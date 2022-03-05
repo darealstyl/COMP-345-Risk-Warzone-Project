@@ -1,4 +1,4 @@
-#include "MapLoader.h"
+#include "Map.h"
 #include <iostream>
 using namespace std;
 

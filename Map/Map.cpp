@@ -1,9 +1,12 @@
 
 #include "Map.h"
+#include "../Utills/warzoneutils.h"
 #include <fstream>
 #include <string>
 #include <iostream>
+
 using namespace std;
+using warzoneutils::splitInput;
 // Map implementation
 Map::Map() {}
 
@@ -245,7 +248,8 @@ Map& MapLoader::createMap(string filename) {
 }
 
 void MapLoader::processBorders(string& line, unordered_map<int, Territory*> countries) {
-	vector<string>& split = splitInput(line, ' ');
+    vector<string> split;
+    splitInput(line, split);
 
 	int countrynumber = stoi(split[0]);
 
@@ -261,22 +265,22 @@ void MapLoader::processBorders(string& line, unordered_map<int, Territory*> coun
 
 		cout << *bordercountry << " ";
 	}
-	delete& split;
 	cout << endl;
 }
 
 Continent& MapLoader::createContinent(string& line) {
-	vector<string>& split = splitInput(line, ' ');
+    vector<string> split;
+    splitInput(line, split);
 
 	string name = split[0];
 
 	Continent* continent = new Continent(name);
-	delete& split;
 	return *continent;
 }
 
 Territory& MapLoader::createTerritory(string& line, unordered_map<int, Continent*> continents, int& countrynumber) {
-	vector<string>& split = splitInput(line, ' ');
+    vector<string> split; 
+    splitInput(line, split);
 
 	countrynumber = stoi(split[0]);
 	string name = split[1];
@@ -289,27 +293,8 @@ Territory& MapLoader::createTerritory(string& line, unordered_map<int, Continent
 
 	continent->territories.push_back(territory);
 
-	delete& split;
-
 	return *territory;
 }
 
-vector<string>& MapLoader::splitInput(const string& line, const char delimiter) {
-	vector<string>* destination = new vector<string>;
 
-	size_t i = 0, j = 0;
-
-	for (; i < line.size(); i++) {
-		if (line[i] == ' ') {
-			// Check first if j is already equal to i. (This happens when theres two consecutive spaces, we do not want to save "").
-			if (i != j) destination->push_back(line.substr(j, i - j));
-			j = i + 1;
-		}
-	}
-
-	// save the last part when i goes out of bounds if previous character was not an empty space.
-	if (i != j) destination->push_back(line.substr(j, i - j));
-
-	return *destination;
-}
 

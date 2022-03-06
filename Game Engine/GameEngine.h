@@ -10,6 +10,7 @@
 
 #include <iostream>
 #include "../LoggingObserver/LoggingObserver.h"
+#include "../Player/Player.h"
 using namespace std;
 
 class GameEngine : public Subject, public ILoggable {
@@ -19,6 +20,7 @@ private:
         START,MAP_LOADED, MAP_VALIDATED,PLAYERS_ADDED,ASSIGN_REINFORCEMENT,ISSUE_ORDERS,EXECUTE_ORDERS,WIN
     };
     currentStates* state;
+    list<Player*> activePlayers;
 
 public:
     GameEngine(); //default constructor
@@ -30,6 +32,10 @@ public:
     friend istream & operator >> (istream &in,  GameEngine &g);
 
     void start(); //start the gameEngine in the first state
+    void reinforcementPhase();
+    void issueOrdersPhase();
+    void executeOrdersPhase();
+    void addPlayer(Player*);
    
     std::string stateToString();
     std::string stringToLog() override;

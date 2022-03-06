@@ -16,6 +16,7 @@ GameEngine& GameEngine::operator= (const GameEngine& game1){
 
 GameEngine::~GameEngine(){
     delete state;
+    activePlayers.clear();
 }
 
 ostream & operator << (ostream &out, const GameEngine &g){
@@ -242,4 +243,32 @@ std::string GameEngine::stateToString() {
 
 std::string GameEngine::stringToLog() {
     return "GameEngine: Current state: " + stateToString();
+}
+
+void GameEngine::reinforcementPhase() {
+    *state = ASSIGN_REINFORCEMENT;
+    for (Player* p : activePlayers) {
+        int reinforcements = floor(p->territories.size() / 3);
+        if (reinforcements < 3)
+            reinforcements = 3;
+        p->addReinforcements(reinforcements);
+
+        // TODO: if the player owns all the territories of a continent, player is given continents control bonus.
+    }    
+}
+
+void GameEngine::issueOrdersPhase() {
+    // Players issue orders and place them in their order list through Player::issueOrder()
+    // This method is called round robin by game engine
+}
+
+void GameEngine::executeOrdersPhase() {
+    // Players are done issuing orders.
+    // Proceed to execute the top order on the list of orders of each player in a round-robin fashion
+    // see Order Execution Phase
+    // Once all player orders have been executed, the main game loop returns to reinforcement phase.
+}
+
+void GameEngine::addPlayer(Player* p) {
+    activePlayers.push_back(p);
 }

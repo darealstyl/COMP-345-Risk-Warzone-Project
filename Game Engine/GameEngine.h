@@ -14,15 +14,11 @@
 using namespace std;
 
 class GameEngine : public Subject, public ILoggable {
-
-private:
-    enum currentStates{ //all the different states
-        START,MAP_LOADED, MAP_VALIDATED,PLAYERS_ADDED,ASSIGN_REINFORCEMENT,ISSUE_ORDERS,EXECUTE_ORDERS,WIN
-    };
-    currentStates* state;
-    list<Player*> activePlayers;
-
 public:
+    enum GameState { //all the different states
+        START, MAP_LOADED, MAP_VALIDATED, PLAYERS_ADDED, ASSIGN_REINFORCEMENT, ISSUE_ORDERS, EXECUTE_ORDERS, WIN
+    };
+
     GameEngine(); //default constructor
     GameEngine(const GameEngine &game1); //copy constructor
     GameEngine& operator =(const GameEngine&); //assignment operator
@@ -37,6 +33,8 @@ public:
     void executeOrdersPhase();
     void addPlayer(Player*);
    
+    GameState getState();
+
     std::string stateToString();
     std::string stringToLog() override;
 
@@ -49,6 +47,10 @@ public:
     void executeOrdersPhase();
     void winPhase();
     */
+private:
+
+    GameState* state;
+    list<Player*> activePlayers;
 };
 
 

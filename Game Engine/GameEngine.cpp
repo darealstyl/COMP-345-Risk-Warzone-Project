@@ -3,7 +3,7 @@
 using namespace std;
 
 GameEngine::GameEngine() {
-    state = new currentStates(START);
+    state = new GameState(START);
 }
 
 GameEngine::GameEngine(const GameEngine &game1){
@@ -229,14 +229,14 @@ void GameEngine::start(){
 
 std::string GameEngine::stateToString() {
     switch (*state) {
-        case currentStates::START:                  return "START";
-        case currentStates::MAP_LOADED:             return "MAP_LOADED";
-        case currentStates::MAP_VALIDATED:          return "MAP_VALIDATED";
-        case currentStates::PLAYERS_ADDED:          return "PLAYERS_ADDED";
-        case currentStates::ASSIGN_REINFORCEMENT:   return "ASSIGN_REINFORCEMENT";
-        case currentStates::ISSUE_ORDERS:           return "ISSUE_ORDERS";
-        case currentStates::EXECUTE_ORDERS:         return "EXECUTE_ORDERS";
-        case currentStates::WIN:                    return "WIN";    
+        case GameState::START:                  return "START";
+        case GameState::MAP_LOADED:             return "MAP_LOADED";
+        case GameState::MAP_VALIDATED:          return "MAP_VALIDATED";
+        case GameState::PLAYERS_ADDED:          return "PLAYERS_ADDED";
+        case GameState::ASSIGN_REINFORCEMENT:   return "ASSIGN_REINFORCEMENT";
+        case GameState::ISSUE_ORDERS:           return "ISSUE_ORDERS";
+        case GameState::EXECUTE_ORDERS:         return "EXECUTE_ORDERS";
+        case GameState::WIN:                    return "WIN";    
         default:                                    return "Error reading state.";
     }
 }
@@ -272,3 +272,10 @@ void GameEngine::executeOrdersPhase() {
 void GameEngine::addPlayer(Player* p) {
     activePlayers.push_back(p);
 }
+
+GameEngine::GameState GameEngine::getState()
+{
+    return *state;
+}
+
+

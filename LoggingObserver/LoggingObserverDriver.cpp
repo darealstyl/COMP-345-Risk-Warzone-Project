@@ -2,57 +2,65 @@
 #include "../Map/Map.h"
 #include "../Game Engine/GameEngine.h"
 #include <string>
+#include <sstream>
 
 int main() {
+
 	LogObserver* logger = new LogObserver();
 
 	// show Command, CommandProcessor logging later
 
-	// ----- Order/OrderList test -----
+	// ----- Order/OrderList Test -----
 	string* na = new string("North America");
 	string* ca = new string("Canada");
 	string* us = new string("United States");
 	Player* p1 = new Player("Michael");
-	p1->orderList->attach(logger);
 	Player* p2 = new Player("William");
 	Continent* northAmerica = new Continent(*na);
 	Territory* canada = new Territory(*ca, northAmerica);
 	Territory* unitedStates = new Territory(*us, northAmerica);
 
 	Deploy* deploy = new Deploy(p1, 1, canada);
-	deploy->attach(logger);
-
 	Advance* advance = new Advance(p1, 1, canada, unitedStates);
-	advance->attach(logger);
-
-	Bomb* bomb = new Bomb(p1, canada);
-	bomb->attach(logger);
-
 	Blockade* blockade = new Blockade(p1, canada);
-	blockade->attach(logger);
-
+	Bomb* bomb = new Bomb(p1, canada);
 	Airlift* airlift = new Airlift(p1, 1, canada, unitedStates);
-	airlift->attach(logger);
-
 	Negotiate* negotiate = new Negotiate(p1, p2);
+	
+	deploy->attach(logger);
+	advance->attach(logger);
+	bomb->attach(logger);
+	blockade->attach(logger);
+	airlift->attach(logger);
 	negotiate->attach(logger);
 
+	p1->orderList->attach(logger);
+	p2->orderList->attach(logger);
+
 	p1->orderList->add(deploy);
-	deploy = NULL;
 	p1->orderList->add(advance);
-	advance = NULL;
 	p1->orderList->add(bomb);
-	bomb = NULL;
-	p1->orderList->add(blockade);
-	blockade = NULL;
-	p1->orderList->add(airlift);
-	airlift = NULL;
-	p1->orderList->add(negotiate);
-	negotiate = NULL;
+	p2->orderList->add(blockade);
+	p2->orderList->add(airlift);
+	p2->orderList->add(negotiate);
+
 	p1->orderList->list.front()->execute();
 
 	// ----- GameEngine Test -----
-	GameEngine* g = new GameEngine();
-	g->attach(logger);
-	g->start();
+	GameEngine* engine = new GameEngine();
+	engine->attach(logger);
+	engine->start();
+
+	// free mem
+	delete logger;
+	delete engine;
+	delete p1;
+	delete p2;
+	delete na;
+	delete ca; 
+	delete us;
+	delete canada;
+	delete unitedStates;
+	delete northAmerica;
+	std::cin.get();
 }

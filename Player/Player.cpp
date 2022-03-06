@@ -5,6 +5,7 @@ Player::Player(string n)
 	name = n;
 	hand = new Hand();
 	orderList = new OrderList();
+	reinforcements = new int(0);
 }
 
 Player::Player(const Player& player)
@@ -13,6 +14,7 @@ Player::Player(const Player& player)
 
 	hand = new Hand(*(player.hand));
 	orderList = new OrderList(*(player.orderList));
+	reinforcements = new int(*(player.reinforcements));
 }
 
 Player& Player::operator=(const Player& player){
@@ -20,6 +22,7 @@ Player& Player::operator=(const Player& player){
 
 	hand = new Hand(*(player.hand));
 	orderList = new OrderList(*(player.orderList));
+	reinforcements = new int(*(player.reinforcements));
 	return *this;
 }
 
@@ -34,6 +37,8 @@ Player::~Player()
 
 	delete hand;
 	hand = NULL;
+
+	delete reinforcements;
 	cout << "Destroying a Player" << endl;
 }
 
@@ -68,12 +73,12 @@ void Player::issueOrder(orderTypes o, Territory* location)
 		Bomb* bomb = new Bomb(this, location);
 		orderList->list.push_back(bomb);
 	}
-			 break;
+		break;
 	case BLOCKADE: {
 		Blockade* blockade = new Blockade(this, location);
 		orderList->list.push_back(blockade);
 	}
-				 break;
+		break;
 	default: cout << "Invalid Order issued";
 		break;
 	}
@@ -87,7 +92,7 @@ void Player::issueOrder(orderTypes o, int numOfArmies, Territory* location)
 		Deploy* deploy = new Deploy(this, numOfArmies, location);
 		orderList->list.push_back(deploy);
 	}
-			   break;
+		break;
 	default: cout << "Invalid Order issued";
 		break;
 	}
@@ -102,12 +107,12 @@ void Player::issueOrder(orderTypes o, int numOfArmies, Territory* to, Territory*
 		Advance* advance = new Advance(this, numOfArmies, to, from);
 		orderList->list.push_back(advance);
 	}
-				break;
+		break;
 	case AIRLIFT: {
 		Airlift* airlift = new Airlift(this, numOfArmies, to, from);
 		orderList->list.push_back(airlift);
 	}
-				break;
+		break;
 	default: cout << "Invalid Order issued";
 		break;
 	};
@@ -121,8 +126,16 @@ void Player::issueOrder(orderTypes o, Player* targetPlayer)
 		Negotiate* negotiate = new Negotiate(this, targetPlayer);
 		orderList->list.push_back(negotiate);
 	}
-				  break;
+		break;
 	default: cout << "Invalid Order issued";
 		break;
 	}
+}
+
+void Player::addReinforcements(int armies) {
+	reinforcements += armies;
+}
+
+void Player::removeReinforcments(int armies) {
+	reinforcements -= armies;
 }

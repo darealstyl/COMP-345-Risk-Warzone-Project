@@ -18,6 +18,7 @@ public:
 	unordered_set<Territory*> territories;
 	Hand* hand;
 	OrderList* orderList;
+	int* reinforcements;
 
 	vector<Territory*>& toAttack();
 	vector<Territory*>& toDefend();
@@ -37,4 +38,7 @@ public:
 	void issueOrder(orderTypes, int, Territory*);
 	void issueOrder(orderTypes, int, Territory*, Territory*);
 	void issueOrder(orderTypes, Player*);
+
+	void addReinforcements(int);
+	void removeReinforcments(int);
 };

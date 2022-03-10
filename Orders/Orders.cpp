@@ -155,12 +155,24 @@ Deploy::Deploy(Player* issuingPlayer, int numOfArmies, Territory* location) : Or
 void Deploy::validate() // Will validate the circumstances of the object before executing
 {
 	cout << "Validating Deploy Order..." << endl;
+	if (issuingPlayer->territories.count(this->location) > 0)
+	{
+		*validity = true;
+	}
 }
 // the execute function will check validation before implementing the functionality of the order
 void Deploy::execute()
 {
 	Deploy::validate();
-	cout << "Executing Deploy..." << endl;
+	if (getValidity())
+	{
+		cout << "Executing Deploy..." << endl;
+
+		this->location->nbOfArmy += numOfArmies;
+	}
+	else 
+		cout << "Deploy Order not valid." << endl;
+	
 	notify(this);
 }
 
@@ -197,7 +209,7 @@ std::string Deploy::stringToLog() {
 	return "Order: " + issuingPlayer->name + " deployed " + std::to_string(numOfArmies) + " units to " + location->name;
 }
 
-Advance::Advance(Player* issuingPlayer, int numOfArmies, Territory* to, Territory* from) : Order(), issuingPlayer(issuingPlayer), numOfArmies(numOfArmies), to(to), from(from)
+Advance::Advance(Player* issuingPlayer, int numOfArmies, Territory* to, Territory* from) : Order(), attacking(false), issuingPlayer(issuingPlayer), numOfArmies(numOfArmies), to(to), from(from)
 {											// Constructor
 	cout << "Making an Advance" << endl;
 	delete (className);
@@ -208,12 +220,50 @@ Advance::Advance(Player* issuingPlayer, int numOfArmies, Territory* to, Territor
 void Advance::validate() // Will validate the circumstances of the object before executing
 {
 	cout << "Validating Advance Order..." << endl;
+	if (issuingPlayer->territories.count(this->from) > 0)
+	{
+		if (issuingPlayer->territories.count(this->to) > 0)
+		{
+			for (Territory* var : to->adjacentTerritories)
+			{
+				if (var == from)
+				{
+					*validity = true;
+				}
+			}
+		}
+		else if (issuingPlayer->territories.count(this->to) <= 0)
+		{
+			
+			for (Territory* var : to->adjacentTerritories)
+			{
+				if (var == from)
+				{
+					*validity = true;
+					attacking = true;
+				}
+			}
+		}
+	}
 }
 // the execute function will check validation before implementing the functionality of the order
 void Advance::execute()
 {
 	Advance::validate();
-	cout << "Executing Advance..." << endl;
+	if (getValidity())
+	{
+		cout << "Executing Advance..." << endl;
+
+		if (attacking)
+		{
+
+		}
+
+		
+	}
+	else
+		cout << "Advance Order not valid." << endl;
+	
 	notify(this);
 }
 
@@ -222,7 +272,7 @@ Advance::~Advance() // Destructor
 	cout << "Destroying an Advance" << endl;
 }
 
-Advance::Advance(const Advance& a) : Order(a), issuingPlayer(a.issuingPlayer), numOfArmies(a.numOfArmies), to(a.to), from(a.from)
+Advance::Advance(const Advance& a) : Order(a), attacking(a.attacking), issuingPlayer(a.issuingPlayer), numOfArmies(a.numOfArmies), to(a.to), from(a.from)
 {											// Copy Constructor
 	cout << "Copying an Advance" << endl;
 	delete (className);

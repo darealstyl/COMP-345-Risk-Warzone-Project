@@ -71,6 +71,7 @@ public:
 class Advance : public Order {
 	Player* issuingPlayer;
 	int numOfArmies;
+	bool attacking;
 	Territory* to;
 	Territory* from;
 public:

@@ -51,6 +51,7 @@ private:
 
     GameState* state;
     list<Player*> activePlayers;
+    Map* theMap;
 };
 
 

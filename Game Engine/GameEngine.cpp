@@ -252,8 +252,22 @@ void GameEngine::reinforcementPhase() {
         if (reinforcements < 3)
             reinforcements = 3;
         p->addReinforcements(reinforcements);
-
+        int count = 0; //to check if players own the territories
         // TODO: if the player owns all the territories of a continent, player is given continents control bonus.
+        for (Continent* c : theMap->continents) {  //get the list of continent
+            for (Territory* t : c->territories) {  // get the list of territories in a continent
+                for (Territory* l : p->territories) {  // get the list of the player's territories
+                    if (l == t ) {  //if the territories are the same, increment the count
+                        count++;
+                    }
+                }
+            }
+            if (count == c->territories.size()) {  //if the count is the same as the size of the list in continent, give the bonus
+                int bonus = 5; //temporary
+                p->addReinforcements(bonus);
+                count = 0; //initialize to 0 for the next continent
+            }
+        }
     }    
 }
 

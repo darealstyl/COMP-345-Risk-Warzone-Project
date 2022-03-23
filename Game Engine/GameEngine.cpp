@@ -252,14 +252,44 @@ void GameEngine::reinforcementPhase() {
         if (reinforcements < 3)
             reinforcements = 3;
         p->addReinforcements(reinforcements);
-
+        int count = 0; //to check if players own the territories
         // TODO: if the player owns all the territories of a continent, player is given continents control bonus.
+        for (Continent* c : theMap->continents) {  //get the list of continent
+            for (Territory* t : c->territories) {  // get the list of territories in a continent
+                for (Territory* l : p->territories) {  // get the list of the player's territories
+                    if (l == t ) {  //if the territories are the same, increment the count
+                        count++;
+                    }
+                }
+            }
+            if (count == c->territories.size()) {  //if the count is the same as the size of the list in continent, give the bonus
+                int bonus = 5; //temporary
+                p->addReinforcements(bonus);
+                count = 0; //initialize to 0 for the next continent
+            }
+        }
     }    
 }
 
 void GameEngine::issueOrdersPhase() {
     // Players issue orders and place them in their order list through Player::issueOrder()
     // This method is called round robin by game engine
+    *state = ISSUE_ORDERS;
+    string order;
+    for (Player* p : activePlayers) {
+     
+        p->issueOrder();
+       
+        }
+    for (Player* p : activePlayers) {  //checks if all players are finished 
+        if (p->endOfOrder == false) {
+         break;
+        }
+        else {
+            cout << "Players are done issuing orders" << endl;
+         //   *state = EXECUTE_ORDERS;
+        }
+    }
 }
 
 void GameEngine::executeOrdersPhase() {
@@ -267,6 +297,39 @@ void GameEngine::executeOrdersPhase() {
     // Proceed to execute the top order on the list of orders of each player in a round-robin fashion
     // see Order Execution Phase
     // Once all player orders have been executed, the main game loop returns to reinforcement phase.
+    for (Player* p : activePlayers) {
+        int length = p->orderList->list.size() - 1; //execute the order at the back of the list
+        p->orderList->list.at(length)->execute(); 
+        p->orderList->list.pop_back(); //pop the order from the list when done 
+    }
+    
+    // check if a player has won 
+    int win_count = 0;
+    for (Player* p : activePlayers) {
+        for (Territory* mapT : theMap->territories) {
+            for (Territory* l : p->territories) {
+                if (l == mapT) {
+                    win_count++;
+                }
+            }
+        }
+        if (win_count == theMap->territories.size()) {
+            cout << "A Player has all the territories" << endl;
+            *state = WIN;
+        }
+    }
+    // check if all the order list are empty, if so, go back to reinforcement
+    int list_count = 0;
+    for (Player* p : activePlayers) {  
+        if (p->orderList->list.size() == 0) {
+            list_count++;
+        }
+        if (list_count == activePlayers.size()) {
+            cout << "All players have executed their orders" << endl;
+            *state = ASSIGN_REINFORCEMENT;
+        }
+    }
+
 }
 
 void GameEngine::addPlayer(string name) {

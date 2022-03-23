@@ -15,11 +15,11 @@ class Player;
 class Card {
     public:
         enum class CardType {
-            Airlift,
-            Blockade,
-            Bomb,
-            Diplomacy,
-            Reinforcement
+            Airlift = 4,
+            Blockade=3,
+            Bomb = 2,
+            Diplomacy = 5,
+            Reinforcement = 0
         };        
 
         Card(CardType);

@@ -1,4 +1,5 @@
 #include "Player.h"
+#include <stdlib.h>
 
 Player::Player(string n)
 {
@@ -130,6 +131,85 @@ void Player::issueOrder(orderTypes o, Player* targetPlayer)
 	default: cout << "Invalid Order issued";
 		break;
 	}
+}
+
+void Player::issueOrder() {
+	*command = DEPLOY;
+	endOfOrder = false;
+	switch (*command)
+	{
+	case DEPLOY:
+		if (*reinforcements != 0) {
+			toAttack();
+			toDefend(); //return the toAttack() and toDefend() vector which will arrange priority
+
+			// Create a deploy order and push it back in the orderlist
+			Deploy* deploy = new Deploy(this, *reinforcements, toDefend().at(0));
+			orderList->list.push_back(deploy);
+
+			//Put this in execution phase
+
+			srand(time(NULL)); //initialize random seed
+			int iarmy;
+			iarmy = rand() % *reinforcements + 1; //number of reinforcements between 1 - nb of reinforcements
+
+			// Deploy Soldiers to toDefend(), the first index as it is priority one
+			toDefend().at(0)->nbOfArmy += iarmy;
+			removeReinforcments(iarmy);
+		}
+		else {
+			cout << "No more reinforcements available" << endl;
+			cout << "Moving to the ADVANCE order" << endl;
+			*command = ADVANCE;
+		}
+		break;
+	case ADVANCE:
+		toAttack();
+		toDefend();
+		{
+			Advance* advance = new Advance(this, *reinforcements, toDefend().at(toDefend().size() - 1), toAttack().at(0));
+			orderList->list.push_back(advance);
+
+			cout << "Moving to the special orders";
+			if (hand->cards.size() == 0) {
+				cout << "No more cards in hand";
+				endOfOrder = true;
+				break;
+			}
+			srand(time(NULL));
+			int randCard = rand() % hand->cards.size() - 1 + 1; //choose a random card to issue order
+			*command = (orderTypes)hand->cards.at(randCard)->getCardType(); //the command will corresponds to the type of card
+		}
+		break;
+	case AIRLIFT:
+		toAttack();
+		toDefend();
+		{
+			Airlift* airlift = new Airlift(this, toDefend().at(0)->nbOfArmy, toDefend().at(0), toAttack().at(0));
+			orderList->list.push_back(airlift);
+		}
+		break; 
+	case BOMB:
+	{
+		Bomb* bomb = new Bomb(this, toAttack().at(0));
+		orderList->list.push_back(bomb);
+	}
+		break;
+	case BLOCKADE:
+	{
+		Blockade* blockade = new Blockade(this, toAttack().at(0));
+		orderList->list.push_back(blockade);
+	}
+		break;
+	case NEGOTIATE:
+	{
+		Negotiate* negotiate = new Negotiate(this, toAttack().at(0)->owner);
+		orderList->list.push_back(negotiate);
+	}
+	}
+	
+
+	
 }
 
 void Player::addReinforcements(int armies) {

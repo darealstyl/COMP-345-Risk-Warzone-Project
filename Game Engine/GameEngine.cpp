@@ -269,6 +269,11 @@ void GameEngine::executeOrdersPhase() {
     // Once all player orders have been executed, the main game loop returns to reinforcement phase.
 }
 
+void GameEngine::addPlayer(string name) {
+    Player* p = new Player(name);
+    activePlayers.push_back(p);
+}
+
 void GameEngine::addPlayer(Player* p) {
     activePlayers.push_back(p);
 }

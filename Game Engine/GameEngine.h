@@ -32,6 +32,7 @@ public:
     void issueOrdersPhase();
     void executeOrdersPhase();
     void addPlayer(Player*);
+    void addPlayer(string);
    
     GameState getState();
 

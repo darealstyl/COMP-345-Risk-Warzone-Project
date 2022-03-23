@@ -19,6 +19,7 @@ public:
 	Hand* hand;
 	OrderList* orderList;
 	int* reinforcements;
+	bool endOfOrder;
 
 	vector<Territory*>& toAttack();
 	vector<Territory*>& toDefend();
@@ -38,7 +39,10 @@ public:
 	void issueOrder(orderTypes, int, Territory*);
 	void issueOrder(orderTypes, int, Territory*, Territory*);
 	void issueOrder(orderTypes, Player*);
+	void issueOrder();
 
 	void addReinforcements(int);
 	void removeReinforcments(int);
+
+	orderTypes* command;
 };

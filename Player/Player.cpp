@@ -1,5 +1,7 @@
 #include "Player.h"
 #include <stdlib.h>
+#include <map>
+#include <algorithm>
 
 Player::Player(string n)
 {
@@ -43,27 +45,32 @@ Player::~Player()
 	cout << "Destroying a Player" << endl;
 }
 
-vector<Territory*>& Player::toAttack() {
-	vector<Territory*>* territoriesToAttack = new vector<Territory*>;
-	unordered_set<Territory*> addedTerritories;
+
+vector<Territory*> Player::toAttack() {
+	vector<Territory*> territoriesToAttack;
+	map<Territory*, int> territoriestotroops;
 
 	// Loops on every territory that the current player owns, and checks the adjacent territories to each of them,
 	// if the two aren't owned by the same player that means it is not owned by the current player and a territory you could attack.
-	// Make sure there aren't two copies of the same territory
 	for (Territory* territory : territories) {
+		int currentNbOfArmy = territory->nbOfArmy;
 		for (Territory* adjacentTerritory : territory->adjacentTerritories) {
-			if (addedTerritories.find(adjacentTerritory) == addedTerritories.end() && territory->owner != adjacentTerritory->owner) {
-				territoriesToAttack->push_back(adjacentTerritory);
-				addedTerritories.insert(adjacentTerritory);
+			if (territory->owner != adjacentTerritory->owner && territoriestotroops[adjacentTerritory] < currentNbOfArmy) {
+				territoriestotroops[adjacentTerritory] = currentNbOfArmy;
 			}
 		}
 	}
 
-	return *territoriesToAttack;
+	for (auto it = territoriestotroops.rbegin(); it != territoriestotroops.rend(); it++)
+		territoriesToAttack.push_back(it->first);
+
+	return territoriesToAttack;
 }
 
-vector<Territory*>& Player::toDefend() {
-	return *(new vector<Territory*>(territories.begin(), territories.end()));
+vector<Territory*> Player::toDefend() {
+	vector<Territory*> toDefend(territories.begin(), territories.end());
+	sort(toDefend.begin(), toDefend.end());
+	return toDefend;
 }
 
 void Player::issueOrder(orderTypes o, Territory* location)

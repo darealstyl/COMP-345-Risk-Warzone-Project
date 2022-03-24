@@ -21,8 +21,8 @@ public:
 	int* reinforcements;
 	bool endOfOrder;
 
-	vector<Territory*>& toAttack();
-	vector<Territory*>& toDefend();
+	vector<Territory*> toAttack();
+	vector<Territory*> toDefend();
 
 	enum orderTypes {
 		DEPLOY = 0, ADVANCE, BOMB, BLOCKADE, AIRLIFT, NEGOTIATE

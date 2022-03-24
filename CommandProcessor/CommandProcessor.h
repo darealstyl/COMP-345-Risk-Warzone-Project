@@ -20,7 +20,7 @@ protected:
 	virtual string readCommand();
 	void saveCommand(Command*);
 public:
-	enum CommandType {
+	enum class CommandType {
 		LOADMAP = 0,
 		VALIDATEMAP,
 		ADDPLAYER,
@@ -33,11 +33,9 @@ public:
 
 	~CommandProcessor();
 
-	void validate(Command*);
 
 private:
 	static const unordered_map<string, CommandType> commandmap;
-	GameEngine* game;
 
 };
 class FileCommandProcessorAdapter : public CommandProcessor {

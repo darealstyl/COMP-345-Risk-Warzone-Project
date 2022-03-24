@@ -152,10 +152,9 @@ void Player::issueOrder() {
 			orderList->list.push_back(deploy);
 
 			//Put this in execution phase
-
-			srand(time(NULL)); //initialize random seed
+			
 			int iarmy;
-			iarmy = rand() % *reinforcements + 1; //number of reinforcements between 1 - nb of reinforcements
+			iarmy = rand() %*reinforcements + 1; //number of reinforcements between 1 - nb of reinforcements
 
 			// Deploy Soldiers to toDefend(), the first index as it is priority one
 			toDefend().at(0)->nbOfArmy += iarmy;
@@ -173,17 +172,38 @@ void Player::issueOrder() {
 		//toAttack();
 		//toDefend();
 		{
-			cout << "Making an advance order" << endl;
-			Advance* advance = new Advance(this, *reinforcements, toDefend().at(0), toDefend().at(1));
-			orderList->list.push_back(advance);
+		if (endOfOrder == false) {
+			
+			int advanceChoice;
+			advanceChoice = (rand() % 3) + 1; // three choices (attack, defend or both)
+			cout << "Choice: " << advanceChoice << endl;
 
+			if (advanceChoice == 1) {
+				cout << "Making an advance order to defend a territory" << endl;
+				Advance* advanceD = new Advance(this, *reinforcements, toDefend().at(0), toDefend().at(1));
+				orderList->list.push_back(advanceD);
+			}
+
+			else if (advanceChoice == 2) {
+				cout << "Making an advance order to attack a territory" << endl;
+				Advance* advanceA = new Advance(this, *reinforcements, toDefend().at(0), toAttack().at(0));
+				orderList->list.push_back(advanceA);
+			}
+			else if (advanceChoice == 3) {
+				cout << "Making both an advance order to defend and to attack a territory";
+				Advance* advanceBD = new Advance(this, *reinforcements, toDefend().at(0), toDefend().at(1));
+				orderList->list.push_back(advanceBD);
+				Advance* advanceBA = new Advance(this, *reinforcements, toDefend().at(0), toAttack().at(0));
+				orderList->list.push_back(advanceBA);
+			}
+		}
 			cout << "Moving to the special orders";
 			if (hand->cards.size() == 0) {
 				cout << "No more cards in hand";
 				endOfOrder = true;
 				break;
 			}
-			srand(time(NULL));
+
 			int randCard = rand() % hand->cards.size() - 1 + 1; //choose a random card to issue order
 			*command = (orderTypes)hand->cards.at(randCard)->getCardType(); //the command will corresponds to the type of card
 		}
@@ -213,6 +233,7 @@ void Player::issueOrder() {
 		Negotiate* negotiate = new Negotiate(this, toAttack().at(0)->owner);
 		orderList->list.push_back(negotiate);
 	}
+
 	}
 	
 

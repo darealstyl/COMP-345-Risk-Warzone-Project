@@ -9,7 +9,7 @@ int main()
 	// 2) A player will only issue deploy orders and no other kind of orders if they still have armies in their reinforcement pool ***DONE
 	// 3) A player can issue advance orders to either defend or attack, based on the toAttack and toDefend lists ***DONE (will give random number for three
 	// options, attack, defend, or both (one after the other)
-	// 4) A plaer can play cards to issue orders ***IN PROGRESS
+	// 4) A plaer can play cards to issue orders ***DONE
 	// 5) A player that does not control any territory is removed from the game. ***DONE
 	// 6) The game ends when a single player controls all the territories ***DONE
 	string* s1 = new string("america");
@@ -82,6 +82,10 @@ int main()
 	//m1->territories.push_back(t13);
 	g1->theMap = m1;
 
+	Card* card = new Card(Card::CardType::Diplomacy);
+
+	p1->hand->addCard(card);
+
 	g1->addPlayer(p1);
 	g1->addPlayer(p2);
 
@@ -89,15 +93,14 @@ int main()
 	int i = 0;
 	g1->reinforcementPhase();
 	srand(time(0));
-	while (i <= 3) {
+	while (i <= 4) {
 		g1->issueOrdersPhase();
 		i++;
 				   }
 	p2->territories.clear();
 	g1->executeOrdersPhase();
 	g1->executeOrdersPhase();
-	g1->executeOrdersPhase();
-	g1->executeOrdersPhase();
+	
 
 		/*g1->issueOrdersPhase();
 		g1->issueOrdersPhase();

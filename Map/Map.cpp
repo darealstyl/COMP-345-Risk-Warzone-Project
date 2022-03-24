@@ -146,6 +146,11 @@ std::ostream& operator<<(std::ostream& out, const Continent& continent) {
     return out << continent.name;
 }
 
+// Territory comparator
+bool Territory::operator<(const Territory& t) const {
+    return nbOfArmy < t.nbOfArmy;
+}
+
 // Territory implementation
 Territory::Territory(const string& name, Continent* continent) {
     this->name = name;

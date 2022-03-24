@@ -7,6 +7,7 @@ Player::Player(string n)
 	hand = new Hand();
 	orderList = new OrderList();
 	reinforcements = new int(0);
+	command = new orderTypes(DEPLOY);
 }
 
 Player::Player(const Player& player)
@@ -134,16 +135,19 @@ void Player::issueOrder(orderTypes o, Player* targetPlayer)
 }
 
 void Player::issueOrder() {
-	*command = DEPLOY;
+	//*command = DEPLOY;
 	endOfOrder = false;
+	toAttack();
+	toDefend();
 	switch (*command)
 	{
 	case DEPLOY:
 		if (*reinforcements != 0) {
-			toAttack();
-			toDefend(); //return the toAttack() and toDefend() vector which will arrange priority
+			//toAttack();
+			//toDefend(); //return the toAttack() and toDefend() vector which will arrange priority
 
 			// Create a deploy order and push it back in the orderlist
+			cout << "Creating deploy order" << endl;
 			Deploy* deploy = new Deploy(this, *reinforcements, toDefend().at(0));
 			orderList->list.push_back(deploy);
 
@@ -155,7 +159,9 @@ void Player::issueOrder() {
 
 			// Deploy Soldiers to toDefend(), the first index as it is priority one
 			toDefend().at(0)->nbOfArmy += iarmy;
+			cout << "Deployement of " << iarmy << " soldiers" << endl;
 			removeReinforcments(iarmy);
+			cout << "Total of reinforcement: " << *reinforcements << endl;
 		}
 		else {
 			cout << "No more reinforcements available" << endl;
@@ -164,10 +170,11 @@ void Player::issueOrder() {
 		}
 		break;
 	case ADVANCE:
-		toAttack();
-		toDefend();
+		//toAttack();
+		//toDefend();
 		{
-			Advance* advance = new Advance(this, *reinforcements, toDefend().at(toDefend().size() - 1), toAttack().at(0));
+			cout << "Making an advance order" << endl;
+			Advance* advance = new Advance(this, *reinforcements, toDefend().at(0), toDefend().at(1));
 			orderList->list.push_back(advance);
 
 			cout << "Moving to the special orders";
@@ -213,9 +220,9 @@ void Player::issueOrder() {
 }
 
 void Player::addReinforcements(int armies) {
-	reinforcements += armies;
+	*reinforcements += armies;
 }
 
 void Player::removeReinforcments(int armies) {
-	reinforcements -= armies;
+	*reinforcements -= armies;
 }

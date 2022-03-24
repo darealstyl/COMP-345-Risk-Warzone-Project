@@ -252,6 +252,7 @@ void GameEngine::reinforcementPhase() {
         if (reinforcements < 3)
             reinforcements = 3;
         p->addReinforcements(reinforcements);
+        cout << *(p->reinforcements) << " reinforcements has been added" << endl;
         int count = 0; //to check if players own the territories
         // TODO: if the player owns all the territories of a continent, player is given continents control bonus.
         for (Continent* c : theMap->continents) {  //get the list of continent
@@ -263,8 +264,10 @@ void GameEngine::reinforcementPhase() {
                 }
             }
             if (count == c->territories.size()) {  //if the count is the same as the size of the list in continent, give the bonus
+                cout << "A bonus is given" << endl;
                 int bonus = 5; //temporary
                 p->addReinforcements(bonus);
+                cout << *(p->reinforcements) << " total soldiers" << endl;
                 count = 0; //initialize to 0 for the next continent
             }
         }
@@ -277,7 +280,7 @@ void GameEngine::issueOrdersPhase() {
     *state = ISSUE_ORDERS;
     string order;
     for (Player* p : activePlayers) {
-     
+        cout << p->name + "'s turn" << endl;
         p->issueOrder();
        
         }
@@ -298,9 +301,9 @@ void GameEngine::executeOrdersPhase() {
     // see Order Execution Phase
     // Once all player orders have been executed, the main game loop returns to reinforcement phase.
     for (Player* p : activePlayers) {
-        int length = p->orderList->list.size() - 1; //execute the order at the back of the list
-        p->orderList->list.at(length)->execute(); 
-        p->orderList->list.pop_back(); //pop the order from the list when done 
+      //  int length = p->orderList->list.size() - 1; //execute the order at the back of the list
+        p->orderList->list.at(0)->execute(); 
+        p->orderList->list.erase(p->orderList->list.begin()); //pop the order from the list when done 
     }
     
     // check if a player has won 
@@ -315,9 +318,45 @@ void GameEngine::executeOrdersPhase() {
         }
         if (win_count == theMap->territories.size()) {
             cout << "A Player has all the territories" << endl;
+            cout << p->name << " has won the game" << endl;
+            win_count = 0;
             *state = WIN;
         }
     }
+
+    //check if a player doesn't have any territories
+ 
+    for (auto it = activePlayers.begin(); it != activePlayers.end(); it++) {
+        if ((*it)->territories.size() == 0) {
+            cout << (*it)->name << " does not own any territories...he will be executed";
+            cout << R"( ____________
+  |____________|_
+   ||--------|| | _________
+   ||- _     || |(HA ha ha!)
+   ||    - _ || | ---------
+   ||       -|| |     //
+   ||        || O\    __
+   ||        ||  \\  (..)
+   ||        ||   \\_|  |_
+   ||        ||    \  \/  )
+   ||        ||     :    :|
+   ||        ||     :    :|
+   ||        ||     :====:O
+   ||        ||     (    )
+   ||__@@@@__||     | `' |
+   || @|..|@ ||     | || |
+   ||O@`=='@O||     | || |
+   ||_@\/\/@_||     |_||_|
+ ----------------   '_'`_`
+/________________\----------\
+|   GUILLOTINE   |-----------|
+|  OF CASTLE DE SADE         |
+|____________________________|)"; //source: https://www.asciiart.eu/weapons/guillotines
+            activePlayers.erase(it--);
+           
+        }
+    }
+
     // check if all the order list are empty, if so, go back to reinforcement
     int list_count = 0;
     for (Player* p : activePlayers) {  

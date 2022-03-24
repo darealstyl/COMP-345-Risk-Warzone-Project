@@ -22,14 +22,14 @@ int main() {
 
 	cout << endl << "All of the player's territories to attack are:\n";
 
-	vector<Territory*>& toattack = player->toAttack();
+	vector<Territory*> toattack = player->toAttack();
 
 	for (Territory* territory : toattack)
 		cout << "\t" << territory->name << endl;
 
 	cout << endl << "All of the player's territories to defend are:\n";
 
-	vector<Territory*>& todefend = player->toDefend();
+	vector<Territory*> todefend = player->toDefend();
 
 	for (Territory* territory : todefend)
 		cout << "\t" << territory->name << endl;
@@ -51,8 +51,6 @@ int main() {
 	cout << endl << "Current order list: " << *(player->orderList);
 	
 	
-	delete& toattack;
-	delete& todefend;
 	delete& map;
 	delete player;
 	cin.get();

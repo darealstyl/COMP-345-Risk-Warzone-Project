@@ -33,6 +33,8 @@ public:
 	vector<Territory*> adjacentTerritories; // adjacentTerritories 
 
 	friend std::ostream& operator<<(std::ostream&, const Territory&);
+	
+	bool operator < (const Territory&) const;
 
 	Territory(const string&, Continent*);
 	Territory(const Territory&);

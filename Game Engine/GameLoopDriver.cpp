@@ -5,12 +5,84 @@ using namespace std;
 int main()
 {
 	// To demonstrate in this driver:
-	// 1) A player receives the correct number of armies in the reinforcmenet phase (showing multiple cases)
-	// 2) A player will only issue deploy orders and no other kind of orders if they still have armies in their reinforcement pool
-	// 3) A player can issue advance orders to either defend or attack, based on the toAttack and toDefend lists
-	// 4) A plaer can play cards to issue orders
-	// 5) A player that does not control any territory is removed from the game.
-	// 6) The game ends when a single player controls all the territories
+	// 1) A player receives the correct number of armies in the reinforcmenet phase (showing multiple cases) ***done
+	// 2) A player will only issue deploy orders and no other kind of orders if they still have armies in their reinforcement pool ***done
+	// 3) A player can issue advance orders to either defend or attack, based on the toAttack and toDefend lists ***in progress
+	// 4) A plaer can play cards to issue orders ***in progress
+	// 5) A player that does not control any territory is removed from the game. ***done
+	// 6) The game ends when a single player controls all the territories ***done 
+	string* s1 = new string("america");
+	Player* p1 = new Player("ced");
+	Player* p2 = new Player("jorge");
+	Continent* c1 = new Continent(*s1);
+	Territory* t1 = new Territory("georgia", c1);
+	Territory* t2 = new Territory("oklaoma", c1);
+	Territory* t3 = new Territory("butan", c1);
+	Territory* t4 = new Territory("canada", c1);
+	Territory* t5 = new Territory("canada", c1);
+	Territory* t6 = new Territory("canada", c1);
+	Territory* t7 = new Territory("canada", c1);
+	Territory* t8 = new Territory("canada", c1);
+	Territory* t9 = new Territory("canada", c1);
+	Territory* t10 = new Territory("canada", c1);
+	Territory* t11 = new Territory("canada", c1);
+	Territory* t12 = new Territory("canada", c1);
+	c1->territories.push_back(t1);
+	c1->territories.push_back(t2);
+	c1->territories.push_back(t3);
+	c1->territories.push_back(t4);
 
+	p1->territories.insert(t1);
+	p1->territories.insert(t2);
+	p1->territories.insert(t3);
+	p1->territories.insert(t4);
+	p1->territories.insert(t5);
+	p1->territories.insert(t6);
+	p1->territories.insert(t7);
+	p1->territories.insert(t8);
+	p1->territories.insert(t9);
+	p1->territories.insert(t10);
+	p1->territories.insert(t11);
+	p1->territories.insert(t12);
+	p2->territories.insert(t1);
+	
+
+	GameEngine* g1 = new GameEngine();
+	Map* m1 = new Map();
+	m1->continents.push_back(c1);
+	m1->territories.push_back(t1);
+	m1->territories.push_back(t2);
+	m1->territories.push_back(t3);
+	m1->territories.push_back(t4);
+	m1->territories.push_back(t5);
+	m1->territories.push_back(t6);
+	m1->territories.push_back(t7);
+	m1->territories.push_back(t8);
+	m1->territories.push_back(t9);
+	m1->territories.push_back(t10);
+	m1->territories.push_back(t11);
+	m1->territories.push_back(t12);
+	g1->theMap = m1;
+
+	g1->addPlayer(p1);
+	g1->addPlayer(p2);
+
+	
+
+	g1->reinforcementPhase();
+	g1->issueOrdersPhase();
+	p2->territories.clear();
+	g1->executeOrdersPhase();
+
+		/*g1->issueOrdersPhase();
+		g1->issueOrdersPhase();
+		g1->issueOrdersPhase();
+		g1->issueOrdersPhase();
+		g1->issueOrdersPhase();
+		g1->issueOrdersPhase();
+		g1->issueOrdersPhase();*/
+		
+	delete g1;
+	g1 = nullptr;
 	
 }

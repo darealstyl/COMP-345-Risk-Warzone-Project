@@ -47,12 +47,12 @@ public:
     void issueOrdersPhase();
     void executeOrdersPhase();
     void winPhase();
-    */
+    */Map* theMap;
 private:
 
     GameState* state;
     list<Player*> activePlayers;
-    Map* theMap;
+    
 };
 
 

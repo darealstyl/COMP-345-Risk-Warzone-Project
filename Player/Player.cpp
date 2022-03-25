@@ -43,6 +43,9 @@ Player::~Player()
 	hand = NULL;
 
 	delete reinforcements;
+
+	delete command;
+
 	cout << "Destroying a Player" << endl;
 }
 

@@ -1,6 +1,7 @@
 #include "../Player/Player.h"
 #include "../Map/Map.h"
 #include "../Game Engine/GameEngine.h"
+#include "../CommandProcessor/CommandProcessor.h"
 #include <string>
 #include <sstream>
 
@@ -51,6 +52,16 @@ int main() {
 	engine->attach(logger);
 	engine->start();
 
+	// ----- Command / CommandProcessor Test -----
+	CommandProcessor* cmdProc = new CommandProcessor();
+	cmdProc->attach(logger);
+	// following line should write the input command to gamelog
+	std::cout << "\nEnter a command: ";
+	Command* cmd = cmdProc->getCommand();
+	cmd->attach(logger);
+	// following line should write this effect to gamelog
+	cmd->saveEffect("TEST EFFECT");
+
 	// free mem
 	delete logger;
 	delete engine;
@@ -62,5 +73,6 @@ int main() {
 	delete canada;
 	delete unitedStates;
 	delete northAmerica;
+	delete cmdProc;
 	std::cin.get();
 }

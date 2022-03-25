@@ -227,7 +227,7 @@ void GameEngine::start(){
                 notify(this);
                 break;
             case 11: //move out of the loop and end the game
-                cout << "End of the game...";
+                cout << "End of the game..." << endl;
                 gameRunning = false;
                 break;
             }

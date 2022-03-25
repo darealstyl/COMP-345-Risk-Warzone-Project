@@ -195,7 +195,7 @@ Map& MapLoader::createMap(string filename) {
 	ifstream mapstream;
 	string line;
 	cout << "Reading from " << filename << endl;
-	mapstream.open(filename);
+	mapstream.open("MapFiles/" + filename);
 
 	// This will get the next line until it hits "[continents]" which will indicate the start of the continents.
 	while (getline(mapstream, line) && line != continentsflag);

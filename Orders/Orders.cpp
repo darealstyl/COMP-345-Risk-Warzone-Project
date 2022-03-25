@@ -544,13 +544,40 @@ Negotiate& Negotiate::operator=(const Negotiate& n) // Assignment Operator Overl
 void Negotiate::validate() // Will validate the circumstances of the object before executing
 {
 	cout << "Validating Negotiate Order..." << endl;
+	if (issuingPlayer != targetPlayer) {
+		*validity = true;
+		cout << "Negociate Order validated" << endl;
+	}
+	else {
+		*validity = false;
+		cout << "Cannot attack yourself" << endl;
+	}
 }
 // the execute function will check validation before implementing the functionality of the order
 void Negotiate::execute()
 {
 	Negotiate::validate();
-	cout << "Executing Negotiate..." << endl;
-	notify(this);
+	if (getValidity()) {
+		cout << "Executing Negotiate..." << endl;
+		//go through the toAttack() of the ennemy, if the issuing player has a territory in it, remove the territory
+		  //auto it = targetPlayer->toAttack().begin();
+		/*for ( auto it = targetPlayer->toAttack().begin();it != targetPlayer->toAttack().end(); it++) {
+			if ((*it)->owner == issuingPlayer) {
+				cout << issuingPlayer->name << " cannot attack " << (*it)->name << endl;
+				targetPlayer->toAttack().erase(it--);
+			}
+		}*/
+		
+		for (int i = 0; i < targetPlayer->toAttack().size(); i++) {
+			if (targetPlayer->toAttack().at(i)->owner == issuingPlayer) {
+				cout << issuingPlayer->name << " cannot attack " << targetPlayer->toAttack().at(i)->name << endl;
+				cout << targetPlayer->toAttack().size();
+				targetPlayer->toAttack().erase(targetPlayer->toAttack().begin());
+			}
+		}
+
+		notify(this);
+	}
 }
 
 std::string Negotiate::stringToLog() {

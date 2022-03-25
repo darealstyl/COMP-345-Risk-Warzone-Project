@@ -125,8 +125,9 @@ Map::~Map() {
     continents.clear();
 }
 // Continent implementation
-Continent::Continent(string& name) {
+Continent::Continent(string& name, int armyValue) {
     this->name = name;
+    this->armyValue = armyValue;
 }
 
 // Shallow copy because otherwise it would require copying the entire map? Seems quite useless considering the scope of this project.
@@ -143,7 +144,7 @@ Continent::~Continent() {
 
 // Print the Territory type as a string
 std::ostream& operator<<(std::ostream& out, const Continent& continent) {
-    return out << continent.name;
+    return out << continent.name << " with army value " << continent.armyValue;
 }
 
 // Territory comparator
@@ -278,8 +279,9 @@ Continent& MapLoader::createContinent(string& line) {
     splitInput(line, split);
 
 	string name = split[0];
+    int armyValue = stoi(split[1]);
 
-	Continent* continent = new Continent(name);
+	Continent* continent = new Continent(name, armyValue);
 	return *continent;
 }
 

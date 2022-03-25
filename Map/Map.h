@@ -14,11 +14,12 @@ class Territory;
 class Continent {
 public:
 	string name;
+	int armyValue;
 	vector<Territory*> territories;
 
 	friend std::ostream& operator<<(std::ostream&, const Continent&);
 
-	Continent(string&);
+	Continent(string&, int);
 	Continent(const Continent&);
 	Continent& operator=(const Continent&);
 	~Continent();

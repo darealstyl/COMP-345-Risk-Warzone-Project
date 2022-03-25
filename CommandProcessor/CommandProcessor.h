@@ -14,7 +14,7 @@ public:
 	Command(string);
 
 	void saveEffect(string);
-	std::string stringToLog() override;
+	string stringToLog() override;
 };
 class CommandProcessor : public Subject, public ILoggable {
 protected:
@@ -33,11 +33,14 @@ public:
 	Command* getCommand();
 
 	~CommandProcessor();
-	std::string stringToLog() override;
 
+	string stringToLog() override;
+
+	bool validate(Command*);
 
 private:
 	static const unordered_map<string, CommandType> commandmap;
+	GameEngine* game;
 
 };
 class FileCommandProcessorAdapter : public CommandProcessor {

@@ -47,11 +47,7 @@ int main() {
 
 	p1->orderList->list.front()->execute();
 
-	// ----- GameEngine Test -----
-	GameEngine* engine = new GameEngine();
-	engine->attach(logger);
-	engine->start();
-
+	
 	// ----- Command / CommandProcessor Test -----
 	CommandProcessor* cmdProc = new CommandProcessor();
 	cmdProc->attach(logger);
@@ -61,6 +57,11 @@ int main() {
 	cmd->attach(logger);
 	// following line should write this effect to gamelog
 	cmd->saveEffect("TEST EFFECT");
+
+	// ----- GameEngine Test -----
+	GameEngine* engine = new GameEngine();
+	engine->attach(logger);
+	engine->start();
 
 	// free mem
 	delete logger;

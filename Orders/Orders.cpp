@@ -385,13 +385,30 @@ Blockade::~Blockade() // Destructor
 void Blockade::validate() // Will validate the circumstances of the object before executing
 {
 	cout << "Validating Blockade Order..." << endl;
+	if (location->owner == issuingPlayer) {
+		*validity = true;
+		cout << "Blockade Order validated" << endl;
+	}
+	else {
+		*validity = false;
+		cout << "Cannot do a blockade on an unknown/enemy" << endl;
+	}
 }
 // the execute function will check validation before implementing the functionality of the order
 void Blockade::execute()
 {
 	Blockade::validate();
-	cout << "Executing Blockade..." << endl;
-	notify(this);
+	if (getValidity()) {
+		cout << "Executing Blockade..." << endl;
+		Player* neutral = new Player("Neutral");
+		location->nbOfArmy *= 2; // double number of players
+		location->owner = neutral; //transfer ownership to neutral player
+		neutral->territories.insert(location);
+		issuingPlayer->territories.erase(issuingPlayer->territories.find(location)); //delete the territory from the issuing player
+		cout << "Blockade executed on " << location->name << ". " << location->name << " is now owned by the Neutral Player" << endl;
+		cout << location->name << " now has: " << location->nbOfArmy << " soldiers" << endl;
+		notify(this);
+	}
 }
 
 Blockade::Blockade(const Blockade& b) : Order(b), issuingPlayer(b.issuingPlayer), location(b.location)

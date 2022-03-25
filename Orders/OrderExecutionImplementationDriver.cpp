@@ -35,6 +35,8 @@ int main() {
 
 	Bomb* bomb = new Bomb(p1, unitedStates);
 	Airlift* air = new Airlift(p2,8,mexico , canada);
-	air->execute();
+	Blockade* block = new Blockade(p2, canada);
+	//air->execute();
 	//bomb->execute();
+	block->execute();
 }

@@ -47,7 +47,7 @@ public:
     void issueOrdersPhase();
     void executeOrdersPhase();
     void winPhase();
-    */Map* theMap;
+    */ Map* theMap;
 private:
 
     GameState* state;

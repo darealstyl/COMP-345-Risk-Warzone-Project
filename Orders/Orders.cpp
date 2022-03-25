@@ -341,13 +341,17 @@ void Bomb::validate() // Will validate the circumstances of the object before ex
 					cout << "Validation complete" << endl;
 					*validity = true;
 				}
-				else
+				else {
 					*validity = false;
+					cout << "Invalid order...Territory is not within reach" << endl;
+				}
 			}
 		}
 	}
-	else
+	else {
 		*validity = false;
+		cout << "Invalid order...Cannot attack itself" << endl;
+	}
 }
 // the execute function will check validation before implementing the functionality of the order
 void Bomb::execute()
@@ -355,7 +359,7 @@ void Bomb::execute()
 	Bomb::validate();
 	if (getValidity()) {
 		cout << "Executing Bomb..." << endl;
-		location->nbOfArmy /= 2;
+		location->nbOfArmy /= 2; //half the army is wiped
 		cout << "Bombed territory has: " << location->nbOfArmy << " soldiers" << endl;
 		notify(this);
 	}
@@ -424,13 +428,38 @@ Airlift::Airlift(Player* issuingPlayer, int numOfArmies, Territory* to, Territor
 void Airlift::validate() // Will validate the circumstances of the object before executing
 {
 	cout << "Validating Airlift Order..." << endl;
+
+	//validate if the source and target are owned by the same player
+	if (to->owner == issuingPlayer && from->owner == issuingPlayer) {
+		if (numOfArmies > from->nbOfArmy) {
+			*validity = false;
+			cout << "Cannot airlift more soldiers than in the territory" << endl;
+		}
+		else {
+			*validity = true;
+			cout << "Validation completed" << endl;
+		}
+	}
+	else {
+		*validity = false;
+		cout << "Invalid order...Cannot airlift to a unknown/ennemy territory " << endl;
+	}
+
 }
 // the execute function will check validation before implementing the functionality of the order
 void Airlift::execute()
 {
 	Airlift::validate();
-	cout << "Executing Airlift..." << endl;
-	notify(this);
+	if (getValidity()) {
+		cout << "Executing Airlift..." << endl;
+		
+		from->nbOfArmy -= numOfArmies; //substract number of soldiers sent
+		to->nbOfArmy += numOfArmies; //add number of soldiers 
+		cout << to->name << " has received " << numOfArmies << " soldiers by plane from " << from->name << endl;
+		cout << from->name << " has: " << from->nbOfArmy << " soldiers" << endl;
+		cout << to->name << " has: " << to->nbOfArmy << " soldiers" << endl;
+		notify(this);
+	}
 }
 
 Airlift::~Airlift() // Destructor

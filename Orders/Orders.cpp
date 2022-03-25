@@ -332,13 +332,37 @@ Bomb& Bomb::operator=(const Bomb b) // Assignment Operator Overload
 void Bomb::validate() // Will validate the circumstances of the object before executing
 {
 	cout << "Validating Bomb Order..." << endl;
+	//check if the territory does not belong to the player
+	if (location->owner != issuingPlayer) {
+		// check if the territory to attack is adjacent to the territories owned by the player
+		for (Territory* t : issuingPlayer->territories) {
+			for (Territory* adjacentT : t->adjacentTerritories) {
+				if (adjacentT == location) {
+					cout << "Validation complete" << endl;
+					*validity = true;
+				}
+				else {
+					*validity = false;
+					cout << "Invalid order...Territory is not within reach" << endl;
+				}
+			}
+		}
+	}
+	else {
+		*validity = false;
+		cout << "Invalid order...Cannot attack itself" << endl;
+	}
 }
 // the execute function will check validation before implementing the functionality of the order
 void Bomb::execute()
 {
 	Bomb::validate();
-	cout << "Executing Bomb..." << endl;
-	notify(this);
+	if (getValidity()) {
+		cout << "Executing Bomb..." << endl;
+		location->nbOfArmy /= 2; //half the army is wiped
+		cout << "Bombed territory has: " << location->nbOfArmy << " soldiers" << endl;
+		notify(this);
+	}
 }
 
 std::string Bomb::stringToLog() {
@@ -361,13 +385,30 @@ Blockade::~Blockade() // Destructor
 void Blockade::validate() // Will validate the circumstances of the object before executing
 {
 	cout << "Validating Blockade Order..." << endl;
+	if (location->owner == issuingPlayer) {
+		*validity = true;
+		cout << "Blockade Order validated" << endl;
+	}
+	else {
+		*validity = false;
+		cout << "Cannot do a blockade on an unknown/enemy" << endl;
+	}
 }
 // the execute function will check validation before implementing the functionality of the order
 void Blockade::execute()
 {
 	Blockade::validate();
-	cout << "Executing Blockade..." << endl;
-	notify(this);
+	if (getValidity()) {
+		cout << "Executing Blockade..." << endl;
+		Player* neutral = new Player("Neutral");
+		location->nbOfArmy *= 2; // double number of players
+		location->owner = neutral; //transfer ownership to neutral player
+		neutral->territories.insert(location);
+		issuingPlayer->territories.erase(issuingPlayer->territories.find(location)); //delete the territory from the issuing player
+		cout << "Blockade executed on " << location->name << ". " << location->name << " is now owned by the Neutral Player" << endl;
+		cout << location->name << " now has: " << location->nbOfArmy << " soldiers" << endl;
+		notify(this);
+	}
 }
 
 Blockade::Blockade(const Blockade& b) : Order(b), issuingPlayer(b.issuingPlayer), location(b.location)
@@ -404,13 +445,38 @@ Airlift::Airlift(Player* issuingPlayer, int numOfArmies, Territory* to, Territor
 void Airlift::validate() // Will validate the circumstances of the object before executing
 {
 	cout << "Validating Airlift Order..." << endl;
+
+	//validate if the source and target are owned by the same player
+	if (to->owner == issuingPlayer && from->owner == issuingPlayer) {
+		if (numOfArmies > from->nbOfArmy) {
+			*validity = false;
+			cout << "Cannot airlift more soldiers than in the territory" << endl;
+		}
+		else {
+			*validity = true;
+			cout << "Validation completed" << endl;
+		}
+	}
+	else {
+		*validity = false;
+		cout << "Invalid order...Cannot airlift to a unknown/ennemy territory " << endl;
+	}
+
 }
 // the execute function will check validation before implementing the functionality of the order
 void Airlift::execute()
 {
 	Airlift::validate();
-	cout << "Executing Airlift..." << endl;
-	notify(this);
+	if (getValidity()) {
+		cout << "Executing Airlift..." << endl;
+		
+		from->nbOfArmy -= numOfArmies; //substract number of soldiers sent
+		to->nbOfArmy += numOfArmies; //add number of soldiers 
+		cout << to->name << " has received " << numOfArmies << " soldiers by plane from " << from->name << endl;
+		cout << from->name << " has: " << from->nbOfArmy << " soldiers" << endl;
+		cout << to->name << " has: " << to->nbOfArmy << " soldiers" << endl;
+		notify(this);
+	}
 }
 
 Airlift::~Airlift() // Destructor
@@ -478,13 +544,40 @@ Negotiate& Negotiate::operator=(const Negotiate& n) // Assignment Operator Overl
 void Negotiate::validate() // Will validate the circumstances of the object before executing
 {
 	cout << "Validating Negotiate Order..." << endl;
+	if (issuingPlayer != targetPlayer) {
+		*validity = true;
+		cout << "Negociate Order validated" << endl;
+	}
+	else {
+		*validity = false;
+		cout << "Cannot attack yourself" << endl;
+	}
 }
 // the execute function will check validation before implementing the functionality of the order
 void Negotiate::execute()
 {
 	Negotiate::validate();
-	cout << "Executing Negotiate..." << endl;
-	notify(this);
+	if (getValidity()) {
+		cout << "Executing Negotiate..." << endl;
+		//go through the toAttack() of the ennemy, if the issuing player has a territory in it, remove the territory
+		  //auto it = targetPlayer->toAttack().begin();
+		/*for ( auto it = targetPlayer->toAttack().begin();it != targetPlayer->toAttack().end(); it++) {
+			if ((*it)->owner == issuingPlayer) {
+				cout << issuingPlayer->name << " cannot attack " << (*it)->name << endl;
+				targetPlayer->toAttack().erase(it--);
+			}
+		}*/
+		
+		for (int i = 0; i < targetPlayer->toAttack().size(); i++) {
+			if (targetPlayer->toAttack().at(i)->owner == issuingPlayer) {
+				cout << issuingPlayer->name << " cannot attack " << targetPlayer->toAttack().at(i)->name << endl;
+				cout << targetPlayer->toAttack().size();
+				targetPlayer->toAttack().erase(targetPlayer->toAttack().begin());
+			}
+		}
+
+		notify(this);
+	}
 }
 
 std::string Negotiate::stringToLog() {

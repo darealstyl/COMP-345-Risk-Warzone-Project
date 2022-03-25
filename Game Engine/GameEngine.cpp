@@ -312,8 +312,10 @@ void GameEngine::executeOrdersPhase() {
     // Proceed to execute the top order on the list of orders of each player in a round-robin fashion
     // see Order Execution Phase
     // Once all player orders have been executed, the main game loop returns to reinforcement phase.
+    cout << "inside executeOrderPhase" << endl;
     for (Player* p : activePlayers) {
-      //  int length = p->orderList->list.size() - 1; //execute the order at the back of the list
+        cout << "inside executeOrderPhase" << endl;
+        cout << p->name + "'s turn" << endl;
         p->orderList->list.at(0)->execute(); 
         p->orderList->list.erase(p->orderList->list.begin()); //pop the order from the list when done 
     }
@@ -364,7 +366,7 @@ void GameEngine::executeOrdersPhase() {
 |   GUILLOTINE   |-----------|
 |  OF CASTLE DE SADE         |
 |____________________________|)"; //source: https://www.asciiart.eu/weapons/guillotines
-            activePlayers.erase(it--);
+            activePlayers.erase(it--); //erasing the object first then decrementing the iterator so the next player will not be an invalid iterator
            
         }
     }

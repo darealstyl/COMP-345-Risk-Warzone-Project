@@ -23,7 +23,6 @@ const unordered_map<string, CT> CommandProcessor::commandmap = { {"loadmap" , CT
 
 string CommandProcessor::readCommand() {
 	string command;
-	cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 	getline(cin, command);
 	return command;
 }

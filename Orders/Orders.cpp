@@ -332,13 +332,33 @@ Bomb& Bomb::operator=(const Bomb b) // Assignment Operator Overload
 void Bomb::validate() // Will validate the circumstances of the object before executing
 {
 	cout << "Validating Bomb Order..." << endl;
+	//check if the territory does not belong to the player
+	if (location->owner != issuingPlayer) {
+		// check if the territory to attack is adjacent to the territories owned by the player
+		for (Territory* t : issuingPlayer->territories) {
+			for (Territory* adjacentT : t->adjacentTerritories) {
+				if (adjacentT == location) {
+					cout << "Validation complete" << endl;
+					*validity = true;
+				}
+				else
+					*validity = false;
+			}
+		}
+	}
+	else
+		*validity = false;
 }
 // the execute function will check validation before implementing the functionality of the order
 void Bomb::execute()
 {
 	Bomb::validate();
-	cout << "Executing Bomb..." << endl;
-	notify(this);
+	if (getValidity()) {
+		cout << "Executing Bomb..." << endl;
+		location->nbOfArmy /= 2;
+		cout << "Bombed territory has: " << location->nbOfArmy << " soldiers" << endl;
+		notify(this);
+	}
 }
 
 std::string Bomb::stringToLog() {

@@ -14,7 +14,7 @@ int main() {
 	string* dn = new string("Denmark");
 	Player* p1 = new Player("Michael");
 	Player* p2 = new Player("William");
-	Continent* northAmerica = new Continent(*na);
+	Continent* northAmerica = new Continent(*na, 0);
 	Territory* canada = new Territory(*ca, northAmerica);
 	Territory* unitedStates = new Territory(*us, northAmerica);
 	Territory* mexico = new Territory(*mx, northAmerica);

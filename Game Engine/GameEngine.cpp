@@ -1,5 +1,8 @@
 #include <iostream>
+#include <filesystem>
 #include "GameEngine.h"
+#include "../Map/Map.h"
+
 using namespace std;
 
 GameEngine::GameEngine() {
@@ -27,6 +30,10 @@ istream & operator >> (istream &in, GameEngine &g){
     return in;
 }
 
+void GameEngine::startupPhase() {
+
+}
+
 // Method to start the GameEngine 
 void GameEngine::start(){
    
@@ -40,13 +47,17 @@ void GameEngine::start(){
         // switch statement where each case represent a state where it will execute the code and ask a command from the user which determine if it stays in the same state or transition to another
         switch (*state)
         {
-        case START:
-            cout << "Starting the startup phase" << endl;
-            cout << "Please choose from the option below.\n"
-                 << endl;
-            
-            cout << choice;
             int option;
+        case START: {
+            cout << "Starting the startup phase" << endl;
+            cout << "Please choose one of the following maps that are available in your MapFiles directory using the \"loadmap <mapfile>\" command.\n" << endl;
+            string path = "MapFiles/";
+            for (const auto& entry : filesystem::directory_iterator(path)) {
+                std::cout << entry.path() << std::endl;
+            }
+
+            cout << choice;
+            
             cout << "Enter your choice: ";
             cin >> option;
 
@@ -63,6 +74,7 @@ void GameEngine::start(){
                 break;
             }
             break;
+        }
 
         case MAP_LOADED:
             cout << "\nYou are in the map loaded phase\n"
@@ -255,7 +267,7 @@ void GameEngine::reinforcementPhase() {
         cout << *(p->reinforcements) << " reinforcements has been added" << endl;
         int count = 0; //to check if players own the territories
         // TODO: if the player owns all the territories of a continent, player is given continents control bonus.
-        for (Continent* c : theMap->continents) {  //get the list of continent
+        for (Continent* c : map->continents) {  //get the list of continent
             for (Territory* t : c->territories) {  // get the list of territories in a continent
                 for (Territory* l : p->territories) {  // get the list of the player's territories
                     if (l == t ) {  //if the territories are the same, increment the count
@@ -309,14 +321,14 @@ void GameEngine::executeOrdersPhase() {
     // check if a player has won 
     int win_count = 0;
     for (Player* p : activePlayers) {
-        for (Territory* mapT : theMap->territories) {
+        for (Territory* mapT : map->territories) {
             for (Territory* l : p->territories) {
                 if (l == mapT) {
                     win_count++;
                 }
             }
         }
-        if (win_count == theMap->territories.size()) {
+        if (win_count == map->territories.size()) {
             cout << "A Player has all the territories" << endl;
             cout << p->name << " has won the game" << endl;
             win_count = 0;

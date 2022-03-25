@@ -28,6 +28,7 @@ public:
     friend istream & operator >> (istream &in,  GameEngine &g);
 
     void start(); //start the gameEngine in the first state
+    void startupPhase();
     void reinforcementPhase();
     void issueOrdersPhase();
     void executeOrdersPhase();
@@ -47,7 +48,7 @@ public:
     void issueOrdersPhase();
     void executeOrdersPhase();
     void winPhase();
-    */Map* theMap;
+    */Map* map;
 private:
 
     GameState* state;

@@ -10,6 +10,11 @@ Command::Command(string str) {
 
 void Command::saveEffect(string str) {
 	this->effect = str;
+	notify(this);
+}
+
+std::string Command::stringToLog() {
+	return "Logger::Command: Effect:" + this->effect;
 }
 
 // Command Processor
@@ -31,12 +36,17 @@ Command* CommandProcessor::getCommand() {
 
 void CommandProcessor::saveCommand(Command* command) {
 	commands.push_back(command);
+	notify(this);
 }
 
 
 CommandProcessor::~CommandProcessor() {
 	for (Command* command : commands)
 		delete command;
+}
+
+std::string CommandProcessor::stringToLog() {
+	return "Logger::CommandProcessor: Command:" + commands.back()->command;
 }
 
 // FileCommandProcessor

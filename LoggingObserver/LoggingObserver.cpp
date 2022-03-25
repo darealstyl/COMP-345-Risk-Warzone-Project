@@ -2,6 +2,8 @@
 #include <fstream>
 #include <iostream>
 
+const std::string logFilename = "gamelog.txt";
+
 #pragma region ILoggable
 ILoggable::~ILoggable() {}
 
@@ -67,7 +69,7 @@ LogObserver::LogObserver(const LogObserver& o) {}
 LogObserver::~LogObserver() {}
 
 void LogObserver::update(ILoggable* il) {
-	std::ofstream file("gamelog.txt", std::ios_base::app);
+	std::ofstream file(logFilename, std::ios_base::app);
 	file << il->stringToLog() << std::endl;
 	file.close();
 }

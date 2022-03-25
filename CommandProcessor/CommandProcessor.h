@@ -6,7 +6,7 @@
 using namespace std;
 
 
-class Command {
+class Command : public Subject, public ILoggable {
 public:
 	string command;
 	string effect;
@@ -14,8 +14,9 @@ public:
 	Command(string);
 
 	void saveEffect(string);
+	std::string stringToLog() override;
 };
-class CommandProcessor {
+class CommandProcessor : public Subject, public ILoggable {
 protected:
 	virtual string readCommand();
 	void saveCommand(Command*);
@@ -32,6 +33,7 @@ public:
 	Command* getCommand();
 
 	~CommandProcessor();
+	std::string stringToLog() override;
 
 
 private:

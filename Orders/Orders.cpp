@@ -38,7 +38,7 @@ Order& Order::operator =(const Order& o) // Assignment Operator Overload
 }
 
 std::string Order::stringToLog() {
-	return "Order: Base order ";
+	return "Logger::Order: Base order ";
 }
 
 bool& Order::getValidity()		// Accessor method				
@@ -141,7 +141,7 @@ OrderList& OrderList::operator=(const OrderList& o)
 }
 
 std::string OrderList::stringToLog() {
-	return "OrderList: Added a " + list.back()->getClassName() + " order";
+	return "Logger::OrderList: Added a " + list.back()->getClassName() + " order";
 }
 
 Deploy::Deploy(Player* issuingPlayer, int numOfArmies, Territory* location) : Order(), issuingPlayer(issuingPlayer), numOfArmies(numOfArmies), location(location)
@@ -206,7 +206,7 @@ Deploy& Deploy::operator=(const Deploy& d) // Assignment Operator Overload
 }
 
 std::string Deploy::stringToLog() {
-	return "Order: " + issuingPlayer->name + " deployed " + std::to_string(numOfArmies) + " units to " + location->name;
+	return "Logger::Order: " + issuingPlayer->name + " deployed " + std::to_string(numOfArmies) + " units to " + location->name;
 }
 
 Advance::Advance(Player* issuingPlayer, int numOfArmies, Territory* to, Territory* from) : Order(), attacking(false), issuingPlayer(issuingPlayer), numOfArmies(numOfArmies), to(to), from(from)
@@ -294,7 +294,7 @@ Advance& Advance::operator=(const Advance& a) // Assignment Operator Overload
 }
 
 std::string Advance::stringToLog() {
-	return "Order: " + issuingPlayer->name + "advanced " + std::to_string(numOfArmies) + " from " + from->name + " to " + to->name;
+	return "Logger::Order: " + issuingPlayer->name + "advanced " + std::to_string(numOfArmies) + " from " + from->name + " to " + to->name;
 }
 
 Bomb::Bomb(Player* issuingPlayer, Territory* location) : Order(), issuingPlayer(issuingPlayer), location(location)
@@ -366,7 +366,7 @@ void Bomb::execute()
 }
 
 std::string Bomb::stringToLog() {
-	return "Order: " + issuingPlayer->name + " bombed " + location->name;
+	return "Logger::Order: " + issuingPlayer->name + " bombed " + location->name;
 }
 
 Blockade::Blockade(Player* issuingPlayer, Territory* location) : Order(), issuingPlayer(issuingPlayer), location(location)
@@ -431,7 +431,7 @@ Blockade& Blockade::operator=(const Blockade& b) // Assignment Operator Overload
 }
 
 std::string Blockade::stringToLog() {
-	return "Order: " + issuingPlayer->name + " blockaded " + location->name;
+	return "Logger::Order: " + issuingPlayer->name + " blockaded " + location->name;
 }
 
 Airlift::Airlift(Player* issuingPlayer, int numOfArmies, Territory* to, Territory* from) : Order(), issuingPlayer(issuingPlayer), numOfArmies(numOfArmies), to(to), from(from)
@@ -506,7 +506,7 @@ Airlift& Airlift::operator=(const Airlift& a) // Assignment Operator Overload
 }
 
 std::string Airlift::stringToLog() {
-	return "Order: " + issuingPlayer->name + " airlifted " + std::to_string(numOfArmies) + " from " + from->name + " to " + to->name;
+	return "Logger::Order: " + issuingPlayer->name + " airlifted " + std::to_string(numOfArmies) + " from " + from->name + " to " + to->name;
 }
 
 Negotiate::Negotiate(Player* issuingPlayer, Player* targetPlayer) : Order(), issuingPlayer(issuingPlayer), targetPlayer(targetPlayer)
@@ -581,5 +581,5 @@ void Negotiate::execute()
 }
 
 std::string Negotiate::stringToLog() {
-	return "Order: " + issuingPlayer->name + " negotiated with " + targetPlayer->name;
+	return "Logger::Order: " + issuingPlayer->name + " negotiated with " + targetPlayer->name;
 }

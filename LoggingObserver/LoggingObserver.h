@@ -9,6 +9,10 @@ class Subject;
 class Observer;
 class LogObserver;
 
+/*
+	All classes subjected to observation should inherit ILoggable for logging purposes.
+	stringToLog() is to be defined by inheriters to provide relevant info to the logger.
+*/
 class ILoggable {
 public:
 	virtual ~ILoggable();
@@ -18,6 +22,10 @@ public:
 	friend std::ostream& operator<<(std::ostream&, const ILoggable&);
 };
 
+/*
+	All classes subjected to observation should inherit Subject to be able to attach observers.
+	Many observers can observe a subject
+*/
 class Subject {
 public:
 	Subject();
@@ -34,6 +42,9 @@ private:
 	std::list<Observer*>* _observers;
 };
 
+/*
+	Observer model to be inherited by the LogObserver
+*/
 class Observer {
 public:
 	Observer();
@@ -46,6 +57,10 @@ public:
 	friend std::ostream& operator<<(std::ostream&, const Observer&);
 };
 
+/*
+	LogObserver inherits Observer and implements the pure abstract update method
+	update() writes all updates received from Subjects to the game log
+*/
 class LogObserver : public Observer {
 public:
 	LogObserver();

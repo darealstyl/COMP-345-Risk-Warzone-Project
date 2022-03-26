@@ -37,9 +37,11 @@ public:
 	string stringToLog() override;
 
 	bool validate(Command*);
+	CommandType getCommandType(string);
 
 private:
 	static const unordered_map<string, CommandType> commandmap;
+	bool commandexists(string);
 	GameEngine* game;
 
 };

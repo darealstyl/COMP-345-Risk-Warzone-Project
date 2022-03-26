@@ -42,25 +42,37 @@ void CommandProcessor::saveCommand(Command* command) {
 	notify(this);
 }
 
-bool CommandProcessor::validate(Command* command) {
-
+bool CommandProcessor::commandexists(string str) {
+	return commandmap.count(str) == 1;
+}
+CT CommandProcessor::getCommandType(string command) {
 	vector<string> split;
-	splitInput(command->command, split);
+	splitInput(command, split);
 
 	string maincommand = split[0];
 	auto pair = commandmap.find(maincommand);
 
-	if (pair == commandmap.end()) {
-		cout << "This command is not recognized, please try again." << endl;
-		return false;
-	}
+	return pair->second;
+}
+
+bool CommandProcessor::validate(Command* command) {
+
+	vector<string> split;
+	splitInput(command->command, split);
 
 	if (split.size() > 2) {
 		cout << "This command contains too many arguments, please try again." << endl;
 		return false;
 	}
 
-	CT type = pair->second;
+	string maincommand = split[0];
+
+	if (commandexists(maincommand)) {
+		cout << "This command is not recognized, please try again." << endl;
+		return false;
+	}
+
+	CT type = getCommandType(command->command);
 	GameEngine::GameState gamestate = game->getState();
 
 	bool validity = false;
@@ -101,15 +113,24 @@ bool CommandProcessor::validate(Command* command) {
 
 			if (split.size() < 2) {
 				cout << "Missing playername." << endl;
-				break;
 			}
-
-			validity = true;
+			else if (game->getPlayerCount() == 6) {
+				cout << "There is already the max amount of players (6)." << endl;
+			}
+			else {
+				validity = true;
+			}
 		}
 		break;
 	case CT::GAMESTART:
 		if (gamestate == GS::PLAYERS_ADDED) {
-			validity = true;
+			if (game->getPlayerCount() < 2) {
+				cout << "Cannot start the game with less than 2 players." << endl;
+			}
+			else {
+				validity = true;
+			}
+			
 		}
 		break;
 	case CT::REPLAY:

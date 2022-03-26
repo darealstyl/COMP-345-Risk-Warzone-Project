@@ -39,10 +39,16 @@ int main() {
 
 	OrderList* o = new OrderList();
 
+
+	Deploy* dep = new Deploy(p1, 1, unitedStates);
+	Advance* adv = new Advance(p1, 7, mexico, unitedStates);
 	Bomb* bomb = new Bomb(p1, unitedStates);
 	Airlift* air = new Airlift(p2,8,mexico , canada);
 	Blockade* block = new Blockade(p2, canada);
 	Negotiate* nego = new Negotiate(p2, p1);
+	
+	//dep->execute();
+	//adv->execute();	
 	//air->execute();
 	//bomb->execute();
 	//block->execute();

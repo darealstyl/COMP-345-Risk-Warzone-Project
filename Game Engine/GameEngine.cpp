@@ -3,7 +3,9 @@
 #include "GameEngine.h"
 #include "../Map/Map.h"
 
+namespace fs = filesystem;
 using namespace std;
+typedef GameEngine::GameState GS;
 
 GameEngine::GameEngine() {
     state = new GameState(START);
@@ -34,6 +36,7 @@ void GameEngine::startupPhase() {
 
 }
 
+
 // Method to start the GameEngine 
 void GameEngine::start(){
    
@@ -52,8 +55,9 @@ void GameEngine::start(){
             cout << "Starting the startup phase" << endl;
             cout << "Please choose one of the following maps that are available in your MapFiles directory using the \"loadmap <mapfile>\" command.\n" << endl;
             string path = "MapFiles/";
-            for (const auto& entry : filesystem::directory_iterator(path)) {
-                std::cout << entry.path() << std::endl;
+            for (const auto& file : fs::directory_iterator(path)) {
+                fs::path map(file.path());
+                cout << map.filename() << endl;
             }
 
             cout << choice;

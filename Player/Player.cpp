@@ -71,6 +71,10 @@ void Player::removeTerritory(Territory* territory) {
 	}
 }
 
+int Player::getNbOfTerritories() {
+	return territories.size();
+}
+
 
 vector<Territory*> Player::toAttack() {
 	vector<Territory*> territoriesToAttack;

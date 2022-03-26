@@ -41,6 +41,8 @@ public:
 	void issueOrder(orderTypes, Player*);
 	void issueOrder();
 
+	int getNbOfTerritories();
+
 	void addTerritory(Territory*);
 	void removeTerritory(Territory*);
 

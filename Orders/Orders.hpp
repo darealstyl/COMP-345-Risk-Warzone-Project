@@ -51,6 +51,9 @@ public:
 	void remove(int position);
 
 	std::string stringToLog() override;
+
+private:
+	void normalize(int&);
 };
 
 class Deploy : public Order {

@@ -75,32 +75,30 @@ ostream& operator<<(ostream& out, OrderList& olist) {
 	return out;
 }
 
+void OrderList::normalize(int& index) {
+	int size = list.size();
+	if (size == 0) {
+		index = 0;
+	}
+	else if (index < 0) {
+		index = 0;
+	}
+	else if (index >= size) {
+		index = size - 1;
+	}
+}
+
 void OrderList::move(int from, int to)
 {
-	if (from < list.size() && from >= 0 && to < list.size() && to >= 0) {
-		Order* temp = list.at(from);
-		if (from < to)
-		{
-			for (int i = from; i <= to; i++)
-			{
-				list.at(i) = list.at(i + 1);
-			}
-			list.at(to) = temp;
-			temp = NULL;
-		}
-		else if (from > to)
-		{
-			for (int i = from; i >= to; i--)
-			{
-				list.at(i) = list.at(i - 1);
-			}
-			list.at(to) = temp;
-		}
-		else
-		{
-			cout << "Invalid Move" << endl;
-		}
-	}
+	if (from == to) return;
+
+	normalize(from);
+	normalize(to);
+
+	Order* order = list[from];
+
+	list.erase(list.begin() + from);
+	list.insert(list.begin() + to, order);
 }
 void OrderList::add(Order* order) {
 	list.push_back(order);
@@ -296,7 +294,7 @@ void Advance::execute()
 					cout << "Defending army destroyed, " + to->name + " succesfully conquered by " + issuingPlayer->name + "." << endl;
 					to->owner = issuingPlayer;
 					to->nbOfArmy = numOfArmyCopy;
-					placeflagforcarddraw
+					//placeflagforcarddraw
 					cout << issuingPlayer->name + " now has " + to_string(to->nbOfArmy) + " armies on the territory." <<endl;
 				}
 			}

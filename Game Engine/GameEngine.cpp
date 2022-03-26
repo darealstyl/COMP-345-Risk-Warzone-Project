@@ -193,11 +193,43 @@ void GameEngine::checkforwin() {
     cout << lastplayer << " has won!" << endl;
 
     transition(GS::WIN);
-
 }
 
 void GameEngine::removelosers() {
+    vector<Player*> remainingplayers;
+    for (Player* player : activePlayers) {
+        if (player->getNbOfTerritories() == 0) {
+            cout << player << " is out of the game. LOSER!";
+            cout << R"( ____________
+                          |____________|_
+                           ||--------|| | _________
+                           ||- _     || |(HA ha ha!)
+                           ||    - _ || | ---------
+                           ||       -|| |     //
+                           ||        || O\    __
+                           ||        ||  \\  (..)
+                           ||        ||   \\_|  |_
+                           ||        ||    \  \/  )
+                           ||        ||     :    :|
+                           ||        ||     :    :|
+                           ||        ||     :====:O
+                           ||        ||     (    )
+                           ||__@@@@__||     | `' |
+                           || @|..|@ ||     | || |
+                           ||O@`=='@O||     | || |
+                           ||_@\/\/@_||     |_||_|
+                         ----------------   '_'`_`
+                        /________________\----------\
+                        |   GUILLOTINE   |-----------|
+                        |  OF CASTLE DE SADE         |
+                        |____________________________|)";
+        }
+        else {
+            remainingplayers.push_back(player);
+        }
+    }
 
+    activePlayers = remainingplayers;
 }
 
 void GameEngine::mainGameLoop() {
@@ -331,59 +363,30 @@ void GameEngine::executeOrdersPhase() {
     // Proceed to execute the top order on the list of orders of each player in a round-robin fashion
     // see Order Execution Phase
     // Once all player orders have been executed, the main game loop returns to reinforcement phase.
-    cout << "inside executeOrderPhase" << endl;
-    for (Player* p : activePlayers) {
-        cout << p->name + "'s turn" << endl;
-        p->orderList->list.at(0)->execute(); 
-        p->orderList->list.erase(p->orderList->list.begin()); //pop the order from the list when done 
+    bool atleastOneExecution = true;
+    int orderindex = 0;
+
+    while (atleastOneExecution) {
+        atleastOneExecution = false;
+        for (Player* player : activePlayers) {
+            cout << player << "'s turn" << endl;
+            vector<Order*>& list = player->orderList->list;
+
+            if (list.size() < orderindex) {
+                Order& order = *list[orderindex];
+                order.execute();
+
+                atleastOneExecution = true;
+            }
+        }
+
+        orderindex++;
     }
 
-    //check if a player doesn't have any territories
- 
-    for (auto it = activePlayers.begin(); it != activePlayers.end(); it++) {
-        if ((*it)->territories.size() == 0) {
-            cout << (*it)->name << " does not own any territories...he will be executed";
-            cout << R"( ____________
-  |____________|_
-   ||--------|| | _________
-   ||- _     || |(HA ha ha!)
-   ||    - _ || | ---------
-   ||       -|| |     //
-   ||        || O\    __
-   ||        ||  \\  (..)
-   ||        ||   \\_|  |_
-   ||        ||    \  \/  )
-   ||        ||     :    :|
-   ||        ||     :    :|
-   ||        ||     :====:O
-   ||        ||     (    )
-   ||__@@@@__||     | `' |
-   || @|..|@ ||     | || |
-   ||O@`=='@O||     | || |
-   ||_@\/\/@_||     |_||_|
- ----------------   '_'`_`
-/________________\----------\
-|   GUILLOTINE   |-----------|
-|  OF CASTLE DE SADE         |
-|____________________________|)"; //source: https://www.asciiart.eu/weapons/guillotines
-            activePlayers.erase(it--); //erasing the object first then decrementing the iterator so the next player will not be an invalid iterator
-           
-        }
-    }
-
-    // check if all the order list are empty, if so, go back to reinforcement
-    int list_count = 0;
-    for (Player* p : activePlayers) {  
-        if (p->orderList->list.size() == 0) {
-            list_count++;
-        }
-        if (list_count == activePlayers.size()) {
-            cout << "All players have executed their orders" << endl;
-            *state = ASSIGN_REINFORCEMENT;
-        }
-    }
-
+    cout << "All players have executed their orders" << endl;
+    transition(GS::ASSIGN_REINFORCEMENT);
 }
+
 int GameEngine::getPlayerCount() {
     return activePlayers.size();
 }

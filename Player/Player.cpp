@@ -3,6 +3,13 @@
 #include <map>
 #include <algorithm>
 
+Player* Player::neutralplayer = new Player("Neutral Player");
+
+void Player::resetNeutralPlayer() {
+	delete neutralplayer;
+	neutralplayer = new Player("Neutral Player");
+}
+
 Player::Player(string n)
 {
 	name = n;
@@ -47,6 +54,21 @@ Player::~Player()
 	delete command;
 
 	cout << "Destroying a Player" << endl;
+}
+
+void Player::addTerritory(Territory* territory) {
+	territory->owner->territories.erase(territory);
+	territories.insert(territory);
+	territory->owner = this;
+}
+
+void Player::removeTerritory(Territory* territory) {
+	
+	territories.erase(territory);
+
+	if (territory->owner == this) {
+		Player::neutralplayer->addTerritory(territory);
+	}
 }
 
 

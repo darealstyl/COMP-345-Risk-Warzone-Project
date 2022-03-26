@@ -41,8 +41,14 @@ public:
 	void issueOrder(orderTypes, Player*);
 	void issueOrder();
 
+	void addTerritory(Territory*);
+	void removeTerritory(Territory*);
+
 	void addReinforcements(int);
 	void removeReinforcments(int);
 
 	orderTypes* command;
+
+	static Player* neutralplayer;
+	static void resetNeutralPlayer();
 };

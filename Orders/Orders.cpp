@@ -158,6 +158,7 @@ void Deploy::validate() // Will validate the circumstances of the object before 
 	if (issuingPlayer->territories.count(this->location) > 0)
 	{
 		*validity = true;
+		cout << "Deploy Validated" << endl;
 	}
 }
 // the execute function will check validation before implementing the functionality of the order
@@ -274,8 +275,10 @@ void Advance::execute()
 						cout << "Attacking army unit destroyed" << endl;
 					}
 				}
-				if (to->nbOfArmy == 0) {
+				if (to->nbOfArmy == 0) 
+				{
 					cout << "Attacking army destroyed, "+to->name+" succesfully defended." << endl;
+					cout << to->name + " has " + to_string(to->nbOfArmy) + " remaining on the territory." << endl;
 				}
 				if (numOfArmyCopy != 0) 
 				{
@@ -293,7 +296,8 @@ void Advance::execute()
 					cout << "Defending army destroyed, " + to->name + " succesfully conquered by " + issuingPlayer->name + "." << endl;
 					to->owner = issuingPlayer;
 					to->nbOfArmy = numOfArmyCopy;
-
+					placeflagforcarddraw
+					cout << issuingPlayer->name + " now has " + to_string(to->nbOfArmy) + " armies on the territory." <<endl;
 				}
 			}
 		}	

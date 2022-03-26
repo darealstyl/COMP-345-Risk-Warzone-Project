@@ -184,7 +184,8 @@ Territory::~Territory() {
 
 // Print the Territory type as a string
 std::ostream& operator<<(std::ostream& out, const Territory& territory) {
-    return out << territory.name;
+    out << territory.name;
+    return out;
 }
 
 

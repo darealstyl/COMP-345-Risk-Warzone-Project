@@ -14,6 +14,9 @@
 #include "../CommandProcessor/CommandProcessor.h"
 using namespace std;
 
+class CommandProcessor;
+class Command;
+
 class GameEngine : public Subject, public ILoggable {
 public:
     enum GameState { //all the different states
@@ -55,7 +58,7 @@ public:
 private:
     CommandProcessor* commandprocessor;
     GameState* state;
-    list<Player*> activePlayers;
+    vector<Player*> activePlayers;
     Deck* deck;
     bool running;
 
@@ -63,12 +66,14 @@ private:
     void initializeCommandProcessor();
     void getandexecutecommand();
     void execute(Command*);
-    void playPhase();
+    void mainGameLoop();
     void gamestart();
     void distributeterritories();
     void randomizeplayerorder();
     void distributearmies();
     void distributecards();
+    void checkforwin();
+    void removelosers();
     
 };
 

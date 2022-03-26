@@ -12,6 +12,7 @@ typedef CommandProcessor::CommandType CT;
 
 GameEngine::GameEngine() {
     state = new GameState(START);
+    map = nullptr;
     commandprocessor = nullptr;
     running = true;
 }
@@ -86,7 +87,7 @@ void GameEngine::execute(Command* command) {
         command->saveEffect("Successfully loaded map \"" + mapfile + "\"");
         break;
     }
-    case CT::VALIDATEMAP:
+    case CT::VALIDATEMAP: {
         bool validmap = this->map->validate();
         if (validmap) {
             transition(GS::MAP_VALIDATED);
@@ -98,6 +99,7 @@ void GameEngine::execute(Command* command) {
             command->saveEffect("Found the map invalid.");
         }
         break;
+    }
     case CT::ADDPLAYER: {
         string playername = split[1];
         addPlayer(playername);
@@ -111,7 +113,7 @@ void GameEngine::execute(Command* command) {
         transition(GS::ASSIGN_REINFORCEMENT);
         cout << "Done with startup. Starting the game" << endl;
         command->saveEffect("Successfully started the game");
-        playPhase();
+        mainGameLoop();
         break;
     case CT::REPLAY:
         transition(GS::START);
@@ -172,20 +174,51 @@ void GameEngine::distributecards() {
     }
 }
 
-void GameEngine::playPhase() {
+void GameEngine::checkforwin() {
+    int currentNbOfPlayers = this->activePlayers.size();
+
+    // If there isn't one player left, there is no winner yet.
+    if (currentNbOfPlayers != 1) {
+        return;
+    }
+
+    Player* lastplayer = this->activePlayers.front();
+    
+    // If the last player does not have all the territories, the game isn't won yet.
+    if (lastplayer->territories.size() != map->territories.size()) {
+        return;
+    }
+
+    // The last player has all the territories and is the winner.
+    cout << lastplayer << " has won!" << endl;
+
+    transition(GS::WIN);
+
+}
+
+void GameEngine::removelosers() {
+
+}
+
+void GameEngine::mainGameLoop() {
     while (GS::WIN != *state) {
         switch (*state) {
         case ASSIGN_REINFORCEMENT:
             cout << "\nYou are in the assignment reinforcement phase" << endl;
+            reinforcementPhase();
             break;
         case ISSUE_ORDERS:
             cout << "\nYou are in the issue order phase" << endl;
+            issueOrdersPhase();
             break;
         case EXECUTE_ORDERS:
             cout << "\nYou are in the execute order phase" << endl;
-
+            executeOrdersPhase();
             break;
         }
+
+        removelosers();
+        checkforwin();
     }
 }
 
@@ -300,28 +333,9 @@ void GameEngine::executeOrdersPhase() {
     // Once all player orders have been executed, the main game loop returns to reinforcement phase.
     cout << "inside executeOrderPhase" << endl;
     for (Player* p : activePlayers) {
-        cout << "inside executeOrderPhase" << endl;
         cout << p->name + "'s turn" << endl;
         p->orderList->list.at(0)->execute(); 
         p->orderList->list.erase(p->orderList->list.begin()); //pop the order from the list when done 
-    }
-    
-    // check if a player has won 
-    int win_count = 0;
-    for (Player* p : activePlayers) {
-        for (Territory* mapT : map->territories) {
-            for (Territory* l : p->territories) {
-                if (l == mapT) {
-                    win_count++;
-                }
-            }
-        }
-        if (win_count == map->territories.size()) {
-            cout << "A Player has all the territories" << endl;
-            cout << p->name << " has won the game" << endl;
-            win_count = 0;
-            *state = WIN;
-        }
     }
 
     //check if a player doesn't have any territories

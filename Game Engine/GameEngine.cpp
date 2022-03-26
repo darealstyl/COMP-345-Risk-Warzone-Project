@@ -1,14 +1,19 @@
 #include <iostream>
 #include <filesystem>
+#include <random>
 #include "GameEngine.h"
 #include "../Map/Map.h"
+#include "../Utills/warzoneutils.h"
 
 namespace fs = filesystem;
 using namespace std;
 typedef GameEngine::GameState GS;
+typedef CommandProcessor::CommandType CT;
 
 GameEngine::GameEngine() {
     state = new GameState(START);
+    commandprocessor = nullptr;
+    running = true;
 }
 
 GameEngine::GameEngine(const GameEngine &game1){
@@ -32,214 +37,191 @@ istream & operator >> (istream &in, GameEngine &g){
     return in;
 }
 
-void GameEngine::startupPhase() {
 
+
+void GameEngine::transition(GS state) {
+    this->state = new GS(state);
+    notify(this);
 }
 
+void GameEngine::initializeCommandProcessor() {
+    CommandProcessor startprocessor;
 
-// Method to start the GameEngine 
-void GameEngine::start(){
-   
-    bool gameRunning = true; //boolean to end the loop when the game ends
-    cout << "Welcome to Warzone. " << endl;
+    while (commandprocessor == nullptr) {
+        cout << "Please select how you want the application to accept commands; from the console (-console) or from a file (-file <filename>)." << endl;
+        Command* command = startprocessor.getCommand();
+        vector<string> split;
+        warzoneutils::splitInput(command->command, split);
 
-    //possible commands for the users
-    string choice = "\n1. Load the map\n2.Validate the map\n3.Add a player in the game\n4.Assign a country\n5.Issue an order\n6End the issues of order\n7.Execute an order\n8.End the execution of orders\n9.Win the Game\n10.Play again\n11.End the game\n";
-    while (gameRunning)
-    {
-        // switch statement where each case represent a state where it will execute the code and ask a command from the user which determine if it stays in the same state or transition to another
+        if (split[0] == "-console") {
+            this->commandprocessor = new CommandProcessor();
+        }
+        else if (split[0] == "-file") {
+            string path = "CommandFiles/";
+            string filename = split[1];
+            for (const auto& file : fs::directory_iterator(path)) {
+                fs::path map(file.path());
+
+                if (map.filename() == filename) {
+                    this->commandprocessor = new FileCommandProcessorAdapter(filename);
+                    break;
+                }
+            }
+        }
+    }
+}
+
+void GameEngine::execute(Command* command) {
+    vector<string> split;
+    warzoneutils::splitInput(command->command, split);
+    string maincommand = split[0];
+
+    CT commandtype = commandprocessor->getCommandType(maincommand);
+
+    switch (commandtype) {
+    case CT::LOADMAP: {
+        string mapfile = split[1];
+        this->map = &MapLoader::createMap(mapfile);
+        transition(GS::MAP_LOADED);
+        command->saveEffect("Successfully loaded map \"" + mapfile + "\"");
+        break;
+    }
+    case CT::VALIDATEMAP:
+        bool validmap = this->map->validate();
+        if (validmap) {
+            transition(GS::MAP_VALIDATED);
+            cout << "The loaded map is valid, now entering MAP_VALIDATED state." << endl;
+            command->saveEffect("Validated the map that is currently loaded successfully.");
+        }
+        else {
+            cout << "Invalid Map" << endl;
+            command->saveEffect("Found the map invalid.");
+        }
+        break;
+    case CT::ADDPLAYER: {
+        string playername = split[1];
+        addPlayer(playername);
+        transition(GS::PLAYERS_ADDED);
+        cout << "Successfully added player \"" + playername + "\"" << endl;
+        command->saveEffect("Successfully added player \"" + playername + "\"");
+        break;
+    }
+    case CT::GAMESTART:
+        gamestart();
+        transition(GS::ASSIGN_REINFORCEMENT);
+        cout << "Done with startup. Starting the game" << endl;
+        command->saveEffect("Successfully started the game");
+        playPhase();
+        break;
+    case CT::REPLAY:
+        transition(GS::START);
+        cout << "Restarting the game" << endl;
+        command->saveEffect("Successfully restarted a new game");
+    case CT::QUIT:
+        running = false;
+        cout << "Quitting the game" << endl;
+        command->saveEffect("Successfully ended the application");
+        break;
+    }
+}
+
+void GameEngine::getandexecutecommand() {
+    Command* command = commandprocessor->getCommand();
+    bool valid = commandprocessor->validate(command);
+    if (valid) {
+        execute(command);
+    }
+}
+
+void GameEngine::gamestart() {
+    distributeterritories();
+    randomizeplayerorder();
+    distributearmies();
+    distributecards();
+}
+
+void GameEngine::distributeterritories() {
+    vector<Territory*> territories(map->territories);
+    while (!territories.empty()) {
+        for (Player* player : activePlayers) {
+            if (territories.empty()) {
+                break;
+            }
+            else {
+                player->addTerritory(territories.back());
+                territories.pop_back();
+            }
+        }
+    }
+}
+
+void GameEngine::randomizeplayerorder() {
+    auto rng = std::default_random_engine{};
+    shuffle(begin(activePlayers), end(activePlayers), rng);
+}
+
+void GameEngine::distributearmies() {
+    for (Player* player : activePlayers) {
+        player->addReinforcements(50);
+    }
+}
+
+void GameEngine::distributecards() {
+    for (Player* player : activePlayers) {
+        player->hand->addCard(deck->draw());
+    }
+}
+
+void GameEngine::playPhase() {
+    while (GS::WIN != *state) {
+        switch (*state) {
+        case ASSIGN_REINFORCEMENT:
+            cout << "\nYou are in the assignment reinforcement phase" << endl;
+            break;
+        case ISSUE_ORDERS:
+            cout << "\nYou are in the issue order phase" << endl;
+            break;
+        case EXECUTE_ORDERS:
+            cout << "\nYou are in the execute order phase" << endl;
+
+            break;
+        }
+    }
+}
+
+void GameEngine::startupPhase() {
+
+    initializeCommandProcessor();
+
+    while (running) {
         switch (*state)
         {
-            int option;
         case START: {
             cout << "Starting the startup phase" << endl;
             cout << "Please choose one of the following maps that are available in your MapFiles directory using the \"loadmap <mapfile>\" command.\n" << endl;
             string path = "MapFiles/";
             for (const auto& file : fs::directory_iterator(path)) {
                 fs::path map(file.path());
-                cout << map.filename() << endl;
-            }
-
-            cout << choice;
-            
-            cout << "Enter your choice: ";
-            cin >> option;
-
-            switch (option)
-            {
-            case 1:
-                // go to the MapLoaded state
-                *state = MAP_LOADED;
-                notify(this);
-                break;
-
-            default:
-                cout << "\nThis is not a valid command\n" << endl;
-                break;
+                cout << "\t" << map.filename() << endl;
             }
             break;
         }
-
         case MAP_LOADED:
-            cout << "\nYou are in the map loaded phase\n"
-                 << endl;
-            // load the map
-            //  game->mapLoadedPhase();
-            cout << "Map has been loaded" << endl;
-            // ask for the options
-            cout << choice;
-            cout << "Enter your choice: ";
-            cin >> option;
-            switch (option)
-            {
-            case 1:
-                // load another map
-                //    game->mapLoadedPhase();
-                cout << "Map has been loaded" << endl;
-                break;
-            case 2:
-                // go to validate the map
-                *state = MAP_VALIDATED;
-                notify(this);
-                break;
-            default:
-                cout << "\nThis is not a valid command\n" << endl;
-                break;
-            }
+            cout << "\nYou are in the map loaded phase." << endl;
             break;
         case MAP_VALIDATED:
-            cout << "\nYou are in the map validated phase\n"
-                 << endl;
-            //    game->mapValidatedPhase();
-            cout << "The map has been validated" << endl;
-            cout << choice;
-            cout << "Enter an option: ";
-            cin >> option;
-            switch (option)
-            {
-            case 3:
-            //go to add player
-                *state = PLAYERS_ADDED;
-                notify(this);
-                break;
-
-            default:
-             cout << "\nThis is not a valid command\n" << endl;
-                break;
-            }
+            cout << "\nYou are in the map validated phase." << endl;
             break;
         case PLAYERS_ADDED:
-            cout << "\nYou are in the player added phase\n"
-                 << endl;
-            //    game->playersAddedPhase();
-            cout << choice;
-            cout << "Enter your choice: ";
-            cin >> option;
-            switch (option)
-            {
-            case 3:
-            //loop in same state to add another player
-                //        game->playersAddedPhase();
-                break;
-            case 4:
-            //go to next state
-                *state = ASSIGN_REINFORCEMENT;
-                notify(this);
-                break;
-            default:
-            cout << "\nThis is not a valid command\n" << endl;
-                break;
-            }
-            break;
-        case ASSIGN_REINFORCEMENT:
-            cout << "\nYou are in the assignment reinforcement phase\n"
-                 << endl;
-            // game->assignReinforcementPhase();
-            cout << "\nThe countries have been assigned to the players\n";
-            cout << choice;
-            cin >> option;
-            switch (option)
-            {
-            case 5: //go to the next state
-                *state = ISSUE_ORDERS;
-                notify(this);
-                break;
-            default:
-            cout << "\nThis is not a valid command\n" << endl;
-                break;
-            }
-            break;
-        case ISSUE_ORDERS:
-            cout << "\nYou are in the issue order phase\n"
-                 << endl;
-            // game->issueOrdersPhase();
-            cout << "\nAn order has been issued\n";
-            cout << choice;
-            cout << "Enter a choice: ";
-            cin >> option;
-
-            switch (option)
-            {
-            case 5:  //loop in the same state, issue another order
-                // game->issueOrdersPhase();
-                break;
-            case 6:  //move to the next state
-                *state = EXECUTE_ORDERS;
-                notify(this);
-                break;
-            default:
-            cout << "\nThis is not a valid command\n" << endl;
-                break;
-            }
-            break;
-        case EXECUTE_ORDERS:
-            cout << "\nYou are in the execute order phase\n";
-            cout << choice;
-            cout << "Enter your choice: ";
-            cin >> option;
-            switch (option)
-            {
-            case 7:  //loop in the same state
-                // game->executeOrdersPhase();
-                cout << "\nAn order has been executed\n";
-                break;
-            case 8:  //move back to previous state
-                cout << "Ending execution orders";
-                *state = ASSIGN_REINFORCEMENT;
-                notify(this);
-                break;
-            case 9:  //move to next state
-                *state = WIN;
-                notify(this);
-                break;
-            default:
-            cout << "\nThis is not a valid command\n" << endl;
-                break;
-            }
+            cout << "\nYou are in the player added phase." << endl;
             break;
         case WIN:
-            cout << "\nYou are in the win phase\n";
-            cout << "Congratulation you have won";
-            cout << choice;
-            cout << "Enter your choice: ";
-            cin >> option;
-            switch (option)
-            {
-            case 10:  //move back to start state
-                cout << "Restarting a new game...";
-                *state = START;
-                notify(this);
-                break;
-            case 11: //move out of the loop and end the game
-                cout << "End of the game..." << endl;
-                gameRunning = false;
-                break;
-            }
+            cout << "\nYou are in the win phase" << endl;
             break;
-        default:
-            cout << "This is not a valid state" << endl;
-                break;
         }
+
+
+        getandexecutecommand();
     }
 }
 
@@ -388,7 +370,9 @@ void GameEngine::executeOrdersPhase() {
     }
 
 }
-
+int GameEngine::getPlayerCount() {
+    return activePlayers.size();
+}
 void GameEngine::addPlayer(string name) {
     Player* p = new Player(name);
     activePlayers.push_back(p);

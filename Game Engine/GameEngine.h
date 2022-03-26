@@ -11,6 +11,7 @@
 #include <iostream>
 #include "../LoggingObserver/LoggingObserver.h"
 #include "../Player/Player.h"
+#include "../CommandProcessor/CommandProcessor.h"
 using namespace std;
 
 class GameEngine : public Subject, public ILoggable {
@@ -34,6 +35,8 @@ public:
     void executeOrdersPhase();
     void addPlayer(Player*);
     void addPlayer(string);
+    int getPlayerCount();
+
    
     GameState getState();
 
@@ -50,9 +53,22 @@ public:
     void winPhase();
     */Map* map;
 private:
-
+    CommandProcessor* commandprocessor;
     GameState* state;
     list<Player*> activePlayers;
+    Deck* deck;
+    bool running;
+
+    void transition(GameEngine::GameState);
+    void initializeCommandProcessor();
+    void getandexecutecommand();
+    void execute(Command*);
+    void playPhase();
+    void gamestart();
+    void distributeterritories();
+    void randomizeplayerorder();
+    void distributearmies();
+    void distributecards();
     
 };
 

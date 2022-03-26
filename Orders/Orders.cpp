@@ -256,10 +256,47 @@ void Advance::execute()
 
 		if (attacking)
 		{
+			srand((unsigned)time(NULL));
+			cout << "Doing Battle..." << endl;
+			int numOfArmyCopy = this->numOfArmies;
+			float rand_num = 0.0;
 
-		}
+			while (to->nbOfArmy != 0 || numOfArmyCopy != 0)
+			{
+				if (to->nbOfArmy != 0)
+				{
+					rand_num = (float)rand() / RAND_MAX;
+					cout << rand_num;
 
-		
+					if (rand_num >= 0.3)
+					{
+						numOfArmyCopy -= 1;
+						cout << "Attacking army unit destroyed" << endl;
+					}
+				}
+				if (to->nbOfArmy == 0) {
+					cout << "Attacking army destroyed, "+to->name+" succesfully defended." << endl;
+				}
+				if (numOfArmyCopy != 0) 
+				{
+					rand_num = (float)rand() / RAND_MAX;
+					cout << rand_num;
+
+					if (rand_num >= 0.4)
+					{
+						to->nbOfArmy -= 1;
+						cout << "Defending army unit destroyed" << endl;
+					}
+				}
+				if (numOfArmyCopy == 0)
+				{
+					cout << "Defending army destroyed, " + to->name + " succesfully conquered by " + issuingPlayer->name + "." << endl;
+					to->owner = issuingPlayer;
+					to->nbOfArmy = numOfArmyCopy;
+
+				}
+			}
+		}	
 	}
 	else
 		cout << "Advance Order not valid." << endl;

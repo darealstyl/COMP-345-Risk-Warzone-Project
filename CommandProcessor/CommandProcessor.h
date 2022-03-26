@@ -5,6 +5,7 @@
 #include "../Game Engine/GameEngine.h"
 using namespace std;
 
+class GameEngine;
 
 class Command : public Subject, public ILoggable {
 public:

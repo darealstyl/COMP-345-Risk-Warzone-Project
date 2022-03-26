@@ -157,6 +157,7 @@ Territory::Territory(const string& name, Continent* continent) {
     this->name = name;
     this->continent = continent;
     this->nbOfArmy = 0;
+    this->owner = Player::neutralplayer;
 }
 
 // Shallow copy because otherwise it would require copying the entire map? Seems quite useless considering the scope of this project.
@@ -164,12 +165,14 @@ Territory::Territory(const Territory& territory) {
     this->name = territory.name;
     this->continent = territory.continent;
     this->nbOfArmy = territory.nbOfArmy;
+    this->owner = territory.owner;
 }
 
 Territory& Territory::operator=(const Territory& territory) {
     this->name = territory.name;
     this->continent = territory.continent;
     this->nbOfArmy = territory.nbOfArmy;
+    this->owner = territory.owner;
 
     return *this;
 }

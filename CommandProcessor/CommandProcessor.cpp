@@ -125,6 +125,7 @@ bool CommandProcessor::validate(Command* command) {
 	}
 	else {
 		cout << "Invalid command" << endl;
+		command->saveEffect("Invalid command");
 	}
 
 	return validity;

@@ -7,9 +7,9 @@
 
 using namespace std;
 
+
 class Territory;
 class OrderList;
-class Hand;
 class Order;
 
 class Player {
@@ -24,7 +24,7 @@ public:
 	vector<Territory*> toAttack();
 	vector<Territory*> toDefend();
 
-	enum orderTypes {
+	enum class OrderType {
 		DEPLOY = 0, ADVANCE, BOMB, BLOCKADE, AIRLIFT, NEGOTIATE
 	};
 	Player(string);
@@ -35,13 +35,14 @@ public:
 
 	friend std::ostream& operator<<(std::ostream&, const Player&);
 
-	void issueOrder(orderTypes, Territory*);
-	void issueOrder(orderTypes, int, Territory*);
-	void issueOrder(orderTypes, int, Territory*, Territory*);
-	void issueOrder(orderTypes, Player*);
+	void issueOrder(OrderType, Territory*);
+	void issueOrder(OrderType, int, Territory*);
+	void issueOrder(OrderType, int, Territory*, Territory*);
+	void issueOrder(OrderType, Player*);
 	void issueOrder();
 
 	int getNbOfTerritories();
+	OrderType cardTypeToOrderType(Card::CardType);
 
 	void addTerritory(Territory*);
 	void removeTerritory(Territory*);
@@ -49,8 +50,11 @@ public:
 	void addReinforcements(int);
 	void removeReinforcments(int);
 
-	orderTypes* command;
+	OrderType command;
 
 	static Player* neutralplayer;
 	static void resetNeutralPlayer();
+
+private:
+	void chooseNextCommand();
 };

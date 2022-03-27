@@ -1,0 +1,6 @@
+loadmap solar.map
+validatemap
+addplayer Michael
+addplayer William
+gamestart
+quit

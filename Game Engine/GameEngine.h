@@ -19,7 +19,7 @@ class Command;
 
 class GameEngine : public Subject, public ILoggable {
 public:
-    enum GameState { //all the different states
+    enum class GameState { //all the different states
         START, MAP_LOADED, MAP_VALIDATED, PLAYERS_ADDED, ASSIGN_REINFORCEMENT, ISSUE_ORDERS, EXECUTE_ORDERS, WIN
     };
 
@@ -33,9 +33,7 @@ public:
 
     void start(); //start the gameEngine in the first state
     void startupPhase();
-    void reinforcementPhase();
-    void issueOrdersPhase();
-    void executeOrdersPhase();
+
     void addPlayer(Player*);
     void addPlayer(string);
     int getPlayerCount();
@@ -57,11 +55,15 @@ public:
     */Map* map;
 private:
     CommandProcessor* commandprocessor;
-    GameState* state;
+    // Enum doesn't need to be of pointer type
+    GameState state;
     vector<Player*> activePlayers;
     Deck* deck;
     bool running;
 
+    void reinforcementPhase();
+    void issueOrdersPhase();
+    void executeOrdersPhase();
     void transition(GameEngine::GameState);
     void initializeCommandProcessor();
     void getandexecutecommand();

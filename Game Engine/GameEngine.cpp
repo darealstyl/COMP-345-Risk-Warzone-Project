@@ -11,7 +11,7 @@ typedef GameEngine::GameState GS;
 typedef CommandProcessor::CommandType CT;
 
 GameEngine::GameEngine() {
-    this->state = new GS(GS::START);
+    this->state = GS::START;
     this->map = nullptr;
     this->commandprocessor = nullptr;
     this->running = true;
@@ -27,9 +27,6 @@ GameEngine& GameEngine::operator= (const GameEngine& game1){
 }
 
 GameEngine::~GameEngine(){
-    delete state;
-    state = nullptr;
-    activePlayers.clear();
 }
 
 ostream & operator << (ostream &out, const GameEngine &g){
@@ -43,8 +40,7 @@ istream & operator >> (istream &in, GameEngine &g){
 
 
 void GameEngine::transition(GS state) {
-    delete this->state;
-    this->state = new GS(state);
+    this->state = state;
     notify(this);
 }
 
@@ -246,17 +242,17 @@ void GameEngine::removelosers() {
 }
 
 void GameEngine::mainGameLoop() {
-    while (GS::WIN != *state) {
-        switch (*state) {
-        case ASSIGN_REINFORCEMENT:
+    while (GS::WIN != state) {
+        switch (state) {
+        case GS::ASSIGN_REINFORCEMENT:
             cout << "\nYou are in the assignment reinforcement phase" << endl;
             reinforcementPhase();
             break;
-        case ISSUE_ORDERS:
+        case GS::ISSUE_ORDERS:
             cout << "\nYou are in the issue order phase" << endl;
             issueOrdersPhase();
             break;
-        case EXECUTE_ORDERS:
+        case GS::EXECUTE_ORDERS:
             cout << "\nYou are in the execute order phase" << endl;
             executeOrdersPhase();
             break;
@@ -272,9 +268,9 @@ void GameEngine::startupPhase() {
     initializeCommandProcessor();
 
     while (running) {
-        switch (*state)
+        switch (state)
         {
-        case START: {
+        case GS::START: {
             cout << "Starting the startup phase" << endl;
             cout << "Please choose one of the following maps that are available in your MapFiles directory using the \"loadmap <mapfile>\" command.\n" << endl;
             string path = "MapFiles/";
@@ -284,16 +280,16 @@ void GameEngine::startupPhase() {
             }
             break;
         }
-        case MAP_LOADED:
+        case GS::MAP_LOADED:
             cout << "\nYou are in the map loaded phase." << endl;
             break;
-        case MAP_VALIDATED:
+        case GS::MAP_VALIDATED:
             cout << "\nYou are in the map validated phase." << endl;
             break;
-        case PLAYERS_ADDED:
+        case GS::PLAYERS_ADDED:
             cout << "\nYou are in the player added phase." << endl;
             break;
-        case WIN:
+        case GS::WIN:
             cout << "\nYou are in the win phase" << endl;
             break;
         }
@@ -304,7 +300,7 @@ void GameEngine::startupPhase() {
 }
 
 std::string GameEngine::stateToString() {
-    switch (*state) {
+    switch (state) {
         case GameState::START:                  return "START";
         case GameState::MAP_LOADED:             return "MAP_LOADED"; 
         case GameState::MAP_VALIDATED:          return "MAP_VALIDATED";
@@ -384,30 +380,33 @@ void GameEngine::reinforcementPhase() {
 }
 
 void GameEngine::issueOrdersPhase() {
+    for (Player* player : activePlayers) {
+        player->endOfOrder = false;
+    }
     // Players issue orders and place them in their order list through Player::issueOrder()
     // This method is called round robin by game engine
-    string order;
-    for (Player* p : activePlayers) {
-        cout << p->name + "'s turn" << endl;
-        p->issueOrder();
-       
-        }
-    for (Player* p : activePlayers) {  //checks if all players are finished 
-        if (p->endOfOrder == false) {
-         break;
-        }
-        else {
-            cout << "Players are done issuing orders" << endl;
-            transition(GS::EXECUTE_ORDERS);
+    bool atleastOneExecution = true;
+    while (atleastOneExecution) {
+        atleastOneExecution = false;
+        for (Player* player : activePlayers) {
+            cout << player->name + "'s turn" << endl;
+            if (!player->endOfOrder) {
+                player->issueOrder();
+                atleastOneExecution = true;
+            }
         }
     }
+    cout << "Players are done issuing orders" << endl;
+    transition(GS::EXECUTE_ORDERS);
+        
 }
-
+// TODO : Execute all deploy orders before any other type of orders
 void GameEngine::executeOrdersPhase() {
     // Players are done issuing orders.
     // Proceed to execute the top order on the list of orders of each player in a round-robin fashion
     // see Order Execution Phase
     // Once all player orders have been executed, the main game loop returns to reinforcement phase.
+    
     bool atleastOneExecution = true;
     int orderindex = 0;
 
@@ -418,7 +417,8 @@ void GameEngine::executeOrdersPhase() {
             vector<Order*>& list = player->orderList->list;
 
             if (list.size() < orderindex) {
-                cout << player << "'s turn" << endl;
+
+                cout << endl << player << "'s turn" << endl;
                 Order& order = *list[orderindex];
                 order.execute();
 
@@ -447,7 +447,7 @@ void GameEngine::addPlayer(Player* p) {
 
 GameEngine::GameState GameEngine::getState()
 {
-    return *state;
+    return state;
 }
 
 

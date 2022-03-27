@@ -16,6 +16,10 @@ public:
 
 	void saveEffect(string);
 	string stringToLog() override;
+
+	Command& operator=(const Command&);
+	friend std::ostream& operator<<(std::ostream&, const Command&);
+
 };
 class CommandProcessor : public Subject, public ILoggable {
 protected:
@@ -42,6 +46,9 @@ public:
 	bool validate(Command*);
 	CommandType getCommandType(string);
 
+	CommandProcessor& operator=(const CommandProcessor&);
+	friend std::ostream& operator<<(std::ostream&, const CommandProcessor&);
+
 private:
 	static const unordered_map<string, CommandType> commandmap;
 	bool commandexists(string);
@@ -51,8 +58,11 @@ private:
 class FileCommandProcessorAdapter : public CommandProcessor {
 public:
 	FileCommandProcessorAdapter(GameEngine*, string);
-
 	~FileCommandProcessorAdapter();
+
+	FileCommandProcessorAdapter& operator=(const FileCommandProcessorAdapter&);
+	friend std::ostream& operator<<(std::ostream&, const FileCommandProcessorAdapter&);
+	
 protected:
 	ifstream inputstream;
 	string readCommand();

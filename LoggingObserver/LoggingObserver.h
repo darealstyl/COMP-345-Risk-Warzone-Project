@@ -21,6 +21,8 @@ public:
 
 	ILoggable& operator=(const ILoggable&);
 	friend std::ostream& operator<<(std::ostream&, const ILoggable&);
+protected:
+	ILoggable();
 };
 
 /*

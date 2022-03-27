@@ -27,6 +27,7 @@ GameEngine& GameEngine::operator= (const GameEngine& game1){
 }
 
 GameEngine::~GameEngine(){
+    delete deck;
 }
 
 ostream & operator << (ostream &out, const GameEngine &g){

@@ -19,6 +19,7 @@ public:
 
 	virtual std::string stringToLog() = 0;
 
+	ILoggable& operator=(const ILoggable&);
 	friend std::ostream& operator<<(std::ostream&, const ILoggable&);
 };
 

@@ -51,6 +51,8 @@ private:
 class FileCommandProcessorAdapter : public CommandProcessor {
 public:
 	FileCommandProcessorAdapter(GameEngine*, string);
+
+	~FileCommandProcessorAdapter();
 protected:
 	ifstream inputstream;
 	string readCommand();

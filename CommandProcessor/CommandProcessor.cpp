@@ -189,3 +189,8 @@ string FileCommandProcessorAdapter::readCommand() {
 std::string CommandProcessor::stringToLog() {
 	return "Logger::CommandProcessor: Command: " + commands.back()->command;
 }
+
+
+FileCommandProcessorAdapter::~FileCommandProcessorAdapter() {
+	inputstream.close();
+}

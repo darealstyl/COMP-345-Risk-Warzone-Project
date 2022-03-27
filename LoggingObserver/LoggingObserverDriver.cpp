@@ -13,7 +13,10 @@ int main() {
 	LogObserver* logger = new LogObserver();
 
 	#pragma region CommandProcessorTest
+
 	cout << "------------------ COMMANDPROCESSOR TEST ------------------" << endl;
+	
+	// CommandProcessor will attach all of its observers to any Command it reads
 	cout << "Creating a CommandProcessor and attaching the LogObserver" << endl;
 	CommandProcessor* cmdProc = new CommandProcessor();
 	cmdProc->attach(logger);
@@ -27,9 +30,11 @@ int main() {
 	cmd->saveEffect("TEST EFFECT");
 
 	delete cmdProc;
+
 	#pragma endregion
 
 	#pragma region GameEngineTest
+
 	cout << endl << "------------------ GAMEENGINE TEST ------------------" << endl;
 	cout << endl << "Creating a GameEngine and attaching the LogObserver" << endl;
 	GameEngine* engine = new GameEngine();
@@ -44,10 +49,13 @@ int main() {
 	engine->transition(GameEngine::GameState::MAP_VALIDATED);
 
 	delete engine;
+
 	#pragma endregion
 
 	#pragma region OrderAndOrderListTest
+
 	cout << endl << "------------------ ORDER/ORDERLIST TEST ------------------" << endl;
+	// Creating necessary objects to demonstrate orderlist issuing and order execution
 	cout << "Creating 2 players, 1 of each order and required parameters..." << endl;
 	Continent* northAmerica = new Continent(string("North America"), 0);
 	Territory* canada = new Territory(string("Canada"), northAmerica);
@@ -66,9 +74,12 @@ int main() {
 	Airlift* airlift = new Airlift(p1, 1, canada, unitedStates);
 	Negotiate* negotiate = new Negotiate(p1, p2);
 	
+	// OrderList will attach all of its observers to any Order objects added into it
 	cout << "Attaching the logger to both players..." << endl;
 	p1->orderList->attach(logger);
 	p2->orderList->attach(logger);
+
+	// Will log each orderlist addition as "order issued..."
 	cout << endl << "Adding 3 orders to each player..." << endl;
 	p1->orderList->add(deploy);
 	cout << endl;
@@ -82,11 +93,13 @@ int main() {
 	cout << endl;
 	p2->orderList->add(negotiate);
 
+	// Will log each execution as "order executed..."
 	cout << endl << "Executing the 1st order in each player's orderlists..." << endl;
 	p1->orderList->list.front()->execute();
 	cout << endl;
 	p2->orderList->list.front()->execute();
 
+	// delete all pointers
 	delete p1;
 	delete p2;
 	delete northAmerica;
@@ -98,6 +111,7 @@ int main() {
 	bomb = nullptr;
 	airlift = nullptr;
 	negotiate = nullptr;
+
 	#pragma endregion
 
 	delete logger;

@@ -4,6 +4,7 @@
 
 using std::cout;
 using std::endl;
+// Filename for log data
 const std::string logFilename = "gamelog.txt";
 
 #pragma region ILoggable
@@ -12,8 +13,8 @@ ILoggable::ILoggable() {}
 // Destructor
 ILoggable::~ILoggable() {}
 
-ILoggable& ILoggable::operator=(const ILoggable&)
-{
+// Assignment Operator Overload
+ILoggable& ILoggable::operator=(const ILoggable&) {
 	return *this;
 }
 
@@ -49,7 +50,8 @@ void Subject::detach(Observer* o) {
 
 // A object of type Subject calls this function to notify all observers that a change occurred
 void Subject::notify(ILoggable* il) {
-	cout << "Inside Subject::notify for: " << typeid(*il).name() << endl;
+	cout << "	Inside Subject::notify for: " << typeid(*il).name() << endl;
+	// Tell all Observer Subscribed to this Subject class
 	for (Observer* s : *_observers)
 		s->update(il);
 }
@@ -99,7 +101,7 @@ LogObserver::~LogObserver() {}
 * Calls the stringToLog implementation of an ILoggable class to write relevant data to the log file.
 */ 
 void LogObserver::update(ILoggable* il) {
-	cout << "Inside LogObserver::update for: " << typeid(*il).name() << endl;
+	cout << "	Inside LogObserver::update for: " << typeid(*il).name() << endl;
 	std::ofstream file(logFilename, std::ios_base::app);
 	file << il->stringToLog() << std::endl;
 	file.close();

@@ -204,9 +204,11 @@ void GameEngine::checkforwin() {
     transition(GS::WIN);
 }
 
+//Remove players that possess no territory
+
 void GameEngine::removelosers() {
     vector<Player*> remainingplayers;
-    for (Player* player : activePlayers) {
+    for (Player* player : activePlayers) { //loop over all remaining player and check if their nb of territories is 0
         if (player->getNbOfTerritories() == 0) {
             cout << player << " is out of the game. LOSER!";
             cout << R"( ____________
@@ -241,8 +243,9 @@ void GameEngine::removelosers() {
     activePlayers = remainingplayers;
 }
 
+//Sequence of the main game loop using enum state
 void GameEngine::mainGameLoop() {
-    while (GS::WIN != state) {
+    while (GS::WIN != state) {  //loop until a player has won which moves to state to the win 
         switch (state) {
         case GS::ASSIGN_REINFORCEMENT:
             cout << "\nYou are in the assignment reinforcement phase" << endl;
@@ -257,7 +260,7 @@ void GameEngine::mainGameLoop() {
             executeOrdersPhase();
             break;
         }
-
+        //after the three phases, check for players with no territories and winner
         removelosers();
         checkforwin();
     }

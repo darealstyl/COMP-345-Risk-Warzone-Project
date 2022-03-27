@@ -20,6 +20,19 @@ std::string Command::stringToLog() {
 	return "Command's Effect:" + this->effect;
 }
 
+Command& Command::operator=(const Command& cmd)
+{
+	this->command = cmd.command;
+	this->effect = cmd.effect;
+	return *this;
+}
+
+std::ostream& operator<<(std::ostream& out, const Command& cmd)
+{
+	out << "Command: " << cmd.command << " Effect: " << cmd.effect << endl;
+	return out;
+}
+
 // Command Processor
 const unordered_map<string, CT> CommandProcessor::commandmap = { {"loadmap" , CT::LOADMAP }, {"validatemap", CT::VALIDATEMAP}, {"addplayer", CT::ADDPLAYER}, {"gamestart", CT::GAMESTART},
 	{"replay", CT::REPLAY}, {"quit", CT::QUIT} };
@@ -175,6 +188,21 @@ CommandProcessor::~CommandProcessor() {
 		delete command;
 }
 
+CommandProcessor& CommandProcessor::operator=(const CommandProcessor& cmdProc)
+{
+	this->commands = cmdProc.commands;
+	this->game = cmdProc.game;
+	return *this;
+}
+
+std::ostream& operator<<(std::ostream& out, const CommandProcessor& cmdProc)
+{
+	out << "CommandProcessor Commands: " << endl;
+	for (Command* cmd : cmdProc.commands)
+		out << cmd;
+	return out;
+}
+
 // FileCommandProcessor
 
 FileCommandProcessorAdapter::FileCommandProcessorAdapter(GameEngine* game, string filename) : CommandProcessor(game) {
@@ -189,10 +217,22 @@ string FileCommandProcessorAdapter::readCommand() {
 }
 
 std::string CommandProcessor::stringToLog() {
-	return "Logger::CommandProcessor: Command: " + commands.back()->command;
+	return "Command: " + commands.back()->command;
 }
 
 
 FileCommandProcessorAdapter::~FileCommandProcessorAdapter() {
 	inputstream.close();
+}
+
+FileCommandProcessorAdapter& FileCommandProcessorAdapter::operator=(const FileCommandProcessorAdapter& fCmdProc)
+{
+	// 'ifstream' has a deleted copy constructor. Nothing to do here.	
+	return *this;
+}
+
+std::ostream& operator<<(std::ostream& out, const FileCommandProcessorAdapter& fCmdProc)
+{
+	out << "FileCommandProcessorAdapter Instance" << endl;
+	return out;
 }

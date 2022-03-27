@@ -422,10 +422,8 @@ void Blockade::execute()
 	Blockade::validate();
 	if (getValidity()) {
 		cout << "Executing Blockade..." << endl;
-		Player* neutral = new Player("Neutral");
 		location->nbOfArmy *= 2; // double number of players
-		location->owner = neutral; //transfer ownership to neutral player
-		neutral->territories.insert(location);
+		location->owner = Player::neutralplayer; //transfer ownership to neutral player
 		issuingPlayer->territories.erase(issuingPlayer->territories.find(location)); //delete the territory from the issuing player
 		cout << "Blockade executed on " << location->name << ". " << location->name << " is now owned by the Neutral Player" << endl;
 		cout << location->name << " now has: " << location->nbOfArmy << " soldiers" << endl;

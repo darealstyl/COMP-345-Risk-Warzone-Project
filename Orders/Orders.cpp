@@ -289,7 +289,7 @@ void Advance::execute()
 					cout << "Defending army destroyed, " + to->name + " succesfully conquered by " + issuingPlayer->name + "." << endl;
 					to->owner = issuingPlayer;
 					to->nbOfArmy = numOfArmyCopy;
-					//placeflagforcarddraw
+					issuingPlayer->conquered = true;
 					cout << issuingPlayer->name + " now has " + to_string(to->nbOfArmy) + " armies on the territory." <<endl;
 				}
 			}

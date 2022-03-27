@@ -21,6 +21,7 @@ public:
 	Card* chosenCard;
 	int reinforcements;
 	bool endOfOrder;
+	bool conquered;
 
 	vector<Territory*> toAttack();
 	vector<Territory*> toDefend();
@@ -47,6 +48,7 @@ public:
 	OrderType cardTypeToOrderType(Card::CardType);
 
 	void addTerritory(Territory*);
+	void addTerritory(Territory*, int);
 	void removeTerritory(Territory*);
 
 	void addReinforcements(int);

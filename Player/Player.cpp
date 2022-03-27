@@ -20,6 +20,8 @@ Player::Player(string n)
 	orderList = new OrderList();
 	reinforcements = 0;
 	command = OT::DEPLOY;
+	conquered = false;
+	endOfOrder = false;
 }
 
 Player::Player(const Player& player)
@@ -56,18 +58,24 @@ Player::~Player()
 }
 
 void Player::addTerritory(Territory* territory) {
+	
 	territory->owner->territories.erase(territory);
+	
 	territories.insert(territory);
 	territory->owner = this;
+}
+
+void Player::addTerritory(Territory* territory, int nbOfTroops) {
+	addTerritory(territory);
+	territory->nbOfArmy = nbOfTroops;
 }
 
 void Player::removeTerritory(Territory* territory) {
 	
 	territories.erase(territory);
 
-	if (territory->owner == this) {
-		Player::neutralplayer->addTerritory(territory);
-	}
+	territory->owner = Player::neutralplayer;
+	
 }
 
 int Player::getNbOfTerritories() {

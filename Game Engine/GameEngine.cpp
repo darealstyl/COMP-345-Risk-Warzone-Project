@@ -170,14 +170,19 @@ void GameEngine::distributearmies() {
     }
 }
 
+void GameEngine::makePlayerDrawCard(Player* player) {
+    player->hand->addCard(deck->draw());
+}
+
+
 void GameEngine::distributecards() {
     for (Player* player : activePlayers) {
 
         cout << "Before distributing cards to " << *player << ": " << endl;
         cout << *(player->hand) << endl;
 
-        player->hand->addCard(deck->draw());
-        player->hand->addCard(deck->draw());
+        makePlayerDrawCard(player);
+        makePlayerDrawCard(player);
 
         cout << "After:" << endl;
         cout << *(player->hand) << endl;
@@ -433,8 +438,13 @@ void GameEngine::executeOrdersPhase() {
         orderindex++;
     }
 
-    // Cleaning up orders
+    // Cleaning up orders and drawing cards for players that conquered at least one territory
     for (Player* player : activePlayers) {
+
+        if (player->conquered) {
+            player->conquered = false;
+            makePlayerDrawCard(player);
+        }
 
         vector<Order*>& list = player->orderList->list;
         

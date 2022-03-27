@@ -224,6 +224,11 @@ void Player::issueOrder(CT cardtype) {
 }
 
 void Player::issueOrder(Deck* deck) {
+	chooseNextCommand();
+	if (endOfOrder) {
+		return;
+	}
+
 	vector<Territory*> defend = toDefend();
 	vector<Territory*> attack = toAttack();
 
@@ -287,7 +292,7 @@ void Player::issueOrder(Deck* deck) {
 		break;
 	}
 	
-	chooseNextCommand();
+	
 	
 }
 

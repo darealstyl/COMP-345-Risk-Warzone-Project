@@ -391,7 +391,7 @@ void GameEngine::issueOrdersPhase() {
         for (Player* player : activePlayers) {
             cout << player->name + "'s turn" << endl;
             if (!player->endOfOrder) {
-                player->issueOrder();
+                player->issueOrder(this->deck);
                 atleastOneExecution = true;
             }
         }
@@ -427,6 +427,18 @@ void GameEngine::executeOrdersPhase() {
         }
 
         orderindex++;
+    }
+
+    // Cleaning up orders
+    for (Player* player : activePlayers) {
+
+        vector<Order*>& list = player->orderList->list;
+        
+        for (Order* order : list) {
+            delete order;
+        }
+
+        list.clear();
     }
 
     cout << "All players have executed their orders" << endl;

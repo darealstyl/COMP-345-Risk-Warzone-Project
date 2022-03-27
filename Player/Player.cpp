@@ -281,9 +281,11 @@ void Player::issueOrder() {
 }
 
 void Player::addReinforcements(int armies) {
+	cout << *this << " receives " << armies << " armies." << endl;
 	*reinforcements += armies;
 }
 
 void Player::removeReinforcments(int armies) {
+	cout << *this << " used " << armies << " armies." << endl;
 	*reinforcements -= armies;
 }

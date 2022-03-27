@@ -3,8 +3,6 @@
 #include <vector>
 #include <iostream>
 
-#include "../Player/Player.h"
-
 #define DECK_SIZE 50
 #define HAND_SIZE 5
 
@@ -15,11 +13,11 @@ class Player;
 class Card {
     public:
         enum class CardType {
-            Airlift = 4,
-            Blockade=3,
-            Bomb = 2,
-            Diplomacy = 5,
-            Reinforcement = 0
+            AIRLIFT,
+            BLOCKADE,
+            BOMB,
+            DIPLOMACY,
+            REINFORCEMENT
         };        
 
         Card(CardType);
@@ -35,7 +33,7 @@ class Card {
         friend std::ostream& operator<<(std::ostream&, const Card&);
     
     private:
-        CardType* type;
+        CardType type;
 };
 
 class Hand {

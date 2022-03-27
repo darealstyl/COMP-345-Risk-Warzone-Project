@@ -99,34 +99,32 @@ std::ostream& operator<<(std::ostream& out, const Hand& hand) {
 // Card Constructor
 // Cards require a CardType to be created
 Card::Card(CardType c) {
-    type = new CardType(c);
+    type = c;
 }
 
 // Card Copy Constructor
 Card::Card(const Card& c) {
-    *type = c.getCardType();
+    type = c.getCardType();
 }
 
 // Card Destructor
 // Free the Card
 Card::~Card() {
-    delete type;
-    type = NULL;
 };
 
 // CardType Value Getter
 Card::CardType Card::getCardType() const {
-    return *type;
+    return type;
 }
 
 // Converts a Cards type to String for printing purposes.
 std::string Card::cardTypeToString() const {
     switch(this->getCardType()) { 
-        case CardType::Airlift:         return "Airlift";
-        case CardType::Blockade:        return "Blockade";
-        case CardType::Bomb:            return "Bomb";
-        case CardType::Diplomacy:       return "Diplomacy";
-        case CardType::Reinforcement:   return "Reinforcement";
+        case CardType::AIRLIFT:         return "Airlift";
+        case CardType::BLOCKADE:        return "Blockade";
+        case CardType::BOMB:            return "Bomb";
+        case CardType::DIPLOMACY:       return "Diplomacy";
+        case CardType::REINFORCEMENT:   return "Reinforcement";
         default:                        return "Error reading card type.";
     }
 }
@@ -138,27 +136,27 @@ void Card::play(Player* player, Deck* deck) {
 
     // will add the card type to the order list later
     switch(this->getCardType()) { 
-        case CardType::Airlift:
+        case CardType::AIRLIFT:
             player->orderList->list.push_back(new Airlift(NULL, 0, NULL, NULL));
             std::cout << "Airlift order created" << std::endl;
             break;
 
-        case CardType::Blockade:
+        case CardType::BLOCKADE:
             player->orderList->list.push_back(new Blockade(NULL, NULL));
             std::cout << "Blockade order created" << std::endl;
             break;
 
-        case CardType::Bomb:
+        case CardType::BOMB:
             player->orderList->list.push_back(new Bomb(NULL, NULL));
             std::cout << "Bomb order created" << std::endl;
             break;
 
-        case CardType::Diplomacy:
+        case CardType::DIPLOMACY:
             player->orderList->list.push_back(new Negotiate(NULL, NULL));
             std::cout << "Diplomacy order created" << std::endl;
             break;
 
-        case CardType::Reinforcement:
+        case CardType::REINFORCEMENT:
             player->orderList->list.push_back(new Advance(NULL, 0, NULL, NULL));
             std::cout << "Reinforcement order created" << std::endl;
             break;

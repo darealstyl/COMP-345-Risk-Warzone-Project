@@ -60,7 +60,7 @@ void GameEngine::initializeCommandProcessor() {
         if (split[0] == "-console") {
             this->commandprocessor = new CommandProcessor(this);
         }
-        else if (split[0] == "-file") {
+        else if (split[0] == "-file" && split.size() == 2) {
             string path = "CommandFiles/";
             string filename = split[1];
             auto it = fs::directory_iterator(path);
@@ -175,7 +175,15 @@ void GameEngine::distributearmies() {
 
 void GameEngine::distributecards() {
     for (Player* player : activePlayers) {
+
+        cout << "Before distributing cards to " << *player << ": " << endl;
+        cout << *(player->hand) << endl;
+
         player->hand->addCard(deck->draw());
+        player->hand->addCard(deck->draw());
+
+        cout << "After:" << endl;
+        cout << *(player->hand) << endl;
     }
 }
 
@@ -313,39 +321,71 @@ std::string GameEngine::stringToLog() {
     return "GameEngine: Current state: " + stateToString();
 }
 
-void GameEngine::reinforcementPhase() {
-    transition(ASSIGN_REINFORCEMENT);
-    for (Player* p : activePlayers) {
-        int reinforcements = floor(p->territories.size() / 3);
-        if (reinforcements < 3)
-            reinforcements = 3;
-        p->addReinforcements(reinforcements);
-        cout << *(p->reinforcements) << " reinforcements has been added" << endl;
-        int count = 0; //to check if players own the territories
-        // TODO: if the player owns all the territories of a continent, player is given continents control bonus.
-        for (Continent* c : map->continents) {  //get the list of continent
-            for (Territory* t : c->territories) {  // get the list of territories in a continent
-                for (Territory* l : p->territories) {  // get the list of the player's territories
-                    if (l == t ) {  //if the territories are the same, increment the count
-                        count++;
-                    }
-                }
-            }
-            if (count == c->territories.size()) {  //if the count is the same as the size of the list in continent, give the bonus
-                cout << "A bonus is given" << endl;
-                int bonus = 5; //temporary
-                p->addReinforcements(bonus);
-                cout << *(p->reinforcements) << " total soldiers" << endl;
-                count = 0; //initialize to 0 for the next continent
+void GameEngine::getcontrolledcontinents(unordered_map<Player*, vector<Continent*>*>& controlledcontinents) {
+    for (Continent* continent : map->continents) {
+        // Take the owner of the first continent, and if it's not the same owner for the entire continent, move on.
+        Player* owner = continent->territories[0]->owner;
+        bool ownsContinent = true;
+
+        for (Territory* territory : continent->territories) {
+            if (owner != territory->owner) {
+                ownsContinent = false;
+                break;
             }
         }
-    }    
+
+        if (ownsContinent) {
+            auto pair = controlledcontinents.find(owner);
+            // If the player is not alread in the map, add the key-value pair with a new vector
+            if (pair == controlledcontinents.end()) {
+                vector<Continent*>* continentlist = new vector<Continent*>();
+                continentlist->push_back(continent);
+                controlledcontinents.insert(make_pair(owner, continentlist));
+            }
+            else {
+                vector<Continent*>& controlledContinentsByOwner = *(pair->second);
+                controlledContinentsByOwner.push_back(continent);
+            }
+        }
+    }
+}
+
+void GameEngine::cleanupcontrolledcontinents(unordered_map<Player*, vector<Continent*>*>& controlledcontinents) {
+    for (auto& pair : controlledcontinents) {
+        delete pair.second;
+    }
+}
+
+void GameEngine::reinforcementPhase() {
+    unordered_map<Player*, vector<Continent*>*> controlledcontinents;
+    getcontrolledcontinents(controlledcontinents);
+
+    for (Player* player : activePlayers) {
+        int reinforcements = player->territories.size() / 3;
+
+        auto pair = controlledcontinents.find(player);
+
+        if (pair != controlledcontinents.end()) {
+            vector<Continent*>& controlledcontinentbyplayer = *(pair->second);
+            for (Continent* controlledcontinent : controlledcontinentbyplayer) {
+                reinforcements += controlledcontinent->armyValue;
+            }
+        }
+
+        if (reinforcements < 3) {
+            reinforcements = 3;
+        }
+
+        player->addReinforcements(reinforcements);
+    }
+
+    cleanupcontrolledcontinents(controlledcontinents);
+    transition(GS::ISSUE_ORDERS);
 }
 
 void GameEngine::issueOrdersPhase() {
     // Players issue orders and place them in their order list through Player::issueOrder()
     // This method is called round robin by game engine
-    transition(GS::ISSUE_ORDERS);
     string order;
     for (Player* p : activePlayers) {
         cout << p->name + "'s turn" << endl;

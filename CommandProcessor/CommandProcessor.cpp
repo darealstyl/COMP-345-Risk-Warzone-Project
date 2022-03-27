@@ -67,7 +67,7 @@ bool CommandProcessor::validate(Command* command) {
 
 	string maincommand = split[0];
 
-	if (commandexists(maincommand)) {
+	if (!commandexists(maincommand)) {
 		cout << "This command is not recognized, please try again." << endl;
 		return false;
 	}
@@ -153,6 +153,17 @@ bool CommandProcessor::validate(Command* command) {
 
 }
 
+
+CommandProcessor::CommandProcessor()
+{
+	this->game = nullptr;
+}
+
+CommandProcessor::CommandProcessor(GameEngine* game)
+{
+	this->game = game;
+}
+
 CommandProcessor::~CommandProcessor() {
 	for (Command* command : commands)
 		delete command;
@@ -160,8 +171,9 @@ CommandProcessor::~CommandProcessor() {
 
 // FileCommandProcessor
 
-FileCommandProcessorAdapter::FileCommandProcessorAdapter(string filename) {
+FileCommandProcessorAdapter::FileCommandProcessorAdapter(GameEngine* game, string filename) : CommandProcessor(game) {
 	inputstream.open(filename);
+
 }
 
 string FileCommandProcessorAdapter::readCommand() {

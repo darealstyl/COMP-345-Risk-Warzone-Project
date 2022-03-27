@@ -33,6 +33,8 @@ public:
 	list<Command*> commands;
 	Command* getCommand();
 
+	CommandProcessor();
+	CommandProcessor(GameEngine*);
 	~CommandProcessor();
 
 	string stringToLog() override;
@@ -48,7 +50,7 @@ private:
 };
 class FileCommandProcessorAdapter : public CommandProcessor {
 public:
-	FileCommandProcessorAdapter(string);
+	FileCommandProcessorAdapter(GameEngine*, string);
 protected:
 	ifstream inputstream;
 	string readCommand();

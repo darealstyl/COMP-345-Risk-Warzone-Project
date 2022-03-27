@@ -11,10 +11,11 @@ typedef GameEngine::GameState GS;
 typedef CommandProcessor::CommandType CT;
 
 GameEngine::GameEngine() {
-    state = new GameState(START);
-    map = nullptr;
-    commandprocessor = nullptr;
-    running = true;
+    this->state = new GS(GS::START);
+    this->map = nullptr;
+    this->commandprocessor = nullptr;
+    this->running = true;
+    this->deck = new Deck();
 }
 
 GameEngine::GameEngine(const GameEngine &game1){
@@ -27,6 +28,7 @@ GameEngine& GameEngine::operator= (const GameEngine& game1){
 
 GameEngine::~GameEngine(){
     delete state;
+    state = nullptr;
     activePlayers.clear();
 }
 
@@ -41,6 +43,7 @@ istream & operator >> (istream &in, GameEngine &g){
 
 
 void GameEngine::transition(GS state) {
+    delete this->state;
     this->state = new GS(state);
     notify(this);
 }
@@ -55,21 +58,23 @@ void GameEngine::initializeCommandProcessor() {
         warzoneutils::splitInput(command->command, split);
 
         if (split[0] == "-console") {
-            this->commandprocessor = new CommandProcessor();
+            this->commandprocessor = new CommandProcessor(this);
         }
         else if (split[0] == "-file") {
             string path = "CommandFiles/";
             string filename = split[1];
-            for (const auto& file : fs::directory_iterator(path)) {
+            auto it = fs::directory_iterator(path);
+            for (const auto& file : it) {
                 fs::path map(file.path());
 
                 if (map.filename() == filename) {
-                    this->commandprocessor = new FileCommandProcessorAdapter(filename);
+                    this->commandprocessor = new FileCommandProcessorAdapter(this, filename);
                     break;
                 }
             }
         }
     }
+
 }
 
 void GameEngine::execute(Command* command) {
@@ -293,7 +298,7 @@ void GameEngine::startupPhase() {
 std::string GameEngine::stateToString() {
     switch (*state) {
         case GameState::START:                  return "START";
-        case GameState::MAP_LOADED:             return "MAP_LOADED";
+        case GameState::MAP_LOADED:             return "MAP_LOADED"; 
         case GameState::MAP_VALIDATED:          return "MAP_VALIDATED";
         case GameState::PLAYERS_ADDED:          return "PLAYERS_ADDED";
         case GameState::ASSIGN_REINFORCEMENT:   return "ASSIGN_REINFORCEMENT";
@@ -309,7 +314,7 @@ std::string GameEngine::stringToLog() {
 }
 
 void GameEngine::reinforcementPhase() {
-    *state = ASSIGN_REINFORCEMENT;
+    transition(ASSIGN_REINFORCEMENT);
     for (Player* p : activePlayers) {
         int reinforcements = floor(p->territories.size() / 3);
         if (reinforcements < 3)
@@ -340,7 +345,7 @@ void GameEngine::reinforcementPhase() {
 void GameEngine::issueOrdersPhase() {
     // Players issue orders and place them in their order list through Player::issueOrder()
     // This method is called round robin by game engine
-    *state = ISSUE_ORDERS;
+    transition(GS::ISSUE_ORDERS);
     string order;
     for (Player* p : activePlayers) {
         cout << p->name + "'s turn" << endl;
@@ -353,7 +358,7 @@ void GameEngine::issueOrdersPhase() {
         }
         else {
             cout << "Players are done issuing orders" << endl;
-         //   *state = EXECUTE_ORDERS;
+            transition(GS::EXECUTE_ORDERS);
         }
     }
 }
@@ -369,10 +374,11 @@ void GameEngine::executeOrdersPhase() {
     while (atleastOneExecution) {
         atleastOneExecution = false;
         for (Player* player : activePlayers) {
-            cout << player << "'s turn" << endl;
+            
             vector<Order*>& list = player->orderList->list;
 
             if (list.size() < orderindex) {
+                cout << player << "'s turn" << endl;
                 Order& order = *list[orderindex];
                 order.execute();
 

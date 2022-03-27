@@ -60,6 +60,10 @@ bool CommandProcessor::validate(Command* command) {
 	vector<string> split;
 	splitInput(command->command, split);
 
+	if (split.size() == 0) {
+		return false;
+	}
+
 	if (split.size() > 2) {
 		cout << "This command contains too many arguments, please try again." << endl;
 		return false;
@@ -172,7 +176,7 @@ CommandProcessor::~CommandProcessor() {
 // FileCommandProcessor
 
 FileCommandProcessorAdapter::FileCommandProcessorAdapter(GameEngine* game, string filename) : CommandProcessor(game) {
-	inputstream.open(filename);
+	inputstream.open("CommandFiles/" + filename);
 
 }
 

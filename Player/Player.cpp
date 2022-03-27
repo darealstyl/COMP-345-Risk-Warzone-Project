@@ -53,7 +53,6 @@ Player::~Player()
 	hand = NULL;
 
 
-	cout << "Destroying a Player" << endl;
 }
 
 void Player::addTerritory(Territory* territory) {

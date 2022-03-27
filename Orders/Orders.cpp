@@ -10,13 +10,11 @@
 
 Order::Order()		// Constructor								// Order Method Implementations
 {
-	cout << "Making an Order\n";
 	this->className = new string("Order");
 	this->validity = new bool(false);
 }
 Order::~Order() // Destructor
 {
-	cout << "Destroying an Order" << endl;
 	delete (className);
 	delete (validity);
 	className = NULL;
@@ -25,7 +23,6 @@ Order::~Order() // Destructor
 
 Order::Order(const Order& o) // Copy Constructor
 {
-	cout << "Copying an Order" << endl;
 	this->validity = new bool(*(o.validity));
 	this->className = new string(*(o.className));
 }
@@ -38,7 +35,7 @@ Order& Order::operator =(const Order& o) // Assignment Operator Overload
 }
 
 std::string Order::stringToLog() {
-	return "Logger::Order: Base order ";
+	return "Order Issued: Base order ";
 }
 
 bool& Order::getValidity()		// Accessor method				
@@ -56,10 +53,9 @@ ostream& operator<<(ostream& strm, Order& o)			// Free stream insertion implemen
 	return strm << "Order Type: " << *o.className;
 }
 
-OrderList::OrderList()	// Constructor				// OrderList Method Implementations
-{
-	cout << "Making an OrderList\n";
-}
+// OrderList Method Implementations
+// Constructor	
+OrderList::OrderList() {}
 
 ostream& operator<<(ostream& out, OrderList& olist) {
 	out << "OrderList: [";
@@ -100,8 +96,13 @@ void OrderList::move(int from, int to)
 	list.erase(list.begin() + from);
 	list.insert(list.begin() + to, order);
 }
+
+// Add an order to the players orderlist
+// Attach all orderlist observers to the order
 void OrderList::add(Order* order) {
 	list.push_back(order);
+	for (auto observer : *_observers)
+		order->attach(observer);
 	notify(this);
 }
 
@@ -122,13 +123,11 @@ void OrderList::remove(int position)	// The remove function removes the Order ob
 
 OrderList::~OrderList() // Destructor
 {
-	cout << "Destroying an OrderList" << endl;
 	for (auto order : this->list) delete order;
 }
 
 OrderList::OrderList(const OrderList& o) // Copy Constructor
 {
-	cout << "Copying an OrderList" << endl;
 	this->list = o.list;
 }
 
@@ -139,12 +138,11 @@ OrderList& OrderList::operator=(const OrderList& o)
 }
 
 std::string OrderList::stringToLog() {
-	return "Logger::OrderList: Added a " + list.back()->getClassName() + " order";
+	return "Order Issued: " + list.back()->getClassName();
 }
 
 Deploy::Deploy(Player* issuingPlayer, int numOfArmies, Territory* location) : Order(), issuingPlayer(issuingPlayer), numOfArmies(numOfArmies), location(location)
 {										// Constructor
-	cout << "Making a Deploy" << endl;
 	delete (className);
 	className = NULL;
 	Deploy::className = new string("Deploy");
@@ -177,7 +175,6 @@ void Deploy::execute()
 
 Deploy::~Deploy() // Destructor
 {
-	cout << "Destroying a Deploy" << endl;
 	delete (className);
 	delete (validity);
 	className = NULL;
@@ -186,7 +183,6 @@ Deploy::~Deploy() // Destructor
 
 Deploy::Deploy(const Deploy& d) : Order(d), issuingPlayer(d.issuingPlayer), numOfArmies(d.numOfArmies), location(d.location)
 {											// Copy Constructor
-	cout << "Copying a Deploy" << endl;
 	delete (className);
 	className = NULL;
 	this->className = new string(*(d.className));
@@ -205,12 +201,11 @@ Deploy& Deploy::operator=(const Deploy& d) // Assignment Operator Overload
 }
 
 std::string Deploy::stringToLog() {
-	return "Logger::Order: " + issuingPlayer->name + " deployed " + std::to_string(numOfArmies) + " units to " + location->name;
+	return "Order Executed: " + issuingPlayer->name + " deployed " + std::to_string(numOfArmies) + " units to " + location->name;
 }
 
 Advance::Advance(Player* issuingPlayer, int numOfArmies, Territory* to, Territory* from) : Order(), attacking(false), issuingPlayer(issuingPlayer), numOfArmies(numOfArmies), to(to), from(from)
 {											// Constructor
-	cout << "Making an Advance" << endl;
 	delete (className);
 	className = NULL;
 	Advance::className = new string("Advance");
@@ -306,14 +301,10 @@ void Advance::execute()
 	notify(this);
 }
 
-Advance::~Advance() // Destructor
-{
-	cout << "Destroying an Advance" << endl;
-}
+Advance::~Advance() {}// Destructor
 
 Advance::Advance(const Advance& a) : Order(a), attacking(a.attacking), issuingPlayer(a.issuingPlayer), numOfArmies(a.numOfArmies), to(a.to), from(a.from)
 {											// Copy Constructor
-	cout << "Copying an Advance" << endl;
 	delete (className);
 	className = NULL;
 	this->className = new string(*(a.className));
@@ -333,25 +324,20 @@ Advance& Advance::operator=(const Advance& a) // Assignment Operator Overload
 }
 
 std::string Advance::stringToLog() {
-	return "Logger::Order: " + issuingPlayer->name + "advanced " + std::to_string(numOfArmies) + " from " + from->name + " to " + to->name;
+	return "Order Executed: " + issuingPlayer->name + "advanced " + std::to_string(numOfArmies) + " from " + from->name + " to " + to->name;
 }
 
 Bomb::Bomb(Player* issuingPlayer, Territory* location) : Order(), issuingPlayer(issuingPlayer), location(location)
 {										// Constructor
-	cout << "Making a Bomb" << endl;
 	delete (className);
 	className = NULL;
 	Bomb::className = new string("Bomb");
 }
 
-Bomb::~Bomb() // Destructor
-{
-	cout << "Destroying a Bomb" << endl;
-}
+Bomb::~Bomb() {}// Destructor
 
 Bomb::Bomb(const Bomb& b) : Order(b), issuingPlayer(b.issuingPlayer), location(b.location)
 {										// Copy Constructor
-	cout << "Copying an Bomb" << endl;
 	delete (className);
 	className = NULL;
 	this->className = new string(*(b.className));
@@ -405,21 +391,18 @@ void Bomb::execute()
 }
 
 std::string Bomb::stringToLog() {
-	return "Logger::Order: " + issuingPlayer->name + " bombed " + location->name;
+	return "Order Executed: " + issuingPlayer->name + " bombed " + location->name;
 }
 
 Blockade::Blockade(Player* issuingPlayer, Territory* location) : Order(), issuingPlayer(issuingPlayer), location(location)
 {											// Constructor
-	cout << "Making a Blockade" << endl;
 	delete (className);
 	className = NULL;
 	Blockade::className = new string("Blockade");
 }
 
-Blockade::~Blockade() // Destructor
-{
-	cout << "Destroying a Blockade" << endl;
-}
+// Destructor
+Blockade::~Blockade() {}
 
 void Blockade::validate() // Will validate the circumstances of the object before executing
 {
@@ -452,7 +435,6 @@ void Blockade::execute()
 
 Blockade::Blockade(const Blockade& b) : Order(b), issuingPlayer(b.issuingPlayer), location(b.location)
 {											// Copy Constructor
-	cout << "Copying a Blockade" << endl;
 	delete (className);
 	className = NULL;
 	this->className = new string(*(b.className));
@@ -470,12 +452,11 @@ Blockade& Blockade::operator=(const Blockade& b) // Assignment Operator Overload
 }
 
 std::string Blockade::stringToLog() {
-	return "Logger::Order: " + issuingPlayer->name + " blockaded " + location->name;
+	return "Order Executed: " + issuingPlayer->name + " blockaded " + location->name;
 }
 
 Airlift::Airlift(Player* issuingPlayer, int numOfArmies, Territory* to, Territory* from) : Order(), issuingPlayer(issuingPlayer), numOfArmies(numOfArmies), to(to), from(from)
 {											// Constructor
-	cout << "Making an Airlift" << endl;
 	delete (className);
 	className = NULL;
 	Airlift::className = new string("Airlift");
@@ -520,12 +501,10 @@ void Airlift::execute()
 
 Airlift::~Airlift() // Destructor
 {
-	cout << "Destroying an Airlift" << endl;
 }
 
 Airlift::Airlift(const Airlift& a) : Order(a), issuingPlayer(a.issuingPlayer), numOfArmies(a.numOfArmies), to(a.to), from(a.from)
 {											// Copy Constructor
-	cout << "Copying an Airlift" << endl;
 	delete (className);
 	className = NULL;
 	this->className = new string(*(a.className));
@@ -545,12 +524,11 @@ Airlift& Airlift::operator=(const Airlift& a) // Assignment Operator Overload
 }
 
 std::string Airlift::stringToLog() {
-	return "Logger::Order: " + issuingPlayer->name + " airlifted " + std::to_string(numOfArmies) + " from " + from->name + " to " + to->name;
+	return "Order Executed: " + issuingPlayer->name + " airlifted " + std::to_string(numOfArmies) + " from " + from->name + " to " + to->name;
 }
 
 Negotiate::Negotiate(Player* issuingPlayer, Player* targetPlayer) : Order(), issuingPlayer(issuingPlayer), targetPlayer(targetPlayer)
 {											// Constructor
-	cout << "Making a Negotiate" << endl;
 	delete (className);
 	className = NULL;
 	Negotiate::className = new string("Negotiate");
@@ -558,12 +536,10 @@ Negotiate::Negotiate(Player* issuingPlayer, Player* targetPlayer) : Order(), iss
 
 Negotiate::~Negotiate() // Destructor
 {
-	cout << "Destroying a Negotiate" << endl;
 }
 
 Negotiate::Negotiate(const Negotiate& n) : Order(n), issuingPlayer(n.issuingPlayer), targetPlayer(n.targetPlayer)
 {											// Copy Constructor
-	cout << "Copying a Negotiate" << endl;
 	delete (className);
 	className = NULL;
 	this->className = new string(*(n.className));
@@ -620,5 +596,5 @@ void Negotiate::execute()
 }
 
 std::string Negotiate::stringToLog() {
-	return "Logger::Order: " + issuingPlayer->name + " negotiated with " + targetPlayer->name;
+	return "Order Executed: " + issuingPlayer->name + " negotiated with " + targetPlayer->name;
 }

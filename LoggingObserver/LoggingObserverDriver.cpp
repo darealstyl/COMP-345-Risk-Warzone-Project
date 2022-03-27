@@ -5,75 +5,101 @@
 #include <string>
 #include <sstream>
 
+using std::cout;
+using std::endl;
+
 int main() {
 
 	LogObserver* logger = new LogObserver();
 
-	// show Command, CommandProcessor logging later
+	#pragma region CommandProcessorTest
+	cout << "------------------ COMMANDPROCESSOR TEST ------------------" << endl;
+	cout << "Creating a CommandProcessor and attaching the LogObserver" << endl;
+	CommandProcessor* cmdProc = new CommandProcessor();
+	cmdProc->attach(logger);
 
-	// ----- Order/OrderList Test -----
-	string* na = new string("North America");
-	string* ca = new string("Canada");
-	string* us = new string("United States");
+	// Will log the command name to the log file
+	cout << endl << "Getting a command using CommandProcessor: ";
+	Command* cmd = cmdProc->getCommand();
+
+	// Will log the effect provided to the log file
+	cout << endl << "Giving the command an effect: TEST EFFECT" << endl;
+	cmd->saveEffect("TEST EFFECT");
+
+	delete cmdProc;
+	#pragma endregion
+
+	#pragma region GameEngineTest
+	cout << endl << "------------------ GAMEENGINE TEST ------------------" << endl;
+	cout << endl << "Creating a GameEngine and attaching the LogObserver" << endl;
+	GameEngine* engine = new GameEngine();
+	engine->attach(logger);
+	
+	// Will log the new state of the game engine (MAP_LOADED)
+	cout << endl << "Transitioning from " << engine->stateToString() <<" to MAP_LOADED" << endl;
+	engine->transition(GameEngine::GameState::MAP_LOADED);
+
+	// Will log the new state of the game engine (MAP_VALIDATED)
+	cout << endl << "Transitioning from " << engine->stateToString() << " to MAP_VALIDATED" << endl;
+	engine->transition(GameEngine::GameState::MAP_VALIDATED);
+
+	delete engine;
+	#pragma endregion
+
+	#pragma region OrderAndOrderListTest
+	cout << endl << "------------------ ORDER/ORDERLIST TEST ------------------" << endl;
+	cout << "Creating 2 players, 1 of each order and required parameters..." << endl;
+	Continent* northAmerica = new Continent(string("North America"), 0);
+	Territory* canada = new Territory(string("Canada"), northAmerica);
+	Territory* unitedStates = new Territory(string("United State"), northAmerica);
+	
 	Player* p1 = new Player("Michael");
 	Player* p2 = new Player("William");
-	Continent* northAmerica = new Continent(*na);
-	Territory* canada = new Territory(*ca, northAmerica);
-	Territory* unitedStates = new Territory(*us, northAmerica);
+
+	p1->addTerritory(canada);
+	p2->addTerritory(unitedStates);
 
 	Deploy* deploy = new Deploy(p1, 1, canada);
 	Advance* advance = new Advance(p1, 1, canada, unitedStates);
-	Blockade* blockade = new Blockade(p1, canada);
+	Blockade* blockade = new Blockade(p2, unitedStates);
 	Bomb* bomb = new Bomb(p1, canada);
 	Airlift* airlift = new Airlift(p1, 1, canada, unitedStates);
 	Negotiate* negotiate = new Negotiate(p1, p2);
 	
-	deploy->attach(logger);
-	advance->attach(logger);
-	bomb->attach(logger);
-	blockade->attach(logger);
-	airlift->attach(logger);
-	negotiate->attach(logger);
-
+	cout << "Attaching the logger to both players..." << endl;
 	p1->orderList->attach(logger);
 	p2->orderList->attach(logger);
-
+	cout << endl << "Adding 3 orders to each player..." << endl;
 	p1->orderList->add(deploy);
+	cout << endl;
 	p1->orderList->add(advance);
+	cout << endl;
 	p1->orderList->add(bomb);
+	cout << endl;
 	p2->orderList->add(blockade);
+	cout << endl;
 	p2->orderList->add(airlift);
+	cout << endl;
 	p2->orderList->add(negotiate);
 
+	cout << endl << "Executing the 1st order in each player's orderlists..." << endl;
 	p1->orderList->list.front()->execute();
+	cout << endl;
+	p2->orderList->list.front()->execute();
 
-	
-	// ----- Command / CommandProcessor Test -----
-	CommandProcessor* cmdProc = new CommandProcessor();
-	cmdProc->attach(logger);
-	// following line should write the input command to gamelog
-	std::cout << "\nEnter a command: ";
-	Command* cmd = cmdProc->getCommand();
-	cmd->attach(logger);
-	// following line should write this effect to gamelog
-	cmd->saveEffect("TEST EFFECT");
-
-	// ----- GameEngine Test -----
-	GameEngine* engine = new GameEngine();
-	engine->attach(logger);
-	engine->start();
-
-	// free mem
-	delete logger;
-	delete engine;
 	delete p1;
 	delete p2;
-	delete na;
-	delete ca; 
-	delete us;
+	delete northAmerica;
 	delete canada;
 	delete unitedStates;
-	delete northAmerica;
-	delete cmdProc;
+	deploy = nullptr;
+	advance = nullptr;
+	blockade = nullptr;
+	bomb = nullptr;
+	airlift = nullptr;
+	negotiate = nullptr;
+	#pragma endregion
+
+	delete logger;
 	std::cin.get();
 }

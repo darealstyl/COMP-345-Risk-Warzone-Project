@@ -19,6 +19,7 @@ public:
 
 	virtual std::string stringToLog() = 0;
 
+	ILoggable& operator=(const ILoggable&);
 	friend std::ostream& operator<<(std::ostream&, const ILoggable&);
 };
 
@@ -38,7 +39,7 @@ public:
 
 	Subject& operator=(const Subject&);
 	friend std::ostream& operator<<(std::ostream&, const Subject&);
-private:
+protected:
 	std::list<Observer*>* _observers;
 };
 

@@ -27,6 +27,7 @@ GameEngine& GameEngine::operator= (const GameEngine& game1){
 }
 
 GameEngine::~GameEngine(){
+    delete deck;
 }
 
 ostream & operator << (ostream &out, const GameEngine &g){
@@ -204,9 +205,11 @@ void GameEngine::checkforwin() {
     transition(GS::WIN);
 }
 
+//Remove players that possess no territory
+
 void GameEngine::removelosers() {
     vector<Player*> remainingplayers;
-    for (Player* player : activePlayers) {
+    for (Player* player : activePlayers) { //loop over all remaining player and check if their nb of territories is 0
         if (player->getNbOfTerritories() == 0) {
             cout << player << " is out of the game. LOSER!";
             cout << R"( ____________
@@ -241,8 +244,9 @@ void GameEngine::removelosers() {
     activePlayers = remainingplayers;
 }
 
+//Sequence of the main game loop using enum state
 void GameEngine::mainGameLoop() {
-    while (GS::WIN != state) {
+    while (GS::WIN != state) {  //loop until a player has won which moves to state to the win 
         switch (state) {
         case GS::ASSIGN_REINFORCEMENT:
             cout << "\nYou are in the assignment reinforcement phase" << endl;
@@ -257,7 +261,7 @@ void GameEngine::mainGameLoop() {
             executeOrdersPhase();
             break;
         }
-
+        //after the three phases, check for players with no territories and winner
         removelosers();
         checkforwin();
     }
@@ -309,12 +313,12 @@ std::string GameEngine::stateToString() {
         case GameState::ISSUE_ORDERS:           return "ISSUE_ORDERS";
         case GameState::EXECUTE_ORDERS:         return "EXECUTE_ORDERS";
         case GameState::WIN:                    return "WIN";    
-        default:                                    return "Error reading state.";
+        default:                                return "Error reading state.";
     }
 }
 
 std::string GameEngine::stringToLog() {
-    return "GameEngine: Current state: " + stateToString();
+    return "GameEngine New State: " + stateToString();
 }
 
 void GameEngine::getcontrolledcontinents(unordered_map<Player*, vector<Continent*>*>& controlledcontinents) {

@@ -11,7 +11,9 @@ Deck::Deck() {
 
         // Alternate through the types
         Card* c = new Card(static_cast<Card::CardType>(i % 5));
-        addCard(c);
+        if (c->getCardType() != Card::CardType::REINFORCEMENT) {
+            addCard(c);
+        }
     }
 
 }
@@ -135,43 +137,17 @@ std::string Card::cardTypeToString() const {
 void Card::play(Player* player, Deck* deck) {
 
     // will add the card type to the order list later
-    switch(this->getCardType()) { 
-        case CardType::AIRLIFT:
-            player->orderList->list.push_back(new Airlift(NULL, 0, NULL, NULL));
-            std::cout << "Airlift order created" << std::endl;
-            break;
-
-        case CardType::BLOCKADE:
-            player->orderList->list.push_back(new Blockade(NULL, NULL));
-            std::cout << "Blockade order created" << std::endl;
-            break;
-
-        case CardType::BOMB:
-            player->orderList->list.push_back(new Bomb(NULL, NULL));
-            std::cout << "Bomb order created" << std::endl;
-            break;
-
-        case CardType::DIPLOMACY:
-            player->orderList->list.push_back(new Negotiate(NULL, NULL));
-            std::cout << "Diplomacy order created" << std::endl;
-            break;
-
-        case CardType::REINFORCEMENT:
-            player->orderList->list.push_back(new Advance(NULL, 0, NULL, NULL));
-            std::cout << "Reinforcement order created" << std::endl;
-            break;
-
-        default:
-            std::cout << "Card Type Error" << std::endl;
-            break;
-    }
+    player->issueOrder(this->type);
     
     // Remove the card from the Hand and add it to the Deck
+    cout << "Hand size before playing the card:" << player->hand->cards.size() << endl;
     auto index = std::find(player->hand->cards.begin(), player->hand->cards.end(), this);
     if (index != player->hand->cards.end()) {
         player->hand->cards.erase(index);
         deck->addCard(this);
     }
+    cout << "Hand size after playing the card:" << player->hand->cards.size() << endl;
+
 }
 
 // Assignment Operator

@@ -18,7 +18,7 @@ Player::Player(string n)
 	name = n;
 	hand = new Hand();
 	orderList = new OrderList();
-	reinforcements = new int(0);
+	reinforcements = 0;
 	command = OT::DEPLOY;
 }
 
@@ -28,7 +28,7 @@ Player::Player(const Player& player)
 
 	hand = new Hand(*(player.hand));
 	orderList = new OrderList(*(player.orderList));
-	reinforcements = new int(*(player.reinforcements));
+	reinforcements = player.reinforcements;
 }
 
 Player& Player::operator=(const Player& player){
@@ -36,7 +36,7 @@ Player& Player::operator=(const Player& player){
 
 	hand = new Hand(*(player.hand));
 	orderList = new OrderList(*(player.orderList));
-	reinforcements = new int(*(player.reinforcements));
+	reinforcements = player.reinforcements;
 	return *this;
 }
 
@@ -52,7 +52,6 @@ Player::~Player()
 	delete hand;
 	hand = NULL;
 
-	delete reinforcements;
 
 	cout << "Destroying a Player" << endl;
 }
@@ -170,44 +169,87 @@ void Player::issueOrder(OrderType o, Player* targetPlayer)
 		break;
 	}
 }
+// TODO: Missing reinforcement card. Why is there such a card?
+void Player::issueOrder(CT cardtype) {
+	vector<Territory*> defend = toDefend();
+	vector<Territory*> attack = toAttack();
 
-void Player::issueOrder() {
-	//*command = DEPLOY;
+	Order* order = nullptr;
+
+	switch (cardtype) {
+	case CT::AIRLIFT: {
+		Territory* from = defend.back();
+		Territory* to = defend.front();
+
+		int transfer = from->nbOfArmy;
+		if (transfer <= 0) {
+			transfer = 1;
+		}
+
+		int numOfArmies = (rand() % transfer) + 1;
+
+		order = new Airlift(this, numOfArmies, to, from);
+		break;
+	}
+	case CT::BLOCKADE: {
+		Territory* location = defend.front();
+
+		order = new Blockade(this, location);
+		break;
+	}
+	case CT::BOMB: {
+		Territory* location = attack.front();
+
+		order = new Bomb(this, location);
+
+		break;
+	}
+	case CT::DIPLOMACY: {
+		Territory* territory = attack.front();
+		Player* targetPlayer = territory->owner;
+
+		order = new Negotiate(this, targetPlayer);
+		break;
+	}
+	case CT::REINFORCEMENT: {
+
+		// TODO: ADJUST THIS AMOUNT
+		reinforcements += 10;
+		break;
+	}
+	}
+
+	if (order != nullptr) {
+		orderList->add(order);
+	}
+}
+
+void Player::issueOrder(Deck* deck) {
+	vector<Territory*> defend = toDefend();
+	vector<Territory*> attack = toAttack();
+
+	Territory* weakestTerritory = defend.front();
+	Territory* strongestTerritory = defend.back();
+	Territory* vulnerableEnnemy = attack.front();
+
 	endOfOrder = false;
-	toAttack();
-	toDefend();
 	switch (command)
 	{
-	case OT::DEPLOY:
-		if (*reinforcements != 0) {
-			//toAttack();
-			//toDefend(); //return the toAttack() and toDefend() vector which will arrange priority
-
-			// Create a deploy order and push it back in the orderlist
+	case OT::DEPLOY: {
+		// Create a deploy order and push it back in the orderlist
+		if (reinforcements != 0) {
 			cout << "Creating deploy order" << endl;
-			Deploy* deploy = new Deploy(this, *reinforcements, toDefend().at(0));
-			orderList->list.push_back(deploy);
+			int nbOfreinforcements = (rand() % reinforcements) + 1;
+			reinforcements -= nbOfreinforcements;
 
-			//Put this in execution phase
-			
-			int iarmy;
-			iarmy = rand() %*reinforcements + 1; //number of reinforcements between 1 - nb of reinforcements
-
-			// Deploy Soldiers to toDefend(), the first index as it is priority one
-			toDefend().at(0)->nbOfArmy += iarmy;
-			cout << "Deployement of " << iarmy << " soldiers" << endl;
-			removeReinforcments(iarmy);
-			cout << "Total of reinforcement: " << *reinforcements << endl;
+			cout << "Deploying " << nbOfreinforcements << " reinforcements to " << *weakestTerritory << endl;
+			cout << reinforcements << " reinforcements left." << endl;
+			Deploy* deploy = new Deploy(this, nbOfreinforcements, weakestTerritory);
+			orderList->add(deploy);
+			break;
 		}
-		else {
-			cout << "No more reinforcements available" << endl;
-			cout << "Moving to the ADVANCE order" << endl;
-			command = OT::ADVANCE;
-		}
-		break;
+	}
 	case OT::ADVANCE:
-		//toAttack();
-		//toDefend();
 		{
 			
 		int advanceChoice;
@@ -216,54 +258,34 @@ void Player::issueOrder() {
 
 		if (advanceChoice == 1) {
 			cout << "Making an advance order to defend a territory" << endl;
-			Advance* advanceD = new Advance(this, *reinforcements, toDefend().at(0), toDefend().at(1));
-			orderList->list.push_back(advanceD);
+			Advance* advanceD = new Advance(this, reinforcements, strongestTerritory, weakestTerritory);
+			orderList->add(advanceD);
 		}
 
 		else if (advanceChoice == 2) {
 			cout << "Making an advance order to attack a territory" << endl;
-			Advance* advanceA = new Advance(this, *reinforcements, toDefend().at(0), toAttack().at(0));
-			orderList->list.push_back(advanceA);
+			Advance* advanceA = new Advance(this, reinforcements, strongestTerritory, vulnerableEnnemy);
+			orderList->add(advanceA);
 		}
 		else if (advanceChoice == 3) {
 			cout << "Making both an advance order to defend and to attack a territory";
-			Advance* advanceBD = new Advance(this, *reinforcements, toDefend().at(0), toDefend().at(1));
-			orderList->list.push_back(advanceBD);
-			Advance* advanceBA = new Advance(this, *reinforcements, toDefend().at(0), toAttack().at(0));
-			orderList->list.push_back(advanceBA);
-		}
-		
+			Advance* advanceD = new Advance(this, reinforcements, strongestTerritory, weakestTerritory);
+			orderList->add(advanceD);
+			Advance* advanceA = new Advance(this, reinforcements, strongestTerritory, vulnerableEnnemy);
+			orderList->add(advanceA);
 		}
 		break;
+		}
+		
 	case OT::AIRLIFT:
-		
-		{
-		cout << "The player is playing the Airlift card" << endl;
-			Airlift* airlift = new Airlift(this, toDefend().at(0)->nbOfArmy, toDefend().at(0), toAttack().at(0));
-			orderList->list.push_back(airlift);
-		}
-		break; 
 	case OT::BOMB:
-	{
-		cout << "The player is playing the Bomb card" << endl;
-		Bomb* bomb = new Bomb(this, toAttack().at(0));
-		orderList->list.push_back(bomb);
-	}
-		break;
 	case OT::BLOCKADE:
-	{
-		cout << "The player is playing the BLockade card" << endl;
-		Blockade* blockade = new Blockade(this, toAttack().at(0));
-		orderList->list.push_back(blockade);
-	}
-		break;
 	case OT::NEGOTIATE:
-	{
-		cout << "The player is playing the Diplomacy card" << endl;
-		Negotiate* negotiate = new Negotiate(this, toAttack().at(0)->owner);
-		orderList->list.push_back(negotiate);
-	}
-
+		cout << *hand << endl;
+		chosenCard->play(this, deck);
+		cout << *hand << endl;
+		chosenCard = nullptr;
+		break;
 	}
 	
 	chooseNextCommand();
@@ -271,18 +293,19 @@ void Player::issueOrder() {
 }
 
 void Player::chooseNextCommand() {
-	if (*reinforcements != 0) {
+	if (reinforcements != 0) {
 		command = OT::DEPLOY;
 	}
 	else if (hand->cards.size() != 0) {
 		// Could be replaced by a conversion function but oh well
 		cout << "Choosing a card to play" << endl;
 		Card* card = hand->cards.back();
-		hand->cards.pop_back();
+		chosenCard = card;
 		command = cardTypeToOrderType(card->getCardType());
 		cout << "The card to play next turn is a " << card->cardTypeToString() << endl;
 	}
 	else {
+		cout << *this << " is done issuing orders." << endl;
 		endOfOrder = true;
 	}
 }
@@ -301,10 +324,10 @@ OT Player::cardTypeToOrderType(CT cardtype) {
 
 void Player::addReinforcements(int armies) {
 	cout << *this << " receives " << armies << " armies." << endl;
-	*reinforcements += armies;
+	reinforcements += armies;
 }
 
 void Player::removeReinforcments(int armies) {
 	cout << *this << " used " << armies << " armies." << endl;
-	*reinforcements -= armies;
+	reinforcements -= armies;
 }

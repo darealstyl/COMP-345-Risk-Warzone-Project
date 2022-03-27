@@ -18,7 +18,8 @@ public:
 	unordered_set<Territory*> territories;
 	Hand* hand;
 	OrderList* orderList;
-	int* reinforcements;
+	Card* chosenCard;
+	int reinforcements;
 	bool endOfOrder;
 
 	vector<Territory*> toAttack();
@@ -39,7 +40,8 @@ public:
 	void issueOrder(OrderType, int, Territory*);
 	void issueOrder(OrderType, int, Territory*, Territory*);
 	void issueOrder(OrderType, Player*);
-	void issueOrder();
+	void issueOrder(Deck*);
+	void issueOrder(Card::CardType);
 
 	int getNbOfTerritories();
 	OrderType cardTypeToOrderType(Card::CardType);

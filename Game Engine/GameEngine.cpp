@@ -309,12 +309,12 @@ std::string GameEngine::stateToString() {
         case GameState::ISSUE_ORDERS:           return "ISSUE_ORDERS";
         case GameState::EXECUTE_ORDERS:         return "EXECUTE_ORDERS";
         case GameState::WIN:                    return "WIN";    
-        default:                                    return "Error reading state.";
+        default:                                return "Error reading state.";
     }
 }
 
 std::string GameEngine::stringToLog() {
-    return "GameEngine: Current state: " + stateToString();
+    return "GameEngine New State: " + stateToString();
 }
 
 void GameEngine::getcontrolledcontinents(unordered_map<Player*, vector<Continent*>*>& controlledcontinents) {

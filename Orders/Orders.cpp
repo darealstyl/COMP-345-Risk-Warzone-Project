@@ -35,7 +35,7 @@ Order& Order::operator =(const Order& o) // Assignment Operator Overload
 }
 
 std::string Order::stringToLog() {
-	return "Logger::Order: Base order ";
+	return "Order Issued: Base order ";
 }
 
 bool& Order::getValidity()		// Accessor method				
@@ -138,7 +138,7 @@ OrderList& OrderList::operator=(const OrderList& o)
 }
 
 std::string OrderList::stringToLog() {
-	return "Logger::OrderList: Added a " + list.back()->getClassName() + " order";
+	return "Order Issued: " + list.back()->getClassName() + " order";
 }
 
 Deploy::Deploy(Player* issuingPlayer, int numOfArmies, Territory* location) : Order(), issuingPlayer(issuingPlayer), numOfArmies(numOfArmies), location(location)

@@ -17,7 +17,7 @@ void Command::saveEffect(string str) {
 }
 
 std::string Command::stringToLog() {
-	return "Logger::Command: Effect:" + this->effect;
+	return "Command's Effect:" + this->effect;
 }
 
 // Command Processor
@@ -39,6 +39,8 @@ Command* CommandProcessor::getCommand() {
 
 void CommandProcessor::saveCommand(Command* command) {
 	commands.push_back(command);
+	for (auto observer : *_observers)
+		command->attach(observer);
 	notify(this);
 }
 
@@ -187,5 +189,5 @@ string FileCommandProcessorAdapter::readCommand() {
 }
 
 std::string CommandProcessor::stringToLog() {
-	return "Logger::CommandProcessor: Command: " + commands.back()->command;
+	return "Command: " + commands.back()->command;
 }

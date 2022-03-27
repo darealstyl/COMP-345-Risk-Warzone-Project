@@ -23,6 +23,8 @@ public:
         START, MAP_LOADED, MAP_VALIDATED, PLAYERS_ADDED, ASSIGN_REINFORCEMENT, ISSUE_ORDERS, EXECUTE_ORDERS, WIN
     };
 
+    Map* map;
+
     GameEngine(); //default constructor
     GameEngine(const GameEngine &game1); //copy constructor
     GameEngine& operator =(const GameEngine&); //assignment operator
@@ -33,6 +35,7 @@ public:
 
     void start(); //start the gameEngine in the first state
     void startupPhase();
+    void transition(GameEngine::GameState);
 
     void addPlayer(Player*);
     void addPlayer(string);
@@ -43,16 +46,7 @@ public:
 
     std::string stateToString();
     std::string stringToLog() override;
-
- /* 
-    void mapLoadedPhase();
-    void mapValidatedPhase();
-    void playersAddedPhase();
-    void assignReinforcementPhase();
-    void issueOrdersPhase();
-    void executeOrdersPhase();
-    void winPhase();
-    */Map* map;
+    
 private:
     CommandProcessor* commandprocessor;
     // Enum doesn't need to be of pointer type
@@ -64,7 +58,6 @@ private:
     void reinforcementPhase();
     void issueOrdersPhase();
     void executeOrdersPhase();
-    void transition(GameEngine::GameState);
     void initializeCommandProcessor();
     void getandexecutecommand();
     void execute(Command*);

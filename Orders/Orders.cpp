@@ -96,8 +96,13 @@ void OrderList::move(int from, int to)
 	list.erase(list.begin() + from);
 	list.insert(list.begin() + to, order);
 }
+
+// Add an order to the players orderlist
+// Attach all orderlist observers to the order
 void OrderList::add(Order* order) {
 	list.push_back(order);
+	for (auto observer : *_observers)
+		order->attach(observer);
 	notify(this);
 }
 

@@ -74,6 +74,8 @@ private:
     void distributecards();
     void checkforwin();
     void removelosers();
+    void getcontrolledcontinents(unordered_map<Player*, vector<Continent*>*>&);
+    void cleanupcontrolledcontinents(unordered_map<Player*, vector<Continent*>*>&);
     
 };
 

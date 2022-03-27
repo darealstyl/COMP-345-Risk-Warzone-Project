@@ -138,9 +138,7 @@ Continent::Continent(const Continent& continent) {
 
 // No need to do anything in here, the destructor of vector is called by default and frees the pointers but not what they're pointing to which will be handled
 // by the map
-Continent::~Continent() {
-    cout << "Destroyed Continent: " << this->name << endl;
-}
+Continent::~Continent() {}
 
 // Print the Territory type as a string
 std::ostream& operator<<(std::ostream& out, const Continent& continent) {

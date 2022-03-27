@@ -54,7 +54,6 @@ Player::~Player()
 
 	delete reinforcements;
 
-	cout << "Destroying a Player" << endl;
 }
 
 void Player::addTerritory(Territory* territory) {

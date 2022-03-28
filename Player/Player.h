@@ -22,6 +22,7 @@ public:
 	int reinforcements;
 	bool endOfOrder;
 	bool conquered;
+	
 
 	vector<Territory*> toAttack();
 	vector<Territory*> toDefend();
@@ -54,11 +55,16 @@ public:
 	void addReinforcements(int);
 	void removeReinforcments(int);
 
+	void addFriendlyPlayer(Player*);
+	bool isFriendlyPlayer(Player*);
+	void clearFriendlyPlayers();
+
 	OrderType command;
 
 	static Player* neutralplayer;
 	static void resetNeutralPlayer();
 
 private:
+	unordered_set<Player*> friendlyPlayers;
 	void chooseNextCommand();
 };

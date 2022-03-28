@@ -22,6 +22,7 @@ Player::Player(string n)
 	command = OT::DEPLOY;
 	conquered = false;
 	endOfOrder = false;
+	chosenCard = nullptr;
 }
 
 Player::Player(const Player& player)
@@ -230,6 +231,18 @@ void Player::issueOrder(CT cardtype) {
 		orderList->add(order);
 	}
 }
+void Player::addFriendlyPlayer(Player* friendplayer) {
+	friendlyPlayers.insert(friendplayer);
+}
+
+bool Player::isFriendlyPlayer(Player* friendplayer) {
+	auto pair = friendlyPlayers.find(friendplayer);
+	return pair != friendlyPlayers.end();
+}
+
+void Player::clearFriendlyPlayers() {
+	friendlyPlayers.clear();
+}
 
 void Player::issueOrder(Deck* deck) {
 	chooseNextCommand();
@@ -249,6 +262,10 @@ void Player::issueOrder(Deck* deck) {
 	{
 	case OT::DEPLOY: {
 		// Create a deploy order and push it back in the orderlist
+		if (chosenCard != nullptr) {
+			chosenCard->play(this,deck);
+			chosenCard = nullptr;
+		}
 		if (reinforcements != 0) {
 			cout << "Creating deploy order" << endl;
 			int nbOfreinforcements = (rand() % reinforcements) + 1;
@@ -258,8 +275,9 @@ void Player::issueOrder(Deck* deck) {
 			cout << reinforcements << " reinforcements left." << endl;
 			Deploy* deploy = new Deploy(this, nbOfreinforcements, weakestTerritory);
 			orderList->add(deploy);
-			break;
+			
 		}
+		break;
 	}
 	case OT::ADVANCE:
 		{

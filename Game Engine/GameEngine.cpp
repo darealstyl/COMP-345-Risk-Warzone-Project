@@ -466,9 +466,9 @@ void GameEngine::executeOrdersPhase() {
             
             vector<Order*>& list = player->orderList->list;
 
-            if (list.size() < orderindex) {
+            if (list.size() > orderindex) {
 
-                cout << endl << player << "'s turn" << endl;
+                cout << endl << *player << "'s turn" << endl;
                 Order& order = *list[orderindex];
                 order.execute();
 

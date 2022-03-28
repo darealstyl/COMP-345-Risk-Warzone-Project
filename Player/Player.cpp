@@ -283,28 +283,31 @@ void Player::issueOrder(Deck* deck) {
 	case OT::ADVANCE:
 		{
 			
-		int advanceChoice;
-		advanceChoice = (rand() % 3) + 1; // three choices (attack, defend or both)
-		cout << "Choice: " << advanceChoice << endl;
-
-		if (advanceChoice == 1) {
-			cout << "Making an advance order to defend a territory" << endl;
-			Advance* advanceD = new Advance(this, reinforcements, strongestTerritory, weakestTerritory);
-			orderList->add(advanceD);
+		int advanceChoice = (rand() % 2);
+		Territory* to;
+		if (advanceChoice == 0) {
+			to = weakestTerritory;
 		}
-
-		else if (advanceChoice == 2) {
-			cout << "Making an advance order to attack a territory" << endl;
-			Advance* advanceA = new Advance(this, reinforcements, strongestTerritory, vulnerableEnnemy);
-			orderList->add(advanceA);
+		else {
+			to = vulnerableEnnemy;
 		}
-		else if (advanceChoice == 3) {
-			cout << "Making both an advance order to defend and to attack a territory";
-			Advance* advanceD = new Advance(this, reinforcements, strongestTerritory, weakestTerritory);
-			orderList->add(advanceD);
-			Advance* advanceA = new Advance(this, reinforcements, strongestTerritory, vulnerableEnnemy);
-			orderList->add(advanceA);
+		Territory* from = nullptr;
+		for (Territory* neighbor : to->adjacentTerritories) {
+			if (neighbor->owner == this) {
+				from = neighbor;
+				break;
+			}
 		}
+		if (from == nullptr) {
+			from = strongestTerritory;
+		}
+		int number = from->nbOfArmy;
+		if (number == 0) {
+			number = 1;
+		}
+		int soldierAmount = (rand() % number) + 1;
+		Advance* advance = new Advance(this, soldierAmount, from, to);
+		orderList->add(advance);
 		break;
 		}
 		

@@ -57,7 +57,8 @@ int main() {
 	cout << endl << "------------------ ORDER/ORDERLIST TEST ------------------" << endl;
 	// Creating necessary objects to demonstrate orderlist issuing and order execution
 	cout << "Creating 2 players, 1 of each order and required parameters..." << endl;
-	Continent* northAmerica = new Continent(string("North America"), 0);
+	string continentname = "North America";
+	Continent* northAmerica = new Continent(continentname, 0);
 	Territory* canada = new Territory(string("Canada"), northAmerica);
 	Territory* unitedStates = new Territory(string("United State"), northAmerica);
 	

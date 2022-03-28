@@ -42,7 +42,10 @@ public:
     void addPlayer(string);
     int getPlayerCount();
 
-   
+    void reinforcementPhase();
+    void issueOrdersPhase();
+    void executeOrdersPhase();
+
     GameState getState();
 
     std::string stateToString();

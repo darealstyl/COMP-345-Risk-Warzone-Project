@@ -50,7 +50,9 @@ void Subject::detach(Observer* o) {
 
 // A object of type Subject calls this function to notify all observers that a change occurred
 void Subject::notify(ILoggable* il) {
-	cout << "	Inside Subject::notify for: " << typeid(*il).name() << endl;
+	// Following cout is used for driver purposes only.
+	if(!_observers->empty())
+		cout << "	Inside Subject::notify for: " << typeid(*il).name() << endl;
 	// Tell all Observer Subscribed to this Subject class
 	for (Observer* s : *_observers)
 		s->update(il);

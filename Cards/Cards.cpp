@@ -11,9 +11,8 @@ Deck::Deck() {
 
         // Alternate through the types
         Card* c = new Card(static_cast<Card::CardType>(i % 5));
-        if (c->getCardType() != Card::CardType::REINFORCEMENT) {
-            addCard(c);
-        }
+        addCard(c);
+        
     }
 
 }

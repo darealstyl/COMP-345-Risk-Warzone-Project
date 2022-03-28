@@ -3,4 +3,10 @@ validatemap
 addplayer Michael
 addplayer William
 gamestart
+replay
+loadmap solar.map
+validatemap
+addplayer Jonah
+addplayer Cedric
+gamestart
 quit

@@ -67,5 +67,19 @@ int main() {
 	cout << "Player " << p1->name << " Card Count: " << p1->hand->cards.size() << endl;
 	cout << "Player " << p2->name << " Card Count: " << p2->hand->cards.size() << endl;
 
+	delete na;
+	delete ca;
+	delete us;
+	delete mx;
+	delete ga;
+	delete p1;
+	delete p2;
+	delete northAmerica;
+	delete canada;
+	delete unitedStates;
+	delete mexico;
+	delete guatemala;
+	delete engine;
+
 	cin.get();
 }

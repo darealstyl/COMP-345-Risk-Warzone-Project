@@ -11,27 +11,23 @@
 
 Order::Order()		// Constructor								// Order Method Implementations
 {
-	this->className = new string("Order");
-	this->validity = new bool(false);
+	this->className = "Order";
+	this->validity = false;
 }
 Order::~Order() // Destructor
 {
-	delete (className);
-	delete (validity);
-	className = NULL;
-	validity = NULL;
 }
 
 Order::Order(const Order& o) // Copy Constructor
 {
-	this->validity = new bool(*(o.validity));
-	this->className = new string(*(o.className));
+	this->validity = o.validity;
+	this->className = o.className;
 }
 
 Order& Order::operator =(const Order& o) // Assignment Operator Overload
 {
-	this->validity = new bool(*(o.validity));
-	this->className = new string(*(o.className));
+	this->validity = o.validity;
+	this->className = o.className;
 	return *this;
 }
 
@@ -39,19 +35,19 @@ std::string Order::stringToLog() {
 	return "Order Issued: Base order ";
 }
 
-bool& Order::getValidity()		// Accessor method				
+bool Order::getValidity()		// Accessor method				
 {
-	return *validity;
+	return validity;
 }
 
-string& Order::getClassName()		//accessor method				
+string Order::getClassName()		//accessor method				
 {
-	return *className;
+	return className;
 }
 
 ostream& operator<<(ostream& strm, Order& o)			// Free stream insertion implementation
 {
-	return strm << "Order Type: " << *o.className;
+	return strm << "Order Type: " << o.className;
 }
 
 // OrderList Method Implementations
@@ -143,10 +139,8 @@ std::string OrderList::stringToLog() {
 }
 
 Deploy::Deploy(Player* issuingPlayer, int numOfArmies, Territory* location) : Order(), issuingPlayer(issuingPlayer), numOfArmies(numOfArmies), location(location)
-{										// Constructor
-	delete (className);
-	className = NULL;
-	Deploy::className = new string("Deploy");
+{					
+	className = "Deploy";
 }
 
 void Deploy::validate() // Will validate the circumstances of the object before executing
@@ -155,7 +149,7 @@ void Deploy::validate() // Will validate the circumstances of the object before 
 	cout << "Validating Deploy Order..." << endl;
 	if (issuingPlayer->territories.count(this->location) > 0)
 	{
-		*validity = true;
+		validity = true;
 		cout << "Deploy Validated" << endl;
 	}
 }
@@ -177,25 +171,18 @@ void Deploy::execute()
 
 Deploy::~Deploy() // Destructor
 {
-	delete (className);
-	delete (validity);
-	className = NULL;
-	validity = NULL;
+
 }
 
 Deploy::Deploy(const Deploy& d) : Order(d), issuingPlayer(d.issuingPlayer), numOfArmies(d.numOfArmies), location(d.location)
 {											// Copy Constructor
-	delete (className);
-	className = NULL;
-	this->className = new string(*(d.className));
+	this->className = d.className;
 }
 
 Deploy& Deploy::operator=(const Deploy& d) // Assignment Operator Overload
 {
 	Order::operator =(d);
-	delete (className);
-	className = NULL;
-	this->className = new string(*(d.className));
+	this->className = d.className;
 	this->issuingPlayer = d.issuingPlayer;
 	this->numOfArmies = d.numOfArmies;
 	this->location = d.location;
@@ -208,9 +195,8 @@ std::string Deploy::stringToLog() {
 
 Advance::Advance(Player* issuingPlayer, int numOfArmies, Territory* to, Territory* from) : Order(), attacking(false), issuingPlayer(issuingPlayer), numOfArmies(numOfArmies), to(to), from(from)
 {											// Constructor
-	delete (className);
-	className = NULL;
-	Advance::className = new string("Advance");
+
+	className = "Advance";
 }
 
 void Advance::validate() // Will validate the circumstances of the object before executing
@@ -224,14 +210,14 @@ void Advance::validate() // Will validate the circumstances of the object before
 			if (!issuingPlayer->isFriendlyPlayer(targetPlayer)) {
 				cout << "Valid order from " << *issuingPlayer << " to attack " << *targetPlayer << endl;
 				attacking = true;
-				*validity = true;
+				validity = true;
 			}
 			else {
 				cout << issuingPlayer->name << " tried to attack friendly player " << targetPlayer->name << ". Invalid order" << endl;
 			}
 		}
 		else {
-			*validity = true;
+			validity = true;
 		}
 		
 	}
@@ -308,22 +294,14 @@ void Advance::execute()
 Advance::~Advance() {}// Destructor
 
 Advance::Advance(const Advance& a) : Order(a), attacking(a.attacking), issuingPlayer(a.issuingPlayer), numOfArmies(a.numOfArmies), to(a.to), from(a.from)
-{											// Copy Constructor
-	delete (className);
-	className = NULL;
-	this->className = new string(*(a.className));
+{
+	this->className = a.className;
 }
 
 Advance& Advance::operator=(const Advance& a) // Assignment Operator Overload
 {
 	Order::operator =(a);
-	delete (className);
-	className = NULL;
-	this->className = new string(*(a.className));
-	this->issuingPlayer = a.issuingPlayer;
-	this->numOfArmies = a.numOfArmies;
-	this->to = a.to;
-	this->from = a.from;
+	this->className = a.className;
 	return *this;
 }
 
@@ -333,26 +311,21 @@ std::string Advance::stringToLog() {
 
 Bomb::Bomb(Player* issuingPlayer, Territory* location) : Order(), issuingPlayer(issuingPlayer), location(location)
 {										// Constructor
-	delete (className);
-	className = NULL;
-	Bomb::className = new string("Bomb");
+
+	className = "Bomb";
 }
 
 Bomb::~Bomb() {}// Destructor
 
 Bomb::Bomb(const Bomb& b) : Order(b), issuingPlayer(b.issuingPlayer), location(b.location)
 {										// Copy Constructor
-	delete (className);
-	className = NULL;
-	this->className = new string(*(b.className));
+	this->className = b.className;
 }
 
 Bomb& Bomb::operator=(const Bomb b) // Assignment Operator Overload
 {
 	Order::operator =(b);
-	delete (className);
-	className = NULL;
-	this->className = new string(*(b.className));
+	this->className = b.className;
 	this->issuingPlayer = b.issuingPlayer;
 	this->location = b.location;
 	return *this;
@@ -368,17 +341,17 @@ void Bomb::validate() // Will validate the circumstances of the object before ex
 			for (Territory* adjacentT : t->adjacentTerritories) {
 				if (adjacentT == location) {
 					cout << "Validation complete" << endl;
-					*validity = true;
+					validity = true;
 				}
 				else {
-					*validity = false;
+					validity = false;
 					cout << "Invalid order...Territory is not within reach" << endl;
 				}
 			}
 		}
 	}
 	else {
-		*validity = false;
+		validity = false;
 		cout << "Invalid order...Cannot attack itself" << endl;
 	}
 }
@@ -400,9 +373,8 @@ std::string Bomb::stringToLog() {
 
 Blockade::Blockade(Player* issuingPlayer, Territory* location) : Order(), issuingPlayer(issuingPlayer), location(location)
 {											// Constructor
-	delete (className);
-	className = NULL;
-	Blockade::className = new string("Blockade");
+
+	className = "Blockade";
 }
 
 // Destructor
@@ -412,11 +384,11 @@ void Blockade::validate() // Will validate the circumstances of the object befor
 {
 	cout << "Validating Blockade Order..." << endl;
 	if (location->owner == issuingPlayer) {
-		*validity = true;
+		validity = true;
 		cout << "Blockade Order validated" << endl;
 	}
 	else {
-		*validity = false;
+		validity = false;
 		cout << "Cannot do a blockade on an unknown/enemy" << endl;
 	}
 }
@@ -437,17 +409,15 @@ void Blockade::execute()
 
 Blockade::Blockade(const Blockade& b) : Order(b), issuingPlayer(b.issuingPlayer), location(b.location)
 {											// Copy Constructor
-	delete (className);
-	className = NULL;
-	this->className = new string(*(b.className));
+
+	this->className = b.className;
 }
 
 Blockade& Blockade::operator=(const Blockade& b) // Assignment Operator Overload
 {
 	Order::operator =(b);
-	delete (className);
-	className = NULL;
-	this->className = new string(*(b.className));
+
+	this->className = b.className;
 	this->issuingPlayer = b.issuingPlayer;
 	this->location = b.location;
 	return *this;
@@ -459,9 +429,8 @@ std::string Blockade::stringToLog() {
 
 Airlift::Airlift(Player* issuingPlayer, int numOfArmies, Territory* to, Territory* from) : Order(), issuingPlayer(issuingPlayer), numOfArmies(numOfArmies), to(to), from(from)
 {											// Constructor
-	delete (className);
-	className = NULL;
-	Airlift::className = new string("Airlift");
+
+	className = "Airlift";
 }
 
 void Airlift::validate() // Will validate the circumstances of the object before executing
@@ -471,16 +440,16 @@ void Airlift::validate() // Will validate the circumstances of the object before
 	//validate if the source and target are owned by the same player
 	if (to->owner == issuingPlayer && from->owner == issuingPlayer) {
 		if (numOfArmies > from->nbOfArmy) {
-			*validity = false;
+			validity = false;
 			cout << "Cannot airlift more soldiers than in the territory" << endl;
 		}
 		else {
-			*validity = true;
+			validity = true;
 			cout << "Validation completed" << endl;
 		}
 	}
 	else {
-		*validity = false;
+		validity = false;
 		cout << "Invalid order...Cannot airlift to a unknown/enemy territory " << endl;
 	}
 
@@ -507,17 +476,15 @@ Airlift::~Airlift() // Destructor
 
 Airlift::Airlift(const Airlift& a) : Order(a), issuingPlayer(a.issuingPlayer), numOfArmies(a.numOfArmies), to(a.to), from(a.from)
 {											// Copy Constructor
-	delete (className);
-	className = NULL;
-	this->className = new string(*(a.className));
+	
+	this->className = a.className;
 }
 
 Airlift& Airlift::operator=(const Airlift& a) // Assignment Operator Overload
 {
 	Order::operator =(a);
-	delete (className);
-	className = NULL;
-	this->className = new string(*(a.className));
+	
+	this->className = a.className;
 	this->issuingPlayer = a.issuingPlayer;
 	this->numOfArmies = a.numOfArmies;
 	this->to = a.to;
@@ -531,9 +498,8 @@ std::string Airlift::stringToLog() {
 
 Negotiate::Negotiate(Player* issuingPlayer, Player* targetPlayer) : Order(), issuingPlayer(issuingPlayer), targetPlayer(targetPlayer)
 {											// Constructor
-	delete (className);
-	className = NULL;
-	Negotiate::className = new string("Negotiate");
+
+	className = "Negotiate";
 }
 
 Negotiate::~Negotiate() // Destructor
@@ -542,17 +508,14 @@ Negotiate::~Negotiate() // Destructor
 
 Negotiate::Negotiate(const Negotiate& n) : Order(n), issuingPlayer(n.issuingPlayer), targetPlayer(n.targetPlayer)
 {											// Copy Constructor
-	delete (className);
-	className = NULL;
-	this->className = new string(*(n.className));
+	this->className = n.className;
 }
 
 Negotiate& Negotiate::operator=(const Negotiate& n) // Assignment Operator Overload
 {
 	Order::operator =(n);
-	delete (className);
-	className = NULL;
-	this->className = new string(*(n.className));
+
+	this->className = n.className;
 	this->issuingPlayer = n.issuingPlayer;
 	this->targetPlayer = n.targetPlayer;
 	return *this;
@@ -562,11 +525,11 @@ void Negotiate::validate() // Will validate the circumstances of the object befo
 {
 	cout << "Validating Negotiate Order..." << endl;
 	if (issuingPlayer != targetPlayer) {
-		*validity = true;
+		validity = true;
 		cout << "Negotiate Order validated" << endl;
 	}
 	else {
-		*validity = false;
+		validity = false;
 		cout << "Cannot attack yourself" << endl;
 	}
 }

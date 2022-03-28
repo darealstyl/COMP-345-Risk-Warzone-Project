@@ -19,16 +19,16 @@ class Continent;
 
 class Order : public Subject, public ILoggable {
 protected:
-	bool* validity;
-	string* className;
+	bool validity;
+	string className;
 	friend ostream& operator<<(ostream&, Order&);
 public:
 	Order();
 	virtual ~Order();
 	Order(const Order& o);
 	Order& operator =(const Order& o);
-	bool& getValidity();
-	string& getClassName();
+	bool getValidity();
+	string getClassName();
 	virtual void validate() = 0;
 	virtual void execute() = 0;
 	

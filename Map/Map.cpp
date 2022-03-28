@@ -114,6 +114,8 @@ std::ostream& operator<<(std::ostream& out, const Map& continent) {
 
 // The map's destructor is the one that handles destroying the territories & continents
 Map::~Map() {
+    cout << "Destroying the map" << endl;
+
     for (Territory* territory : territories)
         delete territory;
 

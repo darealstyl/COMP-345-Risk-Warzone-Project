@@ -29,6 +29,8 @@ protected:
 	PlayerStrategy();
 	PlayerStrategy(const PlayerStrategy&);
 
+	vector<Territory*> getAdjacentTerritories();
+
 };
 
 class HumanPlayerStrategy : public PlayerStrategy {

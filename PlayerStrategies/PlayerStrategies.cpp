@@ -21,6 +21,19 @@ std::ostream& operator<<(std::ostream& out, const PlayerStrategy& s) {
 void PlayerStrategy::setPlayerLink(Player* player) {
 	p = player;
 }
+
+vector<Territory*> PlayerStrategy::getAdjacentTerritories() {
+	vector<Territory*> toattack;
+	for (Territory* territory : p->territories) {
+		for (Territory* adjacentterritory : territory->adjacentTerritories) {
+			if (adjacentterritory->owner != p) {
+				toattack.push_back(adjacentterritory);
+			}
+		}
+	}
+	return toattack;
+}
+
 #pragma endregion
 
 #pragma region Human
@@ -187,7 +200,7 @@ void CheaterPlayerStrategy::issueOrder()
 
 vector<Territory*> CheaterPlayerStrategy::toAttack()
 {
-	return vector<Territory*>();
+	return getAdjacentTerritories();
 }
 
 vector<Territory*> CheaterPlayerStrategy::toDefend()

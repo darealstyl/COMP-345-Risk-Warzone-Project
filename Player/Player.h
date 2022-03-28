@@ -22,6 +22,7 @@ public:
 	int reinforcements;
 	bool endOfOrder;
 	bool conquered;
+	int advanceordersnb;
 	
 
 	vector<Territory*> toAttack();

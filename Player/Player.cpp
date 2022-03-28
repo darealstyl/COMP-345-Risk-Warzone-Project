@@ -23,6 +23,7 @@ Player::Player(string n)
 	conquered = false;
 	endOfOrder = false;
 	chosenCard = nullptr;
+	advanceordersnb = 0;
 }
 
 Player::Player(const Player& player)
@@ -325,6 +326,10 @@ void Player::issueOrder(Deck* deck) {
 void Player::chooseNextCommand() {
 	if (reinforcements != 0) {
 		command = OT::DEPLOY;
+	}
+	else if (advanceordersnb != 5) {
+		command = OT::ADVANCE;
+		advanceordersnb++;
 	}
 	else if (hand->cards.size() != 0) {
 		// Could be replaced by a conversion function but oh well

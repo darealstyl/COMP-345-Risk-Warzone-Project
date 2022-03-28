@@ -47,11 +47,24 @@ int main() {
 	Blockade* block = new Blockade(p2, canada);
 	Negotiate* nego = new Negotiate(p2, p1);
 	
+	cout << endl << "Attempting to execute a Deploy order..." << endl;
 	dep->execute();
-	adv->execute();	
+
+	cout << endl << "Attempting to execute a Advance order..." << endl;
+	cout << "Current Owner of Mexico: " << mexico->owner->name << endl;
+	adv->execute();
+	cout << "Owner of Mexico After Advance Order: " << mexico->owner->name << endl;
+
+	cout << endl << "Attempting to execute a Airlift order..." << endl;
 	air->execute();
+
+	cout << endl << "Attempting to execute a Bomb order..." << endl;
 	bomb->execute();
+
+	cout << endl << "Attempting to execute a Blockade order..." << endl;
 	block->execute();
+
+	cout << endl << "Attempting to execute a Negotiate order..." << endl;
 	nego->execute();
 	cin.get();
 }

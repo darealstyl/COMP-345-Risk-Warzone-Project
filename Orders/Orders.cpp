@@ -1,4 +1,5 @@
 #include "Orders.hpp"
+#include "../Player/Player.h"
 #include <string>
 
 // Method, Constructor, and Operator implementation
@@ -213,6 +214,7 @@ Advance::Advance(Player* issuingPlayer, int numOfArmies, Territory* to, Territor
 
 void Advance::validate() // Will validate the circumstances of the object before executing
 {	
+	cout << "Validating Advance Order..." << endl;
 	if (issuingPlayer == from->owner && Territory::territoriesAreAdjacent(from, to) && from->nbOfArmy >= numOfArmies) {
 		Player* targetPlayer = to->owner;
 		if (issuingPlayer != targetPlayer) {
@@ -475,7 +477,7 @@ void Airlift::validate() // Will validate the circumstances of the object before
 	}
 	else {
 		*validity = false;
-		cout << "Invalid order...Cannot airlift to a unknown/ennemy territory " << endl;
+		cout << "Invalid order...Cannot airlift to a unknown/enemy territory " << endl;
 	}
 
 }

@@ -219,6 +219,7 @@ void Advance::validate() // Will validate the circumstances of the object before
 		Player* targetPlayer = to->owner;
 		if (issuingPlayer != targetPlayer) {
 			if (!issuingPlayer->isFriendlyPlayer(targetPlayer)) {
+				cout << "Valid order from " << *issuingPlayer << " to attack " << *targetPlayer << endl;
 				attacking = true;
 				*validity = true;
 			}
@@ -297,7 +298,7 @@ void Advance::execute()
 	}
 	else
 		cout << "Advance Order not valid." << endl;
-	
+	attacking = false;
 	notify(this);
 }
 

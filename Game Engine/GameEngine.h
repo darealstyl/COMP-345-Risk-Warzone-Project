@@ -73,6 +73,7 @@ private:
     void getcontrolledcontinents(unordered_map<Player*, vector<Continent*>*>&);
     void cleanupcontrolledcontinents(unordered_map<Player*, vector<Continent*>*>&);
     void makePlayerDrawCard(Player*);
+    void clearActivePlayers();
 };
 
 

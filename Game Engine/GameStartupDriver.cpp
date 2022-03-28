@@ -3,9 +3,13 @@
 using namespace std;
 
 int main() {
-	GameEngine* game = new GameEngine();
-	game->FORCEWIN = true;
-	game->startupPhase();
+	GameEngine forcewingame;;
+	forcewingame.FORCEWIN = true;
+	forcewingame.startupPhase();
+	cout << "Warning: next game will go by very fast and you won't be able to observe without breakpoints." << endl;
+	
+	
+	GameEngine normalgame;
+	normalgame.startupPhase();
 	cin.get();
-
 }

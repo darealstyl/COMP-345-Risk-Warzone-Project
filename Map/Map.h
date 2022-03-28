@@ -27,6 +27,7 @@ public:
 
 class Territory { //declaration of the territory class
 public:
+	static bool territoriesAreAdjacent(Territory*, Territory*);
 	string name;
 	Continent* continent; //name of the territory and continent
 	Player* owner; // pointer to the owner of this territory

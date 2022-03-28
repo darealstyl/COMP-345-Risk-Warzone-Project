@@ -150,6 +150,14 @@ bool Territory::operator<(const Territory& t) const {
     return nbOfArmy < t.nbOfArmy;
 }
 
+bool Territory::territoriesAreAdjacent(Territory* t1, Territory* t2) {
+    for (Territory* neighbor : t1->adjacentTerritories) {
+        if (t2 == neighbor) return true;
+    }
+
+    return false;
+}
+
 // Territory implementation
 Territory::Territory(const string& name, Continent* continent) {
     this->name = name;

@@ -151,6 +151,7 @@ Deploy::Deploy(Player* issuingPlayer, int numOfArmies, Territory* location) : Or
 
 void Deploy::validate() // Will validate the circumstances of the object before executing
 {
+
 	cout << "Validating Deploy Order..." << endl;
 	if (issuingPlayer->territories.count(this->location) > 0)
 	{
@@ -215,7 +216,9 @@ Advance::Advance(Player* issuingPlayer, int numOfArmies, Territory* to, Territor
 void Advance::validate() // Will validate the circumstances of the object before executing
 {	
 	cout << "Validating Advance Order..." << endl;
-	if (issuingPlayer == from->owner && Territory::territoriesAreAdjacent(from, to) && from->nbOfArmy >= numOfArmies) {
+	// TODO FIX NB OF ARMIES SENT
+	if (issuingPlayer == from->owner && Territory::territoriesAreAdjacent(from, to)) {
+		numOfArmies = from->nbOfArmy;
 		Player* targetPlayer = to->owner;
 		if (issuingPlayer != targetPlayer) {
 			if (!issuingPlayer->isFriendlyPlayer(targetPlayer)) {

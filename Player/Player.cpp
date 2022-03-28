@@ -305,7 +305,7 @@ void Player::issueOrder(Deck* deck) {
 		if (number == 0) {
 			number = 1;
 		}
-		int soldierAmount = (rand() % number) + 1;
+		int soldierAmount = (rand() % number/4) + 1;
 		Advance* advance = new Advance(this, soldierAmount, from, to);
 		orderList->add(advance);
 		break;

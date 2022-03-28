@@ -29,7 +29,7 @@ Command& Command::operator=(const Command& cmd)
 
 std::ostream& operator<<(std::ostream& out, const Command& cmd)
 {
-	out << "Command: " << cmd.command << " Effect: " << cmd.effect << endl;
+	out << "Command: " << cmd.command << ", Effect: " << cmd.effect << endl;
 	return out;
 }
 
@@ -206,7 +206,7 @@ std::ostream& operator<<(std::ostream& out, const CommandProcessor& cmdProc)
 {
 	out << "CommandProcessor Commands: " << endl;
 	for (Command* cmd : cmdProc.commands)
-		out << cmd;
+		out << *cmd;
 	return out;
 }
 

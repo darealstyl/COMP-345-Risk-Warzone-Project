@@ -485,6 +485,7 @@ void GameEngine::executeOrdersPhase() {
         player->clearFriendlyPlayers();
 
         if (player->conquered) {
+            cout << endl << "Player " << player->name << " conquered a territory. Giving one card..." << endl;
             player->conquered = false;
             makePlayerDrawCard(player);
         }

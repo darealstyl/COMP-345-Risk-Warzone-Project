@@ -15,7 +15,7 @@ int main()
 	string* s1 = new string("america");
 	Player* p1 = new Player("ced");
 	Player* p2 = new Player("jorge");
-	Continent* c1 = new Continent(*s1);
+	Continent* c1 = new Continent(*s1, 0);
 	Territory* t1 = new Territory("georgia", c1);
 	Territory* t2 = new Territory("oklaoma", c1);
 	Territory* t3 = new Territory("butan", c1);
@@ -80,9 +80,9 @@ int main()
 	//m1->territories.push_back(t12);
 	//m1->territories.push_back(t12);
 	//m1->territories.push_back(t13);
-	g1->theMap = m1;
+	g1->map = m1;
 
-	Card* card = new Card(Card::CardType::Diplomacy);
+	Card* card = new Card(Card::CardType::DIPLOMACY);
 
 	p1->hand->addCard(card);
 
@@ -112,5 +112,5 @@ int main()
 		
 	delete g1;
 	g1 = nullptr;
-	
+	cin.get();
 }

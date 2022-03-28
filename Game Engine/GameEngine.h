@@ -41,7 +41,10 @@ public:
     void addPlayer(string);
     int getPlayerCount();
 
-   
+    void reinforcementPhase();
+    void issueOrdersPhase();
+    void executeOrdersPhase();
+
     GameState getState();
 
     std::string stateToString();
@@ -55,9 +58,8 @@ private:
     Deck* deck;
     bool running;
 
-    void reinforcementPhase();
-    void issueOrdersPhase();
-    void executeOrdersPhase();
+    
+    
     void initializeCommandProcessor();
     void getandexecutecommand();
     void execute(Command*);

@@ -212,32 +212,25 @@ Advance::Advance(Player* issuingPlayer, int numOfArmies, Territory* to, Territor
 }
 
 void Advance::validate() // Will validate the circumstances of the object before executing
-{
-	cout << "Validating Advance Order..." << endl;
-	if (issuingPlayer->territories.count(this->from) > 0)
-	{
-		if (issuingPlayer->territories.count(this->to) > 0)
-		{
-			for (Territory* var : to->adjacentTerritories)
-			{
-				if (var == from)
-				{
-					*validity = true;
-				}
+{	
+	if (issuingPlayer == from->owner && Territory::territoriesAreAdjacent(from, to) && from->nbOfArmy >= numOfArmies) {
+		Player* targetPlayer = to->owner;
+		if (issuingPlayer != targetPlayer) {
+			if (!issuingPlayer->isFriendlyPlayer(targetPlayer)) {
+				attacking = true;
+				*validity = true;
+			}
+			else {
+				cout << issuingPlayer << " tried to attack friendly player " << targetPlayer << ". Invalid order" << endl;
 			}
 		}
-		else if (issuingPlayer->territories.count(this->to) <= 0)
-		{
-			
-			for (Territory* var : to->adjacentTerritories)
-			{
-				if (var == from)
-				{
-					*validity = true;
-					attacking = true;
-				}
-			}
+		else {
+			*validity = true;
 		}
+		
+	}
+	else {
+		cout << "Invalid advance order." << endl;
 	}
 }
 // the execute function will check validation before implementing the functionality of the order
@@ -293,7 +286,12 @@ void Advance::execute()
 					cout << issuingPlayer->name + " now has " + to_string(to->nbOfArmy) + " armies on the territory." <<endl;
 				}
 			}
-		}	
+		}
+		else {
+			from->nbOfArmy -= numOfArmies;
+			to->nbOfArmy += numOfArmies;
+			cout << "Moved " << numOfArmies << " soldiers from " << *from << " to " << *to << endl;
+		}
 	}
 	else
 		cout << "Advance Order not valid." << endl;
@@ -559,7 +557,7 @@ void Negotiate::validate() // Will validate the circumstances of the object befo
 	cout << "Validating Negotiate Order..." << endl;
 	if (issuingPlayer != targetPlayer) {
 		*validity = true;
-		cout << "Negociate Order validated" << endl;
+		cout << "Negotiate Order validated" << endl;
 	}
 	else {
 		*validity = false;
@@ -571,23 +569,11 @@ void Negotiate::execute()
 {
 	Negotiate::validate();
 	if (getValidity()) {
-		cout << "Executing Negotiate..." << endl;
-		//go through the toAttack() of the ennemy, if the issuing player has a territory in it, remove the territory
-		  //auto it = targetPlayer->toAttack().begin();
-		/*for ( auto it = targetPlayer->toAttack().begin();it != targetPlayer->toAttack().end(); it++) {
-			if ((*it)->owner == issuingPlayer) {
-				cout << issuingPlayer->name << " cannot attack " << (*it)->name << endl;
-				targetPlayer->toAttack().erase(it--);
-			}
-		}*/
-		
-		for (int i = 0; i < targetPlayer->toAttack().size(); i++) {
-			if (targetPlayer->toAttack().at(i)->owner == issuingPlayer) {
-				cout << issuingPlayer->name << " cannot attack " << targetPlayer->toAttack().at(i)->name << endl;
-				cout << targetPlayer->toAttack().size();
-				targetPlayer->toAttack().erase(targetPlayer->toAttack().begin());
-			}
-		}
+		issuingPlayer->addFriendlyPlayer(targetPlayer);
+		targetPlayer->addFriendlyPlayer(issuingPlayer);
+
+		cout << *issuingPlayer << " cannot attack " << *targetPlayer << " until the end of the round." << endl;
+			
 
 		notify(this);
 	}

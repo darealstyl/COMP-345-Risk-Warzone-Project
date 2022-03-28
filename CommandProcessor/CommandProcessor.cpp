@@ -209,10 +209,18 @@ FileCommandProcessorAdapter::FileCommandProcessorAdapter(GameEngine* game, strin
 	inputstream.open("CommandFiles/" + filename);
 
 }
-
+// If it's the end of the stream, quit the game.
 string FileCommandProcessorAdapter::readCommand() {
+	if (inputstream.eof()) {
+		this->game->running = false;
+		return "";
+	}
 	string command;
 	getline(inputstream, command);
+	if (command == "") {
+		this->game->running = false;
+		return "";
+	}
 	return command;
 }
 

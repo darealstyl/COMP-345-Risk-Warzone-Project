@@ -39,7 +39,7 @@ public:
 
 	CommandProcessor();
 	CommandProcessor(GameEngine*);
-	~CommandProcessor();
+	virtual ~CommandProcessor();
 
 	string stringToLog() override;
 

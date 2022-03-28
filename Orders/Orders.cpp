@@ -223,7 +223,7 @@ void Advance::validate() // Will validate the circumstances of the object before
 				*validity = true;
 			}
 			else {
-				cout << issuingPlayer << " tried to attack friendly player " << targetPlayer << ". Invalid order" << endl;
+				cout << issuingPlayer->name << " tried to attack friendly player " << targetPlayer->name << ". Invalid order" << endl;
 			}
 		}
 		else {

@@ -28,7 +28,11 @@ GameEngine& GameEngine::operator= (const GameEngine& game1){
 }
 
 GameEngine::~GameEngine(){
+    delete commandprocessor;
     delete deck;
+    delete map;
+
+    
 }
 
 ostream & operator << (ostream &out, const GameEngine &g){
@@ -139,13 +143,18 @@ void GameEngine::execute(Command* command) {
     }
 }
 
-void GameEngine::resetgameengine() {
-    map = nullptr;
-    
+void GameEngine::clearActivePlayers() {
     for (Player* player : activePlayers) {
         delete player;
     }
     activePlayers.clear();
+}
+
+void GameEngine::resetgameengine() {
+    delete map;
+    map = nullptr;
+    
+    clearActivePlayers();
 
     delete deck;
     deck = new Deck();
@@ -422,6 +431,7 @@ void GameEngine::reinforcementPhase() {
 void GameEngine::issueOrdersPhase() {
     for (Player* player : activePlayers) {
         player->endOfOrder = false;
+        player->advanceordersnb = 0;
     }
     // Players issue orders and place them in their order list through Player::issueOrder()
     // This method is called round robin by game engine

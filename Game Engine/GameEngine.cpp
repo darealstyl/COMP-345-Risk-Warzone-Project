@@ -59,6 +59,7 @@ void GameEngine::initializeCommandProcessor() {
         }
 
         if (split[0] == "-console" && split.size() == 1) {
+            cout << "Chose to accept command from the console. Instanciated command processor to a new CommandProcessor()." << endl;
             this->commandprocessor = new CommandProcessor(this);
         }
         else if (split[0] == "-file" && split.size() == 2) {
@@ -69,12 +70,15 @@ void GameEngine::initializeCommandProcessor() {
                 fs::path map(file.path());
 
                 if (map.filename() == filename) {
+                    cout << "Chose to accept command from the saved file " << filename << ". Instanciated command processor to a new FileCommandProcessorAdapter()." << endl;
+                    
                     this->commandprocessor = new FileCommandProcessorAdapter(this, filename);
                     break;
                 }
             }
         }
     }
+    cout << commandprocessor << endl;
 
 }
 

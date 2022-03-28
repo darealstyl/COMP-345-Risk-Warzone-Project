@@ -59,9 +59,6 @@ private:
     Deck* deck;
     
     void resetgameengine();
-    void reinforcementPhase();
-    void issueOrdersPhase();
-    void executeOrdersPhase();
     void initializeCommandProcessor();
     void getandexecutecommand();
     void execute(Command*);

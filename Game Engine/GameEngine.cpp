@@ -16,6 +16,7 @@ GameEngine::GameEngine() {
     this->commandprocessor = nullptr;
     this->running = true;
     this->deck = new Deck();
+    FORCEWIN = false;
 }
 
 GameEngine::GameEngine(const GameEngine &game1){
@@ -53,8 +54,11 @@ void GameEngine::initializeCommandProcessor() {
         Command* command = startprocessor.getCommand();
         vector<string> split;
         warzoneutils::splitInput(command->command, split);
+        if (split.size() == 0) {
+            continue;
+        }
 
-        if (split[0] == "-console") {
+        if (split[0] == "-console" && split.size() == 1) {
             this->commandprocessor = new CommandProcessor(this);
         }
         else if (split[0] == "-file" && split.size() == 2) {
@@ -461,8 +465,10 @@ void GameEngine::executeOrdersPhase() {
         orderindex++;
     }
 
-    // Cleaning up orders and drawing cards for players that conquered at least one territory
+    // Cleaning up orders and drawing cards for players that conquered at least one territory. Also clearing the friendly players through negotiation.
     for (Player* player : activePlayers) {
+
+        player->clearFriendlyPlayers();
 
         if (player->conquered) {
             player->conquered = false;

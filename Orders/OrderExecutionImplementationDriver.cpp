@@ -47,10 +47,11 @@ int main() {
 	Blockade* block = new Blockade(p2, canada);
 	Negotiate* nego = new Negotiate(p2, p1);
 	
-	//dep->execute();
-	//adv->execute();	
-	//air->execute();
-	//bomb->execute();
-	//block->execute();
+	dep->execute();
+	adv->execute();	
+	air->execute();
+	bomb->execute();
+	block->execute();
 	nego->execute();
+	cin.get();
 }

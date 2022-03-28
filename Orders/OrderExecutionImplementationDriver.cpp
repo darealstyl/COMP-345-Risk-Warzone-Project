@@ -2,11 +2,12 @@
 #include <string>
 #include "Orders.hpp"
 #include "../Map/Map.h"
+#include "../Game Engine/GameEngine.h"
 
 using namespace std;
 
 int main() {
-	cout << "--Constructors--" << endl;
+
 	string* na = new string("North America");
 	string* ca = new string("Canada");
 	string* us = new string("United States");
@@ -41,9 +42,9 @@ int main() {
 	mexico->nbOfArmy = 3;
 	guatemala->nbOfArmy = 1;
 
-
-	OrderList* o = new OrderList();
-
+	GameEngine* engine = new GameEngine();
+	engine->addPlayer(p1);
+	engine->addPlayer(p2);
 
 	Deploy* dep = new Deploy(p1, 1, unitedStates);
 	Advance* adv = new Advance(p1, 7, mexico, unitedStates);
@@ -51,33 +52,20 @@ int main() {
 	Airlift* air = new Airlift(p2,8,mexico , canada);
 	Blockade* block = new Blockade(p2, canada);
 	Negotiate* nego = new Negotiate(p2, p1);
-	
-	cout << endl << "Attempting to execute a Deploy order..." << endl;
-	dep->execute();
-
-	cout << endl << "Attempting to execute an Advance order..." << endl;
-	cout << "Current Owner of Mexico: " << mexico->owner->name << endl;
-	adv->execute();
-	cout << "Owner of Mexico After Advance Order: " << mexico->owner->name << endl;
-
-	cout << endl << "Attempting to execute an Airlift order..." << endl;
-	air->execute();
-
-	cout << endl << "Attempting to execute a Bomb order..." << endl;
-	bomb->execute();
-
-	cout << endl << "Attempting to execute a Blockade order..." << endl;
-	cout << "Current Owner of Canada: " << canada->owner->name << endl;
-	block->execute();
-	cout << "Owner of Canada After Blockade Order: " << canada->owner->name << endl;
-
-
-	cout << endl << "Attempting to execute a Negotiate order..." << endl;
-	nego->execute();
-
-	cout << endl << "Attempting to execute an Advance order on negotiated players..." << endl;
 	Advance* advFail = new Advance(p2, 1, mexico, guatemala);
-	advFail->execute();
+
+	p1->orderList->add(dep);
+	p1->orderList->add(adv);
+	p1->orderList->add(bomb);
+	p2->orderList->add(air);
+	p2->orderList->add(block);
+	p2->orderList->add(nego);
+	p2->orderList->add(advFail);
+
+	engine->executeOrdersPhase();
+
+	cout << "Player " << p1->name << " Card Count: " << p1->hand->cards.size() << endl;
+	cout << "Player " << p2->name << " Card Count: " << p2->hand->cards.size() << endl;
 
 	cin.get();
 }

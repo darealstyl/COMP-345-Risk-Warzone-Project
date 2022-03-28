@@ -24,6 +24,15 @@ Player::Player(string n)
 	endOfOrder = false;
 	chosenCard = nullptr;
 	advanceordersnb = 0;
+	// players are Neutral by default
+	strat = new NeutralPlayerStrategy();
+	strat->setPlayerLink(this);
+}
+
+Player::Player(string n, PlayerStrategy* ps) : Player(n) {
+	// link strategy to the player and save strategy
+	ps->setPlayerLink(this);
+	strat = ps;
 }
 
 Player::Player(const Player& player)
@@ -45,7 +54,8 @@ Player& Player::operator=(const Player& player){
 }
 
 std::ostream& operator<<(std::ostream& out, const Player& player) {
-	return out << player.name;
+	out << player.name << " - " << *player.strat;
+	return out;
 }
 
 Player::~Player()
@@ -56,6 +66,7 @@ Player::~Player()
 	delete hand;
 	hand = NULL;
 
+	delete strat;
 
 }
 

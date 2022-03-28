@@ -4,6 +4,7 @@
 #include "../Map/Map.h"
 #include "../Cards/Cards.h"
 #include "../Orders/Orders.hpp"
+#include "../PlayerStrategies/PlayerStrategies.h"
 
 using namespace std;
 
@@ -11,6 +12,7 @@ using namespace std;
 class Territory;
 class OrderList;
 class Order;
+class PlayerStrategy;
 
 class Player {
 public:
@@ -19,6 +21,7 @@ public:
 	Hand* hand;
 	OrderList* orderList;
 	Card* chosenCard;
+	PlayerStrategy* strat;
 	int reinforcements;
 	bool endOfOrder;
 	bool conquered;
@@ -32,6 +35,7 @@ public:
 		DEPLOY = 0, ADVANCE, BOMB, BLOCKADE, AIRLIFT, NEGOTIATE
 	};
 	Player(string);
+	Player(string, PlayerStrategy*);
 	Player(const Player&);
 	~Player();
 

@@ -161,7 +161,7 @@ void Deploy::validate() // Will validate the circumstances of the object before 
 // the execute function will check validation before implementing the functionality of the order
 void Deploy::execute()
 {
-	Deploy::validate();
+	this->validate();
 	if (getValidity())
 	{
 		cout << "Executing Deploy..." << endl;
@@ -238,7 +238,7 @@ void Advance::validate() // Will validate the circumstances of the object before
 // the execute function will check validation before implementing the functionality of the order
 void Advance::execute()
 {
-	Advance::validate();
+	this->validate();
 	if (getValidity())
 	{
 		cout << "Executing Advance..." << endl;
@@ -381,7 +381,7 @@ void Bomb::validate() // Will validate the circumstances of the object before ex
 // the execute function will check validation before implementing the functionality of the order
 void Bomb::execute()
 {
-	Bomb::validate();
+	this->validate();
 	if (getValidity()) {
 		cout << "Executing Bomb..." << endl;
 		location->nbOfArmy /= 2; //half the army is wiped
@@ -419,7 +419,7 @@ void Blockade::validate() // Will validate the circumstances of the object befor
 // the execute function will check validation before implementing the functionality of the order
 void Blockade::execute()
 {
-	Blockade::validate();
+	this->validate();
 	if (getValidity()) {
 		cout << "Executing Blockade..." << endl;
 		location->nbOfArmy *= 2; // double number of players
@@ -484,7 +484,7 @@ void Airlift::validate() // Will validate the circumstances of the object before
 // the execute function will check validation before implementing the functionality of the order
 void Airlift::execute()
 {
-	Airlift::validate();
+	this->validate();
 	if (getValidity()) {
 		cout << "Executing Airlift..." << endl;
 		
@@ -569,7 +569,7 @@ void Negotiate::validate() // Will validate the circumstances of the object befo
 // the execute function will check validation before implementing the functionality of the order
 void Negotiate::execute()
 {
-	Negotiate::validate();
+	this->validate();
 	if (getValidity()) {
 		issuingPlayer->addFriendlyPlayer(targetPlayer);
 		targetPlayer->addFriendlyPlayer(issuingPlayer);

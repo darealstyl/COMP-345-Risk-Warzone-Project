@@ -48,11 +48,12 @@ public:
 
 	CommandProcessor& operator=(const CommandProcessor&);
 	friend std::ostream& operator<<(std::ostream&, const CommandProcessor&);
-
+protected:
+	GameEngine* game;
 private:
 	static const unordered_map<string, CommandType> commandmap;
 	bool commandexists(string);
-	GameEngine* game;
+	
 
 };
 class FileCommandProcessorAdapter : public CommandProcessor {

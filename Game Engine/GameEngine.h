@@ -22,7 +22,8 @@ public:
     enum class GameState { //all the different states
         START, MAP_LOADED, MAP_VALIDATED, PLAYERS_ADDED, ASSIGN_REINFORCEMENT, ISSUE_ORDERS, EXECUTE_ORDERS, WIN
     };
-
+    bool FORCEWIN;
+    bool running;
     Map* map;
 
     GameEngine(); //default constructor
@@ -53,8 +54,8 @@ private:
     GameState state;
     vector<Player*> activePlayers;
     Deck* deck;
-    bool running;
-
+    
+    void resetgameengine();
     void reinforcementPhase();
     void issueOrdersPhase();
     void executeOrdersPhase();

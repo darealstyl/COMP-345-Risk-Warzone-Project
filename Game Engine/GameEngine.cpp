@@ -119,14 +119,28 @@ void GameEngine::execute(Command* command) {
         break;
     case CT::REPLAY:
         transition(GS::START);
+        resetgameengine();
         cout << "Restarting the game" << endl;
         command->saveEffect("Successfully restarted a new game");
+        break;
     case CT::QUIT:
         running = false;
         cout << "Quitting the game" << endl;
         command->saveEffect("Successfully ended the application");
         break;
     }
+}
+
+void GameEngine::resetgameengine() {
+    map = nullptr;
+    
+    for (Player* player : activePlayers) {
+        delete player;
+    }
+    activePlayers.clear();
+
+    delete deck;
+    deck = new Deck();
 }
 
 void GameEngine::getandexecutecommand() {
@@ -145,15 +159,23 @@ void GameEngine::gamestart() {
 }
 
 void GameEngine::distributeterritories() {
-    vector<Territory*> territories(map->territories);
-    while (!territories.empty()) {
-        for (Player* player : activePlayers) {
-            if (territories.empty()) {
-                break;
-            }
-            else {
-                player->addTerritory(territories.back());
-                territories.pop_back();
+    if (FORCEWIN) {
+        Player* winner = activePlayers.front();
+        for (Territory* t : map->territories) {
+            winner->addTerritory(t);
+        }
+    }
+    else {
+        vector<Territory*> territories(map->territories);
+        while (!territories.empty()) {
+            for (Player* player : activePlayers) {
+                if (territories.empty()) {
+                    break;
+                }
+                else {
+                    player->addTerritory(territories.back());
+                    territories.pop_back();
+                }
             }
         }
     }
@@ -205,7 +227,7 @@ void GameEngine::checkforwin() {
     }
 
     // The last player has all the territories and is the winner.
-    cout << lastplayer << " has won!" << endl;
+    cout << *lastplayer << " has won!" << endl;
 
     transition(GS::WIN);
 }
@@ -216,8 +238,9 @@ void GameEngine::removelosers() {
     vector<Player*> remainingplayers;
     for (Player* player : activePlayers) { //loop over all remaining player and check if their nb of territories is 0
         if (player->getNbOfTerritories() == 0) {
-            cout << player << " is out of the game. LOSER!";
-            cout << R"( ____________
+            cout << *player << " is out of the game." << endl;
+            cout << R"( 
+                           ____________
                           |____________|_
                            ||--------|| | _________
                            ||- _     || |(HA ha ha!)
@@ -239,7 +262,7 @@ void GameEngine::removelosers() {
                         /________________\----------\
                         |   GUILLOTINE   |-----------|
                         |  OF CASTLE DE SADE         |
-                        |____________________________|)";
+                        |____________________________|)" << endl;
         }
         else {
             remainingplayers.push_back(player);

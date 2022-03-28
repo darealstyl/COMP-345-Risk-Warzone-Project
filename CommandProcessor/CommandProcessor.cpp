@@ -57,9 +57,11 @@ void CommandProcessor::saveCommand(Command* command) {
 	notify(this);
 }
 
+// Command exists. Checks in the command map if the input string matches a valid command.
 bool CommandProcessor::commandexists(string str) {
 	return commandmap.count(str) == 1;
 }
+// Returns a command type to the corresponding input. Assumes the command exists
 CT CommandProcessor::getCommandType(string command) {
 	vector<string> split;
 	splitInput(command, split);
@@ -72,9 +74,11 @@ CT CommandProcessor::getCommandType(string command) {
 
 bool CommandProcessor::validate(Command* command) {
 
+	// Split up the input command
 	vector<string> split;
 	splitInput(command->command, split);
 
+	// If it's "", the command is invalid
 	if (split.size() == 0) {
 		return false;
 	}
@@ -107,6 +111,8 @@ bool CommandProcessor::validate(Command* command) {
 
 			string path = "MapFiles/";
 			string filename = split[1];
+
+			// Checks if the input filename exists in the correct directory, if it does, then it is valid.
 			for (const auto& file : fs::directory_iterator(path)) {
 				fs::path map(file.path());
 
@@ -184,6 +190,7 @@ CommandProcessor::CommandProcessor(GameEngine* game)
 }
 
 CommandProcessor::~CommandProcessor() {
+	cout << "Deleting saved commands of CommandProcessor" << endl;
 	for (Command* command : commands)
 		delete command;
 }
@@ -209,7 +216,7 @@ FileCommandProcessorAdapter::FileCommandProcessorAdapter(GameEngine* game, strin
 	inputstream.open("CommandFiles/" + filename);
 
 }
-// If it's the end of the stream, quit the game.
+// If it's the end of the stream, forcefully stop the engine.
 string FileCommandProcessorAdapter::readCommand() {
 	if (inputstream.eof()) {
 		this->game->running = false;
@@ -230,6 +237,8 @@ std::string CommandProcessor::stringToLog() {
 
 
 FileCommandProcessorAdapter::~FileCommandProcessorAdapter() {
+
+	cout << "Closing the file input stream for FileCommandProcessorAdapter." << endl;
 	inputstream.close();
 }
 

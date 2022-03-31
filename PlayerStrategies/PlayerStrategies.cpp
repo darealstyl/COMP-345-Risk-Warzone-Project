@@ -22,17 +22,7 @@ void PlayerStrategy::setPlayerLink(Player* player) {
 	p = player;
 }
 
-vector<Territory*> PlayerStrategy::getAdjacentTerritories() {
-	vector<Territory*> toattack;
-	for (Territory* territory : p->territories) {
-		for (Territory* adjacentterritory : territory->adjacentTerritories) {
-			if (adjacentterritory->owner != p) {
-				toattack.push_back(adjacentterritory);
-			}
-		}
-	}
-	return toattack;
-}
+
 
 #pragma endregion
 
@@ -196,11 +186,18 @@ void CheaterPlayerStrategy::issueOrder()
 	// (Computer player)
 	// Automatically conquers all territories that are adjacent to its own territories 
 	// (once per turn)
+	if (p->endOfOrder) return;
+
+	vector<Territory*> toattack = toAttack();
+	for (Territory* adjacentterritory : toattack) {
+		p->addTerritory(adjacentterritory);
+	}
+	p->endOfOrder = true;
 }
 
 vector<Territory*> CheaterPlayerStrategy::toAttack()
 {
-	return getAdjacentTerritories();
+	return p->getAdjacentTerritories();
 }
 
 vector<Territory*> CheaterPlayerStrategy::toDefend()

@@ -30,6 +30,7 @@ public:
 
 	vector<Territory*> toAttack();
 	vector<Territory*> toDefend();
+	vector<Territory*> getAdjacentTerritories();
 
 	enum class OrderType {
 		DEPLOY = 0, ADVANCE, BOMB, BLOCKADE, AIRLIFT, NEGOTIATE

@@ -29,7 +29,7 @@ protected:
 	PlayerStrategy();
 	PlayerStrategy(const PlayerStrategy&);
 
-	vector<Territory*> getAdjacentTerritories();
+	;
 
 };
 

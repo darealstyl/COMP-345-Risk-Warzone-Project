@@ -70,6 +70,18 @@ Player::~Player()
 
 }
 
+vector<Territory*> Player::getAdjacentTerritories() {
+	vector<Territory*> toattack;
+	for (Territory* territory : territories) {
+		for (Territory* adjacentterritory : territory->adjacentTerritories) {
+			if (adjacentterritory->owner != this) {
+				toattack.push_back(adjacentterritory);
+			}
+		}
+	}
+	return toattack;
+}
+
 void Player::addTerritory(Territory* territory) {
 	
 	territory->owner->territories.erase(territory);

@@ -65,8 +65,8 @@ public:
 	virtual ~Deploy();
 	Deploy(const Deploy& d);
 	Deploy& operator=(const Deploy& d);
-	void validate();
-	void execute();
+	void validate() override;
+	void execute() override;
 
 	std::string stringToLog() override;
 };
@@ -82,8 +82,8 @@ public:
 	virtual ~Advance();
 	Advance(const Advance& a);
 	Advance& operator=(const Advance& a);
-	void validate();
-	void execute();
+	void validate() override;
+	void execute() override;
 
 	std::string stringToLog() override;
 };
@@ -96,8 +96,8 @@ public:
 	virtual ~Bomb();
 	Bomb(const Bomb& b);
 	Bomb& operator=(const Bomb b);
-	void validate();
-	void execute();
+	void validate() override;
+	void execute() override;
 
 	std::string stringToLog() override;
 };
@@ -110,8 +110,8 @@ public:
 	virtual ~Blockade();
 	Blockade(const Blockade& b);
 	Blockade& operator=(const Blockade& b);
-	void validate();
-	void execute();
+	void validate() override;
+	void execute() override;
 
 	std::string stringToLog() override;
 };
@@ -126,8 +126,8 @@ public:
 	virtual ~Airlift();
 	Airlift(const Airlift& a);
 	Airlift& operator=(const Airlift& a);
-	void validate();
-	void execute();
+	void validate() override;
+	void execute() override;
 
 	std::string stringToLog() override;
 };
@@ -140,8 +140,8 @@ public:
 	virtual ~Negotiate();
 	Negotiate(const Negotiate& n);
 	Negotiate& operator=(const Negotiate& n);
-	void validate();
-	void execute();
+	void validate() override;
+	void execute() override;
 
 	std::string stringToLog() override;
 };

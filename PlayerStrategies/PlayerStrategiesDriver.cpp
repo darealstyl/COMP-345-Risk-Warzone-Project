@@ -28,10 +28,12 @@ int main() {
 	cout << *p2 << endl;
 	cout << *p3 << endl;
 	cout << *p4 << endl;
+	cout << *p5 << endl;
 
 	delete p1;
 	delete p2;
 	delete p3;
 	delete p4;
+	delete p5;
 	cin.get();
 }

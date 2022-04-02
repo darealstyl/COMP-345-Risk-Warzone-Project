@@ -134,8 +134,9 @@ Continent::Continent(string& name, int armyValue) {
 
 // Shallow copy because otherwise it would require copying the entire map? Seems quite useless considering the scope of this project.
 Continent::Continent(const Continent& continent) {
-    this->name = name;
-    this->territories = territories;
+    this->name = continent.name;
+    this->territories = continent.territories;
+    this->armyValue = continent.armyValue;
 }
 
 // No need to do anything in here, the destructor of vector is called by default and frees the pointers but not what they're pointing to which will be handled

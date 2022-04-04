@@ -1,9 +1,12 @@
 #include "CommandProcessor.h"
 #include "../Utills/warzoneutils.h"
+#include "../PlayerStrategies/PlayerStrategies.h"
 #include <filesystem>
+#include <unordered_set>
 
 namespace fs = filesystem;
 using warzoneutils::splitInput;
+using std::unordered_set;
 typedef CommandProcessor::CommandType CT;
 typedef GameEngine::GameState GS;
 // Command
@@ -34,8 +37,16 @@ std::ostream& operator<<(std::ostream& out, const Command& cmd)
 }
 
 // Command Processor
-const unordered_map<string, CT> CommandProcessor::commandmap = { {"loadmap" , CT::LOADMAP }, {"validatemap", CT::VALIDATEMAP}, {"addplayer", CT::ADDPLAYER}, {"gamestart", CT::GAMESTART},
-	{"replay", CT::REPLAY}, {"quit", CT::QUIT} };
+
+
+const unordered_map<string, CT> CommandProcessor::commandmap = { 
+	{"loadmap" , CT::LOADMAP }, 
+	{"validatemap", CT::VALIDATEMAP}, 
+	{"addplayer", CT::ADDPLAYER}, 
+	{"gamestart", CT::GAMESTART},
+	{"replay", CT::REPLAY}, 
+	{"quit", CT::QUIT}, 
+	{"tournament", CT::TOURNAMENT }};
 
 string CommandProcessor::readCommand() {
 	string command;
@@ -72,6 +83,138 @@ CT CommandProcessor::getCommandType(string command) {
 	return pair->second;
 }
 
+bool CommandProcessor::isValidTournamentCommand(const vector<string>& split) {
+	int size = split.size();
+	
+	// Check if there are any arguments to the command.
+	if (split.size() < 2) {
+		cout << "Missing arguments" << endl;
+		return false;
+	}
+
+	// Check if the first flag is correct.
+	if (split[1] != "-M") {
+		cout << "Missing the list of map files flag (-M)." << endl;
+		return false;
+	}
+
+	// Load all of the possible maps into a set to quickly check if the ones in the command exist.
+	unordered_set<string> mapfiles;
+	string mapdirectory =  warzoneutils::mapdirectory;
+	for (const auto& file : fs::directory_iterator(mapdirectory)) {
+		fs::path map(file.path());
+
+		mapfiles.insert(map.filename().string());
+	}
+
+	int index = 2;
+
+	int mapcount = 0;
+
+	// Verify that all of the map files exist.
+	while (index < size && split[index] != "-P") {
+
+		// If we're about to check for a 6th map, exit as that's too many.
+		if (mapcount == 5) {
+			cout << "Too many map files." << endl;
+			return false;
+		}
+
+		string mapfileinput = split[index];
+
+		// Check that the current map file exists
+		if (mapfiles.find(mapfileinput) == mapfiles.end()) {
+			cout << mapfileinput << " does not exist in the " << mapdirectory << " directory." << endl;
+			return false;
+		}
+		mapcount++;
+		index++;
+	}
+
+	if (mapcount == 0) {
+		cout << "Missing map files." << endl;
+		return false;
+	}
+
+	if (index == size) {
+		cout << "Missing player strategies." << endl;
+		return false;
+	}
+
+	// Skip over the -P
+	index++;
+
+	const unordered_set<string>& strategystrings = PlayerStrategy::strategystrings;
+
+	int playercount = 0;
+	// Verify that all of the player strategies are valid.
+	while (index < size && split[index] != "-G") {
+
+		if (playercount == 4) {
+			cout << "Too many player strategies." << endl;
+			return false;
+		}
+
+		string playstring = split[index];
+
+		if (strategystrings.find(playstring) == strategystrings.end()) {
+			cout << playstring << " is not a valid player strategy." << endl;
+			return false;
+		}
+		playercount++;
+		index++;
+	}
+
+	if (playercount == 0) {
+		cout << "Missing player strategies." << endl;
+		return false;
+	}
+
+	if (index == size || split[index] != "-G") {
+		cout << "Missing the flag for the number of games to be played on each map." << endl;
+		return false;
+	}
+
+	// Skip over the -G
+	index++;
+
+	if (index == size) {
+		cout << "Missing the number of games to be played on each map." << endl;
+		return false;
+	}
+
+	int gamenumber = stoi(split[index]);
+
+	if (gamenumber < 1 || gamenumber > 5) {
+		cout << "You can only choose between 1 to 5 games to be played on each map." << endl;
+		return false;
+	}
+
+	index++;
+
+	if (index == size || split[index] != "-D") {
+		cout << "Missing the flag for the number of turns to be played on each map." << endl;
+		return false;
+	}
+
+	// Skip over the -D
+	index++;
+
+	if (index == size) {
+		cout << "Missing the number of turns to be played on each map." << endl;
+		return false;
+	}
+
+	int turnnumber = stoi(split[index]);
+
+	if (turnnumber < 10 || turnnumber > 50) {
+		cout << "You can only choose between 10 to 50 turns to be played on each map." << endl;
+		return false;
+	}
+	cout << "Valid tournament command!" << endl;
+	return true;
+}
+
 bool CommandProcessor::validate(Command* command) {
 
 	// Split up the input command
@@ -83,10 +226,7 @@ bool CommandProcessor::validate(Command* command) {
 		return false;
 	}
 
-	if (split.size() > 2) {
-		cout << "This command contains too many arguments, please try again." << endl;
-		return false;
-	}
+	
 
 	string maincommand = split[0];
 
@@ -101,6 +241,12 @@ bool CommandProcessor::validate(Command* command) {
 	bool validity = false;
 
 	switch (type) {
+	case CT::TOURNAMENT: {
+		if (gamestate == GS::START) {
+			validity = isValidTournamentCommand(split);
+		}
+		break;
+	}
 	case CT::LOADMAP: {
 		if (gamestate == GS::START || gamestate == GS::MAP_LOADED) {
 
@@ -109,11 +255,11 @@ bool CommandProcessor::validate(Command* command) {
 				break;
 			}
 
-			string path = "MapFiles/";
+			string mapdirectory = warzoneutils::mapdirectory;
 			string filename = split[1];
 
 			// Checks if the input filename exists in the correct directory, if it does, then it is valid.
-			for (const auto& file : fs::directory_iterator(path)) {
+			for (const auto& file : fs::directory_iterator(mapdirectory)) {
 				fs::path map(file.path());
 
 				if (map.filename() == filename) {
@@ -123,7 +269,7 @@ bool CommandProcessor::validate(Command* command) {
 			}
 
 			if (!validity) {
-				cout << "No such map was found in the directory \"" << path << "\"." << endl;
+				cout << "No such map was found in the directory \"" << mapdirectory << "\"." << endl;
 			}
 		}
 		break;

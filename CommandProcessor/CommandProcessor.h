@@ -32,7 +32,8 @@ public:
 		ADDPLAYER,
 		GAMESTART,
 		REPLAY,
-		QUIT
+		QUIT,
+		TOURNAMENT
 	};
 	list<Command*> commands;
 	Command* getCommand();
@@ -42,7 +43,7 @@ public:
 	virtual ~CommandProcessor();
 
 	string stringToLog() override;
-
+	
 	bool validate(Command*);
 	CommandType getCommandType(string);
 
@@ -53,6 +54,8 @@ protected:
 private:
 	static const unordered_map<string, CommandType> commandmap;
 	bool commandexists(string);
+	bool isValidTournamentCommand(const vector<string>&);
+	static const string mapdirectory;
 	
 
 };

@@ -3,15 +3,19 @@
 #include "../Player/Player.h"
 
 #include <vector>
+#include <unordered_set>
+#include <string>
 
 using std::vector;
+using std::string;
+using std::unordered_set;
 
 class Territory;
 class Player;
 
 class PlayerStrategy {
 public:	
-	
+	static const unordered_set<std::string> strategystrings;
 	virtual ~PlayerStrategy();
 	
 	PlayerStrategy& operator=(const PlayerStrategy&);
@@ -28,9 +32,6 @@ protected:
 
 	PlayerStrategy();
 	PlayerStrategy(const PlayerStrategy&);
-
-	;
-
 };
 
 class HumanPlayerStrategy : public PlayerStrategy {

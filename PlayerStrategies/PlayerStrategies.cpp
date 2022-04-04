@@ -1,10 +1,20 @@
 #include "PlayerStrategies.h"
 
+
 #pragma region Base
+const unordered_set<string> PlayerStrategy::strategystrings = {
+	{"aggressive"}, 
+	{"benevolent"},
+	{"neutral"}, 
+	{"cheater"}};
 // Default Constructor. Unusable due to being Pure Virtual Class
-PlayerStrategy::PlayerStrategy() {}
+PlayerStrategy::PlayerStrategy() {
+	p = nullptr;
+}
 // Copy Construtor. Unusable due to being Pure Virtual Class
-PlayerStrategy::PlayerStrategy(const PlayerStrategy& s) {}
+PlayerStrategy::PlayerStrategy(const PlayerStrategy& s) {
+	p = s.p;
+}
 // Destructor
 PlayerStrategy::~PlayerStrategy() {}
 // Assignment Operator

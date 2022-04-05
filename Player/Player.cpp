@@ -1,4 +1,5 @@
 #include "Player.h"
+#include "../PlayerStrategies/PlayerStrategies.h"
 #include <stdlib.h>
 #include <map>
 #include <algorithm>
@@ -13,8 +14,7 @@ void Player::resetNeutralPlayer() {
 	neutralplayer = new Player("Neutral Player");
 }
 
-Player::Player(string n)
-{
+Player::Player(string n) {
 	name = n;
 	hand = new Hand();
 	orderList = new OrderList();
@@ -35,8 +35,7 @@ Player::Player(string n, PlayerStrategy* ps) : Player(n) {
 	strat = ps;
 }
 
-Player::Player(const Player& player)
-{
+Player::Player(const Player& player) {
 	territories = player.territories;
 
 	hand = new Hand(*(player.hand));
@@ -44,7 +43,7 @@ Player::Player(const Player& player)
 	reinforcements = player.reinforcements;
 }
 
-Player& Player::operator=(const Player& player){
+Player& Player::operator=(const Player& player) {
 	territories = player.territories;
 
 	hand = new Hand(*(player.hand));
@@ -54,12 +53,11 @@ Player& Player::operator=(const Player& player){
 }
 
 std::ostream& operator<<(std::ostream& out, const Player& player) {
-	out << player.name << " - " << *player.strat;
+	out << player.name;
 	return out;
 }
 
-Player::~Player()
-{
+Player::~Player() {
 	delete orderList;
 	orderList = NULL;
 
@@ -80,6 +78,13 @@ vector<Territory*> Player::getAdjacentTerritories() {
 		}
 	}
 	return toattack;
+}
+
+vector<Territory*> Player::getAtRiskTerritories() {
+	// possibly refactor to only get territories with adjacent enemies?
+	vector<Territory*> defend(territories.begin(), territories.end());
+	sort(defend.begin(), defend.end());
+	return defend;
 }
 
 void Player::addTerritory(Territory* territory) {
@@ -109,30 +114,15 @@ int Player::getNbOfTerritories() {
 
 
 vector<Territory*> Player::toAttack() {
-	vector<Territory*> territoriesToAttack;
-	map<Territory*, int> territoriestotroops;
-
-	// Loops on every territory that the current player owns, and checks the adjacent territories to each of them,
-	// if the two aren't owned by the same player that means it is not owned by the current player and a territory you could attack.
-	for (Territory* territory : territories) {
-		int currentNbOfArmy = territory->nbOfArmy;
-		for (Territory* adjacentTerritory : territory->adjacentTerritories) {
-			if (territory->owner != adjacentTerritory->owner && territoriestotroops[adjacentTerritory] < currentNbOfArmy) {
-				territoriestotroops[adjacentTerritory] = currentNbOfArmy;
-			}
-		}
-	}
-
-	for (auto it = territoriestotroops.rbegin(); it != territoriestotroops.rend(); it++)
-		territoriesToAttack.push_back(it->first);
-
-	return territoriesToAttack;
+	return strat->toAttack();
 }
 
 vector<Territory*> Player::toDefend() {
-	vector<Territory*> toDefend(territories.begin(), territories.end());
-	sort(toDefend.begin(), toDefend.end());
-	return toDefend;
+	return strat->toDefend();
+}
+
+void Player::issueOrder() {
+	strat->issueOrder();
 }
 
 void Player::issueOrder(OrderType o, Territory* location)

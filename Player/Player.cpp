@@ -82,9 +82,9 @@ vector<Territory*> Player::getAdjacentTerritories() {
 
 vector<Territory*> Player::getAtRiskTerritories() {
 	// possibly refactor to only get territories with adjacent enemies?
-   vector<Territory*> defend(territories.begin(), territories.end());
-   sort(defend.begin(), defend.end());
-   return defend;
+	vector<Territory*> defend(territories.begin(), territories.end());
+	sort(defend.begin(), defend.end());
+	return defend;
 }
 
 void Player::addTerritory(Territory* territory) {
@@ -122,7 +122,7 @@ vector<Territory*> Player::toDefend() {
 }
 
 void Player::issueOrder() {
-    strat->issueOrder();
+	strat->issueOrder();
 }
 
 void Player::issueOrder(OrderType o, Territory* location)

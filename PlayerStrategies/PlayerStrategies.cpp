@@ -60,7 +60,7 @@ std::ostream& operator<<(std::ostream& out, const HumanPlayerStrategy& s) {
 void HumanPlayerStrategy::issueOrder()
 {
 	cout << p->name << " - Human issueOrder" << endl;
-    // Requires user interaction to make decisions
+	// Requires user interaction to make decisions
 }
 
 vector<Territory*> HumanPlayerStrategy::toAttack()
@@ -71,7 +71,7 @@ vector<Territory*> HumanPlayerStrategy::toAttack()
 
 vector<Territory*> HumanPlayerStrategy::toDefend()
 {
-    cout << p->name << " - Human toDefend" << endl;
+	cout << p->name << " - Human toDefend" << endl;
 	return p->getAtRiskTerritories();
 }
 #pragma endregion
@@ -109,7 +109,7 @@ vector<Territory*> AggressivePlayerStrategy::toAttack()
 
 vector<Territory*> AggressivePlayerStrategy::toDefend()
 {
-    cout << p->name << " - Aggressive toDefend" << endl;
+	cout << p->name << " - Aggressive toDefend" << endl;
 	return p->getAtRiskTerritories();
 }
 #pragma endregion
@@ -133,7 +133,7 @@ std::ostream& operator<<(std::ostream& out, const BenevolentPlayerStrategy& s) {
 
 void BenevolentPlayerStrategy::issueOrder()
 {
-    cout << p->name << " - Benevolent issueOrder" << endl;
+	cout << p->name << " - Benevolent issueOrder" << endl;
 	// (Computer player)
 	// Focuses on protecting its weak countries
 	// Deploys/Advances on its weakest countries, never advances to enemy territories
@@ -142,7 +142,7 @@ void BenevolentPlayerStrategy::issueOrder()
 vector<Territory*> BenevolentPlayerStrategy::toAttack()
 {
 	cout << p->name << " - Benevolent toAttack" << endl;
-    return p->getAdjacentTerritories();
+	return p->getAdjacentTerritories();
 }
 
 vector<Territory*> BenevolentPlayerStrategy::toDefend()
@@ -171,7 +171,7 @@ std::ostream& operator<<(std::ostream& out, const NeutralPlayerStrategy& s) {
 
 void NeutralPlayerStrategy::issueOrder()
 {
-    cout << p->name << " - Neutral issueOrder" << endl;
+	cout << p->name << " - Neutral issueOrder" << endl;
 	// (Computer player)
 	// Never issues orders
 	// Becomes an Aggressive Player if attacked
@@ -209,7 +209,7 @@ std::ostream& operator<<(std::ostream& out, const CheaterPlayerStrategy& s) {
 
 void CheaterPlayerStrategy::issueOrder()
 {
-    cout << p->name << " - Cheater issueOrder" << endl;
+	cout << p->name << " - Cheater issueOrder" << endl;
 	// (Computer player)
 	// Automatically conquers all territories that are adjacent to its own territories 
 	// (once per turn)

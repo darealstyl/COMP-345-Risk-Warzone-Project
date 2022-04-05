@@ -31,7 +31,7 @@ public:
 	vector<Territory*> toAttack();
 	vector<Territory*> toDefend();
 	vector<Territory*> getAdjacentTerritories();
-    vector<Territory*> getAtRiskTerritories();
+	vector<Territory*> getAtRiskTerritories();
 
 	enum class OrderType {
 		DEPLOY = 0, ADVANCE, BOMB, BLOCKADE, AIRLIFT, NEGOTIATE
@@ -51,7 +51,7 @@ public:
 	void issueOrder(OrderType, Player*);
 	void issueOrder(Deck*);
 	void issueOrder(Card::CardType);
-    void issueOrder();
+	void issueOrder();
 
 	int getNbOfTerritories();
 	OrderType cardTypeToOrderType(Card::CardType);

@@ -109,30 +109,11 @@ int Player::getNbOfTerritories() {
 
 
 vector<Territory*> Player::toAttack() {
-	vector<Territory*> territoriesToAttack;
-	map<Territory*, int> territoriestotroops;
-
-	// Loops on every territory that the current player owns, and checks the adjacent territories to each of them,
-	// if the two aren't owned by the same player that means it is not owned by the current player and a territory you could attack.
-	for (Territory* territory : territories) {
-		int currentNbOfArmy = territory->nbOfArmy;
-		for (Territory* adjacentTerritory : territory->adjacentTerritories) {
-			if (territory->owner != adjacentTerritory->owner && territoriestotroops[adjacentTerritory] < currentNbOfArmy) {
-				territoriestotroops[adjacentTerritory] = currentNbOfArmy;
-			}
-		}
-	}
-
-	for (auto it = territoriestotroops.rbegin(); it != territoriestotroops.rend(); it++)
-		territoriesToAttack.push_back(it->first);
-
-	return territoriesToAttack;
+	return strat->toAttack();
 }
 
 vector<Territory*> Player::toDefend() {
-	vector<Territory*> toDefend(territories.begin(), territories.end());
-	sort(toDefend.begin(), toDefend.end());
-	return toDefend;
+	return strat->toDefend();
 }
 
 void Player::issueOrder(OrderType o, Territory* location)

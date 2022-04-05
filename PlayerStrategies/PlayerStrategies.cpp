@@ -1,5 +1,8 @@
 #include "PlayerStrategies.h"
+#include <iostream>
 
+using std::cout;
+using std::endl;
 
 #pragma region Base
 const unordered_set<string> PlayerStrategy::strategystrings = {
@@ -55,17 +58,21 @@ std::ostream& operator<<(std::ostream& out, const HumanPlayerStrategy& s) {
 
 void HumanPlayerStrategy::issueOrder()
 {
-	// Requires user interaction to make decisions
+	cout << "HumanPlayer issueOrder" << endl;
+    // Requires user interaction to make decisions
 }
 
 vector<Territory*> HumanPlayerStrategy::toAttack()
 {
-	return vector<Territory*>();
+    cout << "HumanPlayer toAttack()" << endl;
+	return p->getAdjacentTerritories();
 }
 
 vector<Territory*> HumanPlayerStrategy::toDefend()
 {
-	return vector<Territory*>();
+    cout << "HumanPlayer toDefend()" << endl;
+    vector<Territory*> toDefend(p->territories.begin(), p->territories.end());
+	return toDefend;
 }
 #pragma endregion
 
@@ -88,6 +95,7 @@ std::ostream& operator<<(std::ostream& out, const AggressivePlayerStrategy& s){
 
 void AggressivePlayerStrategy::issueOrder()
 {
+    cout << "AggressivePlayer issueOrder" << endl;
 	// (Computer player)
 	// Focuses on attack
 	// Deploys/Advances armies on its strongest country then always advances to enemy territories until it can't
@@ -95,11 +103,13 @@ void AggressivePlayerStrategy::issueOrder()
 
 vector<Territory*> AggressivePlayerStrategy::toAttack()
 {
+    cout << "AggressivePlayer toAttack" << endl;
 	return vector<Territory*>();
 }
 
 vector<Territory*> AggressivePlayerStrategy::toDefend()
 {
+    cout << "AggressivePlayer toDefend" << endl;
 	return vector<Territory*>();
 }
 #pragma endregion
@@ -130,11 +140,13 @@ void BenevolentPlayerStrategy::issueOrder()
 
 vector<Territory*> BenevolentPlayerStrategy::toAttack()
 {
-	return vector<Territory*>();
+    cout << "BenevolentPlayer toAttack" << endl;
+    return p->getAdjacentTerritories();
 }
 
 vector<Territory*> BenevolentPlayerStrategy::toDefend()
 {
+    cout << "BenevolentPlayer toDefend" << endl;
 	return vector<Territory*>();
 }
 #pragma endregion
@@ -158,6 +170,7 @@ std::ostream& operator<<(std::ostream& out, const NeutralPlayerStrategy& s) {
 
 void NeutralPlayerStrategy::issueOrder()
 {
+
 	// (Computer player)
 	// Never issues orders
 	// Becomes an Aggressive Player if attacked
@@ -165,11 +178,13 @@ void NeutralPlayerStrategy::issueOrder()
 
 vector<Territory*> NeutralPlayerStrategy::toAttack()
 {
-	return vector<Territory*>();
+    cout << "NeutralPlayer toAttack" << endl;
+	return p->getAdjacentTerritories();
 }
 
 vector<Territory*> NeutralPlayerStrategy::toDefend()
 {
+    cout << "NeutralPlayer toDefend" << endl;
 	return vector<Territory*>();
 }
 #pragma endregion
@@ -207,11 +222,13 @@ void CheaterPlayerStrategy::issueOrder()
 
 vector<Territory*> CheaterPlayerStrategy::toAttack()
 {
+    cout << "CheaterPlayer toAttack" << endl;
 	return p->getAdjacentTerritories();
 }
 
 vector<Territory*> CheaterPlayerStrategy::toDefend()
 {
+    cout << "CheaterPlayer toDefend" << endl;
 	return vector<Territory*>();
 }
 #pragma endregion

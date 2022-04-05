@@ -22,13 +22,33 @@ int main() {
 	Player* p2 = new Player("Cedric", new BenevolentPlayerStrategy());
 	Player* p3 = new Player("Jonah", new AggressivePlayerStrategy());
 	Player* p4 = new Player("William", new NeutralPlayerStrategy());
-	Player* p5 = new Player("test");
+	Player* p5 = new Player("test", new CheaterPlayerStrategy());
 	
 	cout << *p1 << endl;
+    //p1->issueOrder();
+    p1->toAttack();
+    p1->toDefend();
+
 	cout << *p2 << endl;
-	cout << *p3 << endl;
-	cout << *p4 << endl;
-	cout << *p5 << endl;
+	//p2->issueOrder();
+    p2->toAttack();
+    p2->toDefend();
+
+    cout << *p3 << endl;
+	//p3->issueOrder();
+    p3->toAttack();
+    p3->toDefend();
+
+    cout << *p4 << endl;
+	///p4->issueOrder();
+    std::cout << "Calling p4->toAttack()" << std::endl;
+    p4->toAttack();
+    p4->toDefend();
+
+    cout << *p5 << endl;
+    //p5->issueOrder();
+    p5->toAttack();
+    p5->toDefend();
 
 	delete p1;
 	delete p2;

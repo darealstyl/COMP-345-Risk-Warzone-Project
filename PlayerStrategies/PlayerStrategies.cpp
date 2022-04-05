@@ -71,8 +71,7 @@ vector<Territory*> HumanPlayerStrategy::toAttack()
 vector<Territory*> HumanPlayerStrategy::toDefend()
 {
     cout << "HumanPlayer toDefend()" << endl;
-    vector<Territory*> toDefend(p->territories.begin(), p->territories.end());
-	return toDefend;
+	return p->getAtRiskTerritories();
 }
 #pragma endregion
 
@@ -104,13 +103,13 @@ void AggressivePlayerStrategy::issueOrder()
 vector<Territory*> AggressivePlayerStrategy::toAttack()
 {
     cout << "AggressivePlayer toAttack" << endl;
-	return vector<Territory*>();
+	return p->getAdjacentTerritories();
 }
 
 vector<Territory*> AggressivePlayerStrategy::toDefend()
 {
     cout << "AggressivePlayer toDefend" << endl;
-	return vector<Territory*>();
+	return p->getAtRiskTerritories();
 }
 #pragma endregion
 
@@ -133,6 +132,7 @@ std::ostream& operator<<(std::ostream& out, const BenevolentPlayerStrategy& s) {
 
 void BenevolentPlayerStrategy::issueOrder()
 {
+    cout << "BenevolentPlayer issueOrder" << endl;
 	// (Computer player)
 	// Focuses on protecting its weak countries
 	// Deploys/Advances on its weakest countries, never advances to enemy territories
@@ -147,7 +147,7 @@ vector<Territory*> BenevolentPlayerStrategy::toAttack()
 vector<Territory*> BenevolentPlayerStrategy::toDefend()
 {
     cout << "BenevolentPlayer toDefend" << endl;
-	return vector<Territory*>();
+	return p->getAtRiskTerritories();
 }
 #pragma endregion
 
@@ -170,7 +170,7 @@ std::ostream& operator<<(std::ostream& out, const NeutralPlayerStrategy& s) {
 
 void NeutralPlayerStrategy::issueOrder()
 {
-
+    cout << "NeutralPlayer issueOrder" << endl;
 	// (Computer player)
 	// Never issues orders
 	// Becomes an Aggressive Player if attacked
@@ -185,7 +185,7 @@ vector<Territory*> NeutralPlayerStrategy::toAttack()
 vector<Territory*> NeutralPlayerStrategy::toDefend()
 {
     cout << "NeutralPlayer toDefend" << endl;
-	return vector<Territory*>();
+	return p->getAtRiskTerritories();
 }
 #pragma endregion
 
@@ -208,6 +208,7 @@ std::ostream& operator<<(std::ostream& out, const CheaterPlayerStrategy& s) {
 
 void CheaterPlayerStrategy::issueOrder()
 {
+    cout << "CheaterPlayer issueOrder" << endl;
 	// (Computer player)
 	// Automatically conquers all territories that are adjacent to its own territories 
 	// (once per turn)
@@ -229,6 +230,6 @@ vector<Territory*> CheaterPlayerStrategy::toAttack()
 vector<Territory*> CheaterPlayerStrategy::toDefend()
 {
     cout << "CheaterPlayer toDefend" << endl;
-	return vector<Territory*>();
+	return p->getAtRiskTerritories();
 }
 #pragma endregion

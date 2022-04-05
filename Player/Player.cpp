@@ -82,6 +82,11 @@ vector<Territory*> Player::getAdjacentTerritories() {
 	return toattack;
 }
 
+vector<Territory*> Player::getAtRiskTerritories() {
+   vector<Territory*> defend(territories.begin(), territories.end());
+   return defend;
+}
+
 void Player::addTerritory(Territory* territory) {
 	
 	territory->owner->territories.erase(territory);
@@ -114,6 +119,10 @@ vector<Territory*> Player::toAttack() {
 
 vector<Territory*> Player::toDefend() {
 	return strat->toDefend();
+}
+
+void Player::issueOrder() {
+    strat->issueOrder();
 }
 
 void Player::issueOrder(OrderType o, Territory* location)

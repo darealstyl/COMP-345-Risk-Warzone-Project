@@ -520,4 +520,47 @@ GameEngine::GameState GameEngine::getState()
     return state;
 }
 
+void TournamentHandler::printresults()
+{
+    int width = 10;
+    printverticalborder(width);
+    cout << "|";
+    printspaceandborder(width);
+    for (int i = 1; i <= nbOfGames; i++) {
+        string str = "Game " + i;
+        cout << str;
+        printspaceandborder(width - str.size());
+    }
+    printverticalborder(width);
+    int mapcount = 1;
+    for (vector<string> mapwinners : results) {
+        string str = "Map " + mapcount;
+        cout << str;
+        printspaceandborder(width - str.size());
+        int winnercount = 1;
+        for (string gamewinner : mapwinners) {
+            cout << gamewinner;
+            printspaceandborder(width - gamewinner.size());
+            winnercount++;
+        }
+        mapcount++;
+        printverticalborder(width);
+    }
+}
+void TournamentHandler::printspaceandborder(int width) {
+    for (int i = 0; i < width; i++) {
+        cout << " ";
+    }
+    cout << "|";
+}
 
+void TournamentHandler::printverticalborder(int width) {
+    cout << endl << "|";
+    for (int i = 0; i <= nbOfGames; i++) {
+        for (int j = 0; j < width; j++) {
+            cout << "-";
+        }
+        cout << "|";
+    }
+    cout << endl;
+}

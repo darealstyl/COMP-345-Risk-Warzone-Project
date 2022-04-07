@@ -12,6 +12,8 @@
 #include "../LoggingObserver/LoggingObserver.h"
 #include "../Player/Player.h"
 #include "../CommandProcessor/CommandProcessor.h"
+#include "../PlayerStrategies/PlayerStrategies.h"
+
 using namespace std;
 
 class CommandProcessor;
@@ -76,5 +78,15 @@ private:
     void clearActivePlayers();
 };
 
-
+class TournamentHandler {
+private:
+    vector<Map*> maps;
+    vector<PlayerStrategy*> playerstrategies;
+    int nbOfGames;
+    int maxNbOfTurns;
+    vector<vector<string>> results;
+    void printresults();
+    void printverticalborder(int);
+    void printspaceandborder(int);
+};
 

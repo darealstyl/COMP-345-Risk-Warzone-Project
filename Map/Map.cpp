@@ -202,7 +202,7 @@ std::ostream& operator<<(std::ostream& out, const Territory& territory) {
 
 
 // <-- MAP LOADER -->
-Map& MapLoader::createMap(string filename) {
+Map* MapLoader::createMap(string filename) {
 	const string continentsflag = "[continents]";
 	Map* gamemap = new Map();
 
@@ -263,7 +263,7 @@ Map& MapLoader::createMap(string filename) {
 
 	mapstream.close();
 
-	return *gamemap;
+	return gamemap;
 }
 
 void MapLoader::processBorders(string& line, unordered_map<int, Territory*> countries) {

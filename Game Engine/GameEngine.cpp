@@ -16,6 +16,7 @@ GameEngine::GameEngine() {
     this->commandprocessor = nullptr;
     this->running = true;
     this->deck = new Deck();
+    this->tournamenthandler = nullptr;
     FORCEWIN = false;
 }
 
@@ -31,8 +32,6 @@ GameEngine::~GameEngine(){
     delete commandprocessor;
     delete deck;
     delete map;
-
-    
 }
 
 ostream & operator << (ostream &out, const GameEngine &g){
@@ -85,6 +84,56 @@ void GameEngine::initializeCommandProcessor() {
     cout << commandprocessor << endl;
 
 }
+void GameEngine::createTournament(string str) {
+    vector<string> split;
+    warzoneutils::splitInput(str, split);
+
+    int size = split.size();
+
+    int index = 2;
+
+    vector<Map*> maps;
+
+    while (index < size && split[index] != "-P") {
+        string mapfileinput = split[index];
+
+        // Create and validate each map files
+        Map* map = MapLoader::createMap(mapfileinput);
+        if (!map->validate()) {
+            cout << "The map that was loaded from this file: " << mapfileinput << " is invalid. Cannot start the tournament." << endl;
+            return;
+        }
+        maps.push_back(map);
+        index++;
+    }
+
+    // Skip over the -P
+    index++;
+
+    vector<string> playerstrategies;
+
+    while (index < size && split[index] != "-G") {
+
+        string playstring = split[index];
+
+        playerstrategies.push_back(playstring);
+        
+        index++;
+    }
+    // Skip over the -G
+    index++;
+
+    int gamenumber = stoi(split[index]);
+    index++;
+
+    // Skip over the -D
+    index++;
+
+    int turnnumber = stoi(split[index]);
+
+    TournamentHandler* tournamenthandler = new TournamentHandler(maps, playerstrategies, gamenumber, turnnumber, this);
+    this->tournamenthandler = tournamenthandler;
+}
 
 void GameEngine::execute(Command* command) {
     vector<string> split;
@@ -94,9 +143,12 @@ void GameEngine::execute(Command* command) {
     CT commandtype = commandprocessor->getCommandType(maincommand);
 
     switch (commandtype) {
+    case CT::TOURNAMENT: {
+        createTournament(command->command);
+    }
     case CT::LOADMAP: {
         string mapfile = split[1];
-        this->map = &MapLoader::createMap(mapfile);
+        this->map = MapLoader::createMap(mapfile);
         transition(GS::MAP_LOADED);
         command->saveEffect("Successfully loaded map \"" + mapfile + "\"");
         break;
@@ -327,6 +379,7 @@ void GameEngine::startupPhase() {
                 fs::path map(file.path());
                 cout << "\t" << map.filename() << endl;
             }
+            cout << "You can also choose to start a tournament using the command: tournament -M <listofmapfiles> -P <listofplayerstrategies> -G <numberofgames> -D <maxnumberofturns>." << endl;
             break;
         }
         case GS::MAP_LOADED:
@@ -518,6 +571,14 @@ void GameEngine::addPlayer(Player* p) {
 GameEngine::GameState GameEngine::getState()
 {
     return state;
+}
+
+TournamentHandler::TournamentHandler(vector<Map*> maps, vector<string> playerstrategies, int nbOfGames, int maxNbOfTurns, GameEngine* gameengine) {
+    this->maps = maps;
+    this->playerstrategies = playerstrategies;
+    this->nbOfGames = nbOfGames;
+    this->maxNbOfTurns = maxNbOfTurns;
+    this->gameengine = gameengine;
 }
 
 void TournamentHandler::printresults()

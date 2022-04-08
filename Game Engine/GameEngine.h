@@ -18,6 +18,7 @@ using namespace std;
 
 class CommandProcessor;
 class Command;
+class TournamentHandler;
 
 class GameEngine : public Subject, public ILoggable {
 public:
@@ -27,6 +28,7 @@ public:
     bool FORCEWIN;
     bool running;
     Map* map;
+    TournamentHandler* tournamenthandler;
 
     GameEngine(); //default constructor
     GameEngine(const GameEngine &game1); //copy constructor
@@ -64,6 +66,7 @@ private:
     void initializeCommandProcessor();
     void getandexecutecommand();
     void execute(Command*);
+    void createTournament(string);
     void mainGameLoop();
     void gamestart();
     void distributeterritories();
@@ -79,12 +82,16 @@ private:
 };
 
 class TournamentHandler {
+public:
+    TournamentHandler(vector<Map*> maps, vector<string> playerstrategies, int nbOfGames, int maxNbOfTurns, GameEngine*);
 private:
     vector<Map*> maps;
-    vector<PlayerStrategy*> playerstrategies;
+    vector<string> playerstrategies;
     int nbOfGames;
     int maxNbOfTurns;
     vector<vector<string>> results;
+    GameEngine* gameengine;
+
     void printresults();
     void printverticalborder(int);
     void printspaceandborder(int);

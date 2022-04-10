@@ -1,4 +1,5 @@
 #include "PlayerStrategies.h"
+#include "../Orders/Orders.hpp"
 #include <iostream>
 
 using std::cout;
@@ -99,6 +100,25 @@ void AggressivePlayerStrategy::issueOrder()
 	// (Computer player)
 	// Focuses on attack
 	// Deploys/Advances armies on its strongest country then always advances to enemy territories until it can't
+	
+	// player has reinforcements to deploy
+	if (p->reinforcements > 0) {
+		// deploy all reinforcements onto the players strongest territory
+		Territory* strongestTerritory = p->getAtRiskTerritories().front();
+		Deploy* deploy = new Deploy(p, p->reinforcements, strongestTerritory);
+		p->orderList->add(deploy);
+		// all reinforcements were used, set to 0
+		p->reinforcements = 0;
+	}
+	else if (p->toAttack().size() > 0 && p->advanceordersnb != 5) {
+		// waiting for clarification from Joey Paquet
+		p->advanceordersnb++;
+	}
+	else {
+		// either no territories to attack or advanced maximum times
+		p->endOfOrder = true;
+	}
+	
 }
 
 vector<Territory*> AggressivePlayerStrategy::toAttack()

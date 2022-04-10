@@ -80,10 +80,15 @@ vector<Territory*> Player::getAdjacentTerritories() {
 	return toattack;
 }
 
+// gets territories owned by the player and sorts by army strength
 vector<Territory*> Player::getAtRiskTerritories() {
-	// possibly refactor to only get territories with adjacent enemies?
+	// TODO: possibly refactor to only get territories with adjacent enemies?
+
 	vector<Territory*> defend(territories.begin(), territories.end());
-	sort(defend.begin(), defend.end());
+	// sort territories to defend by strength (army count)
+	sort(defend.begin(), defend.end(), [](const Territory* lhs, const Territory* rhs) {
+		return lhs->nbOfArmy > rhs->nbOfArmy;
+	});
 	return defend;
 }
 

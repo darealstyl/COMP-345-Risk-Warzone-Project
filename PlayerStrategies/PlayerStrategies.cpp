@@ -4,7 +4,8 @@
 
 using std::cout;
 using std::endl;
-
+typedef Player::OrderType OT;
+typedef Card::CardType CT;
 #pragma region Base
 const unordered_set<string> PlayerStrategy::strategystrings = {
 	{"aggressive"}, 
@@ -58,7 +59,7 @@ std::ostream& operator<<(std::ostream& out, const HumanPlayerStrategy& s) {
 	return out;
 }
 
-void HumanPlayerStrategy::issueOrder()
+void HumanPlayerStrategy::issueOrder(Deck* deck)
 {
 	cout << p->name << " - Human issueOrder" << endl;
 	// Requires user interaction to make decisions
@@ -94,22 +95,108 @@ std::ostream& operator<<(std::ostream& out, const AggressivePlayerStrategy& s){
 	return out;
 }
 
-void AggressivePlayerStrategy::issueOrder()
+void AggressivePlayerStrategy::issueOrder(Deck* deck)
 {
 	cout << p->name << " - Aggressive issueOrder" << endl;
 	// (Computer player)
 	// Focuses on attack
 	// Deploys/Advances armies on its strongest country then always advances to enemy territories until it can't
-	
-	// player has reinforcements to deploy
-	if (p->reinforcements > 0) {
-		// deploy all reinforcements onto the players strongest territory
-		Territory* strongestTerritory = p->getAtRiskTerritories().front();
-		Deploy* deploy = new Deploy(p, p->reinforcements, strongestTerritory);
-		p->orderList->add(deploy);
-		// all reinforcements were used, set to 0
-		p->reinforcements = 0;
+	p->chooseNextCommand();
+	if (p->endOfOrder) {
+		return;
 	}
+
+	vector<Territory*> defend = toDefend();
+	vector<Territory*> attack = toAttack();
+	Territory* strongestTerritory = p->getAtRiskTerritories().front();
+
+	//Territory* weakestTerritory = defend.front();
+	//Territory* strongestTerritory = defend.back();
+	Territory* vulnerableEnnemy = attack.front();
+
+	p->endOfOrder = false;
+	switch (p->command)
+	{
+	case OT::DEPLOY: {
+		// Create a deploy order and push it back in the orderlist
+		if (p->chosenCard != nullptr) {
+			p->chosenCard->play(p, deck);
+			p->chosenCard = nullptr;
+		}
+		if (p->reinforcements != 0) {
+			cout << "Creating deploy order" << endl;
+			int nbOfreinforcements = p->reinforcements;
+
+
+			cout << "Deploying " << nbOfreinforcements << " reinforcements to " << *strongestTerritory << endl;
+			Deploy* deploy = new Deploy(p, p->reinforcements, strongestTerritory);
+			p->orderList->add(deploy);
+			// all reinforcements were used, set to 0
+			p->reinforcements = 0;
+			cout << p->reinforcements << " reinforcements left." << endl;
+
+		}
+		break;
+	}
+	case OT::ADVANCE:
+	{
+		// aggressive players advance player into its strongest territories until all soldiers are there 
+
+		//TODO: check if all armies are in its strongest territory
+		int advanceChoice;
+		Territory* from = nullptr;
+		//check if any territory except strongest has > 0 nbOfArmies
+		for (Territory* territory : p->territories) {
+			if ((territory->nbOfArmy != 0) && (territory != strongestTerritory)) {
+				from = territory; //sending from territory that still has soldiers
+				advanceChoice = 0; //go to the defense option
+				break;
+			}
+		}
+
+
+
+		
+		Territory* to = nullptr;
+		//if 0, we send soldier to strongest territory
+		if (advanceChoice == 0) {
+			to = strongestTerritory;
+		}
+		//attack from strongest to ennemy
+		else {
+			from = strongestTerritory;
+			to = vulnerableEnnemy;
+		}
+		/*for (Territory* neighbor : to->adjacentTerritories) {
+			if (neighbor->owner == p) {
+				from = neighbor;
+				break;
+			}
+		}*/
+		/*if (from == nullptr) {
+			from = strongestTerritory;
+		}*/
+		int number = from->nbOfArmy;
+		if (number == 0) {
+			number = 1;
+		}
+		int soldierAmount = (rand() % number / 4) + 1;
+		Advance* advance = new Advance(p, soldierAmount, from, to);
+		p->orderList->add(advance);
+		break;
+	}
+
+	case OT::AIRLIFT:
+	case OT::BOMB:
+	case OT::BLOCKADE:
+	case OT::NEGOTIATE:
+		cout <<  *(p->hand) << endl;
+		p->chosenCard->play(p, deck);
+		cout << *(p->hand) << endl;
+		p->chosenCard = nullptr;
+		break;
+	}
+	
 	else if (p->toAttack().size() > 0 && p->advanceordersnb != 5) {
 		// waiting for clarification from Joey Paquet
 		p->advanceordersnb++;
@@ -151,12 +238,31 @@ std::ostream& operator<<(std::ostream& out, const BenevolentPlayerStrategy& s) {
 	return out;
 }
 
-void BenevolentPlayerStrategy::issueOrder()
+void BenevolentPlayerStrategy::issueOrder(Deck* deck)
 {
 	cout << p->name << " - Benevolent issueOrder" << endl;
 	// (Computer player)
 	// Focuses on protecting its weak countries
 	// Deploys/Advances on its weakest countries, never advances to enemy territories
+	
+
+	// player has reinforcements to deploy
+	if (p->reinforcements > 0) {
+		Territory* weakestTerritory = p->getAtRiskTerritories().back();
+		Deploy* deploy = new Deploy(p, p->reinforcements, weakestTerritory);
+		p->orderList->add(deploy);
+		p->reinforcements = 0;
+	}
+
+	else if (p->toAttack().size() > 0 && p->advanceordersnb != 5) {
+		// waiting for clarification from Joey Paquet
+		p->advanceordersnb++;
+	}
+	else {
+		// either no territories to attack or advanced maximum times
+		p->endOfOrder = true;
+	}
+	
 }
 
 vector<Territory*> BenevolentPlayerStrategy::toAttack()
@@ -189,7 +295,7 @@ std::ostream& operator<<(std::ostream& out, const NeutralPlayerStrategy& s) {
 	return out;
 }
 
-void NeutralPlayerStrategy::issueOrder()
+void NeutralPlayerStrategy::issueOrder(Deck* deck)
 {
 	cout << p->name << " - Neutral issueOrder" << endl;
 	// (Computer player)
@@ -227,7 +333,7 @@ std::ostream& operator<<(std::ostream& out, const CheaterPlayerStrategy& s) {
 	return out;
 }
 
-void CheaterPlayerStrategy::issueOrder()
+void CheaterPlayerStrategy::issueOrder(Deck* deck)
 {
 	cout << p->name << " - Cheater issueOrder" << endl;
 	// (Computer player)

@@ -71,8 +71,8 @@ public:
 
 	static Player* neutralplayer;
 	static void resetNeutralPlayer();
-
+	void chooseNextCommand();
 private:
 	unordered_set<Player*> friendlyPlayers;
-	void chooseNextCommand();
+	
 };

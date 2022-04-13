@@ -203,7 +203,7 @@ void Advance::validate() // Will validate the circumstances of the object before
 {	
 	cout << "Validating Advance Order..." << endl;
 	// TODO FIX NB OF ARMIES SENT
-	if (issuingPlayer == from->owner && Territory::territoriesAreAdjacent(from, to)) {
+	if (issuingPlayer == from->owner && Territory::territoriesAreAdjacent(from, to) && numOfArmies > 0) {
 		numOfArmies = from->nbOfArmy;
 		Player* targetPlayer = to->owner;
 		if (issuingPlayer != targetPlayer) {
@@ -239,7 +239,12 @@ void Advance::execute()
 			cout << "Doing Battle..." << endl;
 			int numOfArmyCopy = this->numOfArmies;
 			float rand_num = 0.0;
-
+			if (dynamic_cast<NeutralPlayerStrategy*>(to->owner->strat) != nullptr) {
+				cout << "A neutral player was attacked. They are now aggressive." << endl;
+				delete to->owner->strat;
+				to->owner->strat = new AggressivePlayerStrategy();
+				to->owner->strat->setPlayerLink(to->owner);
+			}
 			while (to->nbOfArmy != 0 || numOfArmyCopy != 0)
 			{
 				if (to->nbOfArmy != 0)

@@ -68,7 +68,7 @@ Player::~Player() {
 
 	delete strat;
 }
-
+// TODO: this is creating duplicates of a territory if 2 owned territories are adjacent to it
 vector<Territory*> Player::getAdjacentTerritories() {
 	vector<Territory*> toattack;
 	for (Territory* territory : territories) {

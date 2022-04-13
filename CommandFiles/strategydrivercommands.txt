@@ -1,0 +1,6 @@
+loadmap solar.map
+validatemap
+addplayer Neutral
+addplayer Aggressive
+addplayer Cheater
+gamestart

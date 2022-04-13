@@ -91,14 +91,14 @@ void HumanPlayerStrategy::issueOrder(Deck* deck)
 			int nbOfreinforcements = 0;
 			int nbCountry = 0;
 			//user interaction for the number of reinforcements
-			cout << "How many reinforcements do you want to deploy?" << endl;
+			cout << "How many reinforcements do you want to deploy? (max: " << p->reinforcements << ") " << endl;
 			cin >> nbOfreinforcements;
 
 			//user interaction for the country to defend
 			cout << "Which territory do you want to deploy to?" << endl;
 			cout << "List of your territories: " << endl;
 			for (int i = 0; i < defend.size(); i++) {
-				cout << i + ". " + defend[i]->name << ", number of armies: " << defend[i]->nbOfArmy<< endl;
+				cout << i << ". " << defend[i]->name << " - number of armies: " << defend[i]->nbOfArmy<< endl;
 			}
 			cout << "Enter the number of the country: ";
 			cin >> nbCountry;
@@ -117,6 +117,19 @@ void HumanPlayerStrategy::issueOrder(Deck* deck)
 	{
 		// human interaction: number of armies, from territory, to territory
 
+		// verify user wants to do any advances
+		char continueAdvancing;
+		do {
+			cout << endl << "Would you like to issue an advance? (y/n): ";
+			cin >> continueAdvancing;
+		} while (continueAdvancing != 'y' && continueAdvancing != 'n');
+
+		if (continueAdvancing == 'n') {
+			// stop asking the user to issue advances
+			// (why are we limited to 5 advances?)
+			p->advanceordersnb = 5;
+			break;
+		}
 
 		int advanceChoice{};
 		Territory* from = nullptr;
@@ -125,7 +138,7 @@ void HumanPlayerStrategy::issueOrder(Deck* deck)
 		int toChoice = 0;
 
 		//user interaction: defend or attack
-		cout << "Do you want to do an advance order on your 1. own territory, 2.ennemy territory" << endl;
+		cout << "Do you want to do an advance order on your 1. own territory, 2.enemy territory" << endl;
 		cin >> advanceChoice;
 
 
@@ -134,12 +147,11 @@ void HumanPlayerStrategy::issueOrder(Deck* deck)
 		if (advanceChoice == 1) {
 			cout << "List of your territories: " << endl;
 			for (int i = 0; i < defend.size(); i++) {
-				cout << i + ". " + defend[i]->name << ", number of armies: " << defend[i]->nbOfArmy << endl;
+				cout << i << ". " << defend[i]->name << " - number of armies: " << defend[i]->nbOfArmy << endl;
 			}
-			cout << "Enter the number of the territory that gives armies";
+			cout << "Enter the number of the territory that will send armies: ";
 			cin >> fromChoice;
-			cout << endl;
-			cout << "Enter the number of the territory that receives armies";
+			cout << endl << "Enter the number of the territory that receives the armies:";
 			cin >> toChoice;
 
 			from = defend[fromChoice];
@@ -149,16 +161,15 @@ void HumanPlayerStrategy::issueOrder(Deck* deck)
 		else {
 			cout << "List of your territories: " << endl;
 			for (int i = 0; i < defend.size(); i++) {
-				cout << i + ". " + defend[i]->name << ", number of armies: " << defend[i]->nbOfArmy << endl;
+				cout << i << ". " << defend[i]->name << " - number of armies: " << defend[i]->nbOfArmy << endl;
 			}
-			cout << "Enter the number of the territory that attacks the ennemy";
+			cout << "Enter the number of the territory that attacks the enemy";
 			cin >> fromChoice;
-			cout << endl;
-			cout << "List of ennemies' territories: " << endl;
+			cout << endl << "List of enemies' territories: " << endl;
 			for (int i = 0; i < attack.size(); i++) {
-				cout << i + ". " + attack[i]->name << ", number of armies: " << attack[i]->nbOfArmy << endl;
+				cout << i << ". " << attack[i]->name << " - number of armies: " << attack[i]->nbOfArmy << endl;
 			}
-			cout << "Enter the number of the ennemy territory that's being attacked: ";
+			cout << "Enter the number of the enemy territory that's being attacked: ";
 			cin >> toChoice;
 
 
@@ -167,14 +178,15 @@ void HumanPlayerStrategy::issueOrder(Deck* deck)
 			to = attack[toChoice];
 		}
 	
-	int max = from->nbOfArmy;
-	int number = 0;
-	//user interaction for the number of armies to send 
-	cout << "How many soldiers to send (max: " << max << " ): ";
-	cin >> number;
+		int max = from->nbOfArmy;
+		int number = 0;
+		//user interaction for the number of armies to send 
+		cout << "How many soldiers to send (max: " << max << " ): ";
+		cin >> number;
 
-	Advance* advance = new Advance(p, number, from, to);
-	p->orderList->add(advance);
+		Advance* advance = new Advance(p, number, to, from);
+		p->orderList->add(advance);		
+
 		break;
 	}
 

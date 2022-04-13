@@ -54,13 +54,14 @@ public:
 
     std::string stateToString();
     std::string stringToLog() override;
-    
+
+    Deck* deck;
 private:
     CommandProcessor* commandprocessor;
     // Enum doesn't need to be of pointer type
     GameState state;
     vector<Player*> activePlayers;
-    Deck* deck;
+    
     
     void resetgameengine();
     void initializeCommandProcessor();

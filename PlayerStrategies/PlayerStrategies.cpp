@@ -37,9 +37,6 @@ std::ostream& operator<<(std::ostream& out, const PlayerStrategy& s) {
 void PlayerStrategy::setPlayerLink(Player* player) {
 	p = player;
 }
-
-
-
 #pragma endregion
 
 #pragma region Human
@@ -69,12 +66,16 @@ void HumanPlayerStrategy::issueOrder(Deck* deck)
 	}
 
 	vector<Territory*> defend = toDefend();
+	// players are only kicked after order execution phase, but cheater claims territories in issueorder phase
+	// ensure the current player is still in the game
+	if (defend.empty()) {
+		p->endOfOrder = true;
+		return;
+	}
 	vector<Territory*> attack = toAttack();
 	Territory* strongestTerritory = p->getAtRiskTerritories().front();
 
-	//Territory* weakestTerritory = defend.front();
-	//Territory* strongestTerritory = defend.back();
-	Territory* vulnerableEnnemy = attack.front();
+	Territory* vulnerableEnemy = attack.front();
 
 	p->endOfOrder = false;
 	switch (p->command)
@@ -128,7 +129,6 @@ void HumanPlayerStrategy::issueOrder(Deck* deck)
 		cin >> advanceChoice;
 
 
-		Territory* to = nullptr;
 		//user interaction to send soldier from defend to defend of choice
 
 		if (advanceChoice == 1) {
@@ -232,12 +232,15 @@ void AggressivePlayerStrategy::issueOrder(Deck* deck)
 	}
 
 	vector<Territory*> defend = toDefend();
+	// players are only kicked after order execution phase, but cheater claims territories in issueorder phase
+	// ensure the current player is still in the game
+	if (defend.empty()) {
+		p->endOfOrder = true;
+		return;
+	}
 	vector<Territory*> attack = toAttack();
 	Territory* strongestTerritory = p->getAtRiskTerritories().front();
-
-	//Territory* weakestTerritory = defend.front();
-	//Territory* strongestTerritory = defend.back();
-	Territory* vulnerableEnnemy = attack.front();
+	Territory* vulnerableEnemy = attack.front();
 
 	p->endOfOrder = false;
 	switch (p->command)
@@ -290,7 +293,7 @@ void AggressivePlayerStrategy::issueOrder(Deck* deck)
 		//attack from strongest to ennemy
 		else {
 			from = strongestTerritory;
-			to = vulnerableEnnemy;
+			to = vulnerableEnemy;
 		}
 		/*for (Territory* neighbor : to->adjacentTerritories) {
 			if (neighbor->owner == p) {
@@ -298,9 +301,9 @@ void AggressivePlayerStrategy::issueOrder(Deck* deck)
 				break;
 			}
 		}*/
-		/*if (from == nullptr) {
+		if (from == nullptr) {
 			from = strongestTerritory;
-		}*/
+		}
 		int number = from->nbOfArmy;
 		if (number == 0) {
 			number = 1;
@@ -362,22 +365,23 @@ void BenevolentPlayerStrategy::issueOrder(Deck* deck)
 	// Focuses on protecting its weak countries
 	// Deploys/Advances on its weakest countries, never advances to enemy territories
 	
-	cout << p->name << " - Aggressive issueOrder" << endl;
-	// (Computer player)
-	// Focuses on attack
-	// Deploys/Advances armies on its strongest country then always advances to enemy territories until it can't
 	p->chooseNextCommand();
 	if (p->endOfOrder) {
 		return;
 	}
 
 	vector<Territory*> defend = toDefend();
+	// players are only kicked after order execution phase, but cheater claims territories in issueorder phase
+	// ensure the current player is still in the game
+	if (defend.empty()) {
+		p->endOfOrder = true;
+		return;
+	}
 	vector<Territory*> attack = toAttack();
 	Territory* strongestTerritory = p->getAtRiskTerritories().front();
 
 	Territory* weakestTerritory = p->getAtRiskTerritories().back();
-	//Territory* strongestTerritory = defend.back();
-	Territory* vulnerableEnnemy = attack.front();
+	Territory* vulnerableEnemy = attack.front();
 
 	p->endOfOrder = false;
 	switch (p->command)

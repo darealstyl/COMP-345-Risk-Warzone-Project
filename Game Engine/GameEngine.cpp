@@ -566,7 +566,19 @@ int GameEngine::getPlayerCount() {
     return activePlayers.size();
 }
 void GameEngine::addPlayer(string name) {
-    Player* p = new Player(name);
+    Player* p = nullptr;
+
+    if(name == "Aggressive")
+        p = new Player(name, new AggressivePlayerStrategy());
+    else if(name == "Benevolent")
+        p = new Player(name, new BenevolentPlayerStrategy());
+    else if(name == "Neutral")
+        p = new Player(name, new NeutralPlayerStrategy());
+    else if(name == "Cheater")
+        p = new Player(name, new CheaterPlayerStrategy());
+    else
+        p = new Player(name, new HumanPlayerStrategy());
+
     activePlayers.push_back(p);
 }
 

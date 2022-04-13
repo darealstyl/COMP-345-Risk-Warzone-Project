@@ -7,11 +7,11 @@
 typedef Player::OrderType OT;
 typedef Card::CardType CT;
 
-Player* Player::neutralplayer = new Player("Neutral Player");
+Player* Player::neutralplayer = new Player("Neutral Player", new NeutralPlayerStrategy());
 
 void Player::resetNeutralPlayer() {
 	delete neutralplayer;
-	neutralplayer = new Player("Neutral Player");
+	neutralplayer = new Player("Neutral Player", new NeutralPlayerStrategy());
 }
 
 Player::Player(string n) {
@@ -24,14 +24,16 @@ Player::Player(string n) {
 	endOfOrder = false;
 	chosenCard = nullptr;
 	advanceordersnb = 0;
-	// players are Neutral by default
-	strat = new NeutralPlayerStrategy();
+	// players are Human by default
+	strat = new HumanPlayerStrategy();
 	strat->setPlayerLink(this);
 }
 
 Player::Player(string n, PlayerStrategy* ps) : Player(n) {
 	// link strategy to the player and save strategy
 	ps->setPlayerLink(this);
+	// other constructor sets strat to Human, need to overwrite it for this constructor
+	delete strat;
 	strat = ps;
 }
 
@@ -65,7 +67,6 @@ Player::~Player() {
 	hand = NULL;
 
 	delete strat;
-
 }
 
 vector<Territory*> Player::getAdjacentTerritories() {

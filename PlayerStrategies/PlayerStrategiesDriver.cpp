@@ -18,43 +18,9 @@ int main() {
 		(6) The issueOrder(), toAttack(), and toDefend() methods of the player do no implement behaviours, they just delegate to their strategies implementation.
 	
 	*/
-
-	Player* p1 = new Player("Michael", new HumanPlayerStrategy());
-	Player* p2 = new Player("Cedric", new BenevolentPlayerStrategy());
-	Player* p3 = new Player("Jonah", new AggressivePlayerStrategy());
-	Player* p4 = new Player("William", new NeutralPlayerStrategy());
-	Player* p5 = new Player("test", new CheaterPlayerStrategy());
 	GameEngine* g = new GameEngine();
-	
-	cout << *p1 << endl;
-	p1->issueOrder(g->deck);
-	p1->toAttack();
-	p1->toDefend();
+	g->startupPhase();
 
-	cout << *p2 << endl;
-	p2->issueOrder(g->deck);
-	p2->toAttack();
-	p2->toDefend();
-
-	cout << *p3 << endl;
-	p3->issueOrder(g->deck);
-	p3->toAttack();
-	p3->toDefend();
-
-	cout << *p4 << endl;
-	p4->issueOrder(g->deck);
-	p4->toAttack();
-	p4->toDefend();
-
-	cout << *p5 << endl;
-	p5->issueOrder(g->deck);
-	p5->toAttack();
-	p5->toDefend();
-
-	delete p1;
-	delete p2;
-	delete p3;
-	delete p4;
-	delete p5;
+	delete g;
 	cin.get();
 }

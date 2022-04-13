@@ -126,77 +126,10 @@ vector<Territory*> Player::toDefend() {
 	return strat->toDefend();
 }
 
-void Player::issueOrder() {
-	strat->issueOrder();
+void Player::issueOrder(Deck* deck) {
+	strat->issueOrder(deck);
 }
 
-void Player::issueOrder(OrderType o, Territory* location)
-{
-	switch (o)
-	{
-	case OT::BOMB: {
-		Bomb* bomb = new Bomb(this, location);
-		orderList->list.push_back(bomb);
-	}
-		break;
-	case OT::BLOCKADE: {
-		Blockade* blockade = new Blockade(this, location);
-		orderList->list.push_back(blockade);
-	}
-		break;
-	default: cout << "Invalid Order issued";
-		break;
-	}
-}
-
-void Player::issueOrder(OrderType o, int numOfArmies, Territory* location)
-{
-	switch (o)
-	{
-	case OT::DEPLOY: {
-		Deploy* deploy = new Deploy(this, numOfArmies, location);
-		orderList->list.push_back(deploy);
-	}
-		break;
-	default: cout << "Invalid Order issued";
-		break;
-	}
-}
-
-void Player::issueOrder(OrderType o, int numOfArmies, Territory* to, Territory* from)
-{
-
-	switch (o)
-	{
-	case OT::ADVANCE: {
-		Advance* advance = new Advance(this, numOfArmies, to, from);
-		orderList->list.push_back(advance);
-	}
-		break;
-	case OT::AIRLIFT: {
-		Airlift* airlift = new Airlift(this, numOfArmies, to, from);
-		orderList->list.push_back(airlift);
-	}
-		break;
-	default: cout << "Invalid Order issued";
-		break;
-	};
-}
-
-void Player::issueOrder(OrderType o, Player* targetPlayer)
-{
-	switch (o)
-	{
-	case OT::NEGOTIATE: {
-		Negotiate* negotiate = new Negotiate(this, targetPlayer);
-		orderList->list.push_back(negotiate);
-	}
-		break;
-	default: cout << "Invalid Order issued";
-		break;
-	}
-}
-// TODO: Missing reinforcement card. Why is there such a card?
 void Player::issueOrder(CT cardtype) {
 	vector<Territory*> defend = toDefend();
 	vector<Territory*> attack = toAttack();
@@ -262,7 +195,7 @@ bool Player::isFriendlyPlayer(Player* friendplayer) {
 void Player::clearFriendlyPlayers() {
 	friendlyPlayers.clear();
 }
-
+/*
 void Player::issueOrder(Deck* deck) {
 	chooseNextCommand();
 	if (endOfOrder) {
@@ -339,10 +272,8 @@ void Player::issueOrder(Deck* deck) {
 		chosenCard = nullptr;
 		break;
 	}
-	
-	
-	
 }
+*/
 
 void Player::chooseNextCommand() {
 	if (reinforcements != 0) {

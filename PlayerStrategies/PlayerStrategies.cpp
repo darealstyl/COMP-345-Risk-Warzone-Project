@@ -197,7 +197,7 @@ void AggressivePlayerStrategy::issueOrder(Deck* deck)
 		break;
 	}
 	
-	else if (p->toAttack().size() > 0 && p->advanceordersnb != 5) {
+	if (p->toAttack().size() > 0 && p->advanceordersnb != 5) {
 		// waiting for clarification from Joey Paquet
 		p->advanceordersnb++;
 	}

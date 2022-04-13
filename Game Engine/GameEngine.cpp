@@ -21,7 +21,13 @@ GameEngine::GameEngine() {
 }
 
 GameEngine::GameEngine(const GameEngine &game1){
-    
+    this->state = game1.state;
+    this->map = game1.map;
+    this->commandprocessor = game1.commandprocessor;
+    this->running = game1.running;
+    this->deck = game1.deck;
+    this->tournamenthandler = game1.tournamenthandler;
+    FORCEWIN = false;
 }
 
 GameEngine& GameEngine::operator= (const GameEngine& game1){

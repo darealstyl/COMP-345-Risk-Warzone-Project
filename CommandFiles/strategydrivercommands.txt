@@ -4,3 +4,4 @@ addplayer Neutral
 addplayer Aggressive
 addplayer Cheater
 gamestart
+quit

@@ -21,7 +21,7 @@ public:
 	Hand* hand;
 	OrderList* orderList;
 	Card* chosenCard;
-	PlayerStrategy* strat;
+	PlayerStrategy * strat;
 	int reinforcements;
 	bool endOfOrder;
 	bool conquered;
@@ -66,6 +66,7 @@ public:
 	void addFriendlyPlayer(Player*);
 	bool isFriendlyPlayer(Player*);
 	void clearFriendlyPlayers();
+	void setPlayerStrategy(string);
 
 	OrderType command;
 

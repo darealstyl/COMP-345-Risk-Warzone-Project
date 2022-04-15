@@ -93,6 +93,34 @@ vector<Territory*> Player::getAtRiskTerritories() {
 	return defend;
 }
 
+void Player::setPlayerStrategy(string stringstrategy) {
+
+	PlayerStrategy* playerstrategy = nullptr;
+
+	if (stringstrategy == "aggressive") {
+		playerstrategy = new AggressivePlayerStrategy();
+	}
+	else if (stringstrategy == "benevolent") {
+		playerstrategy = new BenevolentPlayerStrategy();
+	}
+	else if (stringstrategy == "neutral") {
+		playerstrategy = new NeutralPlayerStrategy();
+	}
+	else if (stringstrategy == "cheater") {
+		playerstrategy = new CheaterPlayerStrategy();
+	}
+	else if (stringstrategy == "human") {
+		playerstrategy = new HumanPlayerStrategy();
+	}
+
+	if (this->strat) {
+		delete strat;
+	}
+
+	this->strat = playerstrategy;
+	playerstrategy->setPlayerLink(this);
+}
+
 void Player::addTerritory(Territory* territory) {
 	
 	territory->owner->territories.erase(territory);

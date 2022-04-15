@@ -11,8 +11,37 @@ using warzoneutils::splitInput;
 Map::Map() {}
 
 Map::Map(const Map& map) {
-    territories = map.territories;
-    continents = map.continents;
+    unordered_map<Continent*, Continent*> continents;
+
+    for (Continent* continent : map.continents) {
+        Continent* copy = new Continent(continent->name, continent->armyValue);
+        continents.insert(make_pair(continent, copy));
+        this->continents.push_back(copy);
+    }
+
+    unordered_map<Territory*, Territory*> territories;
+    
+    for (Territory* territory : map.territories) {
+        Continent* copycontinent = continents.find(territory->continent)->second;
+        Territory* copy = new Territory(territory->name, copycontinent);
+        territories.insert(make_pair(territory, copy));
+        this->territories.push_back(copy);
+    }
+
+    for (Continent* continent : map.continents) {
+        Continent* copy = continents.find(continent)->second;
+        for (Territory* territory : continent->territories) {
+            copy->territories.push_back(territories.find(territory)->second);
+        }
+    }
+
+    for (Territory* territory : map.territories) {
+        Territory* copy = territories.find(territory)->second;
+        for (Territory* adjacentTerritory : territory->adjacentTerritories) {
+            copy->adjacentTerritories.push_back(territories.find(adjacentTerritory)->second);
+        }
+    }
+
 }
 
 Map& Map::operator=(const Map& map) {

@@ -17,7 +17,7 @@ GameEngine::GameEngine() {
     this->running = true;
     this->deck = new Deck();
     this->tournamenthandler = nullptr;
-    FORCEWIN = false;
+    this->nbOfTurns = 0;
 }
 
 GameEngine::GameEngine(const GameEngine &game1){
@@ -27,7 +27,6 @@ GameEngine::GameEngine(const GameEngine &game1){
     this->running = game1.running;
     this->deck = game1.deck;
     this->tournamenthandler = game1.tournamenthandler;
-    FORCEWIN = false;
 }
 
 GameEngine& GameEngine::operator= (const GameEngine& game1){
@@ -59,6 +58,7 @@ void GameEngine::initializeCommandProcessor() {
     CommandProcessor startprocessor;
 
     while (commandprocessor == nullptr) {
+
         cout << "Please select how you want the application to accept commands; from the console (-console) or from a file (-file <filename>)." << endl;
         Command* command = startprocessor.getCommand();
         vector<string> split;
@@ -151,6 +151,7 @@ void GameEngine::execute(Command* command) {
     switch (commandtype) {
     case CT::TOURNAMENT: {
         createTournament(command->command);
+        break;
     }
     case CT::LOADMAP: {
         string mapfile = split[1];
@@ -181,11 +182,9 @@ void GameEngine::execute(Command* command) {
         break;
     }
     case CT::GAMESTART:
-        gamestart();
-        transition(GS::ASSIGN_REINFORCEMENT);
-        cout << "Done with startup. Starting the game" << endl;
         command->saveEffect("Successfully started the game");
-        mainGameLoop();
+        startgame();
+        
         break;
     case CT::REPLAY:
         transition(GS::START);
@@ -200,6 +199,12 @@ void GameEngine::execute(Command* command) {
         break;
     }
 }
+void GameEngine::startgame() {
+    gamestart();
+    transition(GS::ASSIGN_REINFORCEMENT);
+    cout << "Done with startup. Starting the game" << endl;
+    mainGameLoop();
+}
 
 void GameEngine::clearActivePlayers() {
     for (Player* player : activePlayers) {
@@ -213,17 +218,21 @@ void GameEngine::resetgameengine() {
     map = nullptr;
     
     clearActivePlayers();
+    nbOfTurns = 0;
 
     delete deck;
     deck = new Deck();
 }
 
 void GameEngine::getandexecutecommand() {
-    Command* command = commandprocessor->getCommand();
-    bool valid = commandprocessor->validate(command);
-    if (valid) {
-        execute(command);
-    }
+ 
+    
+        Command* command = commandprocessor->getCommand();
+        bool valid = commandprocessor->validate(command);
+        if (valid) {
+            execute(command);
+        }
+    
 }
 
 void GameEngine::gamestart() {
@@ -234,13 +243,6 @@ void GameEngine::gamestart() {
 }
 
 void GameEngine::distributeterritories() {
-    if (FORCEWIN) {
-        Player* winner = activePlayers.front();
-        for (Territory* t : map->territories) {
-            winner->addTerritory(t);
-        }
-    }
-    else {
         vector<Territory*> territories(map->territories);
         while (!territories.empty()) {
             for (Player* player : activePlayers) {
@@ -253,7 +255,7 @@ void GameEngine::distributeterritories() {
                 }
             }
         }
-    }
+    
 }
 
 void GameEngine::randomizeplayerorder() {
@@ -350,6 +352,9 @@ void GameEngine::removelosers() {
 //Sequence of the main game loop using enum state
 void GameEngine::mainGameLoop() {
     while (GS::WIN != state) {  //loop until a player has won which moves to state to the win 
+        if (tournamenthandler && !tournamenthandler->canPlayTurn()) {
+            break;
+        }
         switch (state) {
         case GS::ASSIGN_REINFORCEMENT:
             cout << "\nYou are in the assignment reinforcement phase" << endl;
@@ -371,39 +376,44 @@ void GameEngine::mainGameLoop() {
 }
 
 void GameEngine::startupPhase() {
-
+    
     initializeCommandProcessor();
 
     while (running) {
-        switch (state)
-        {
-        case GS::START: {
-            cout << "Starting the startup phase" << endl;
-            cout << "Please choose one of the following maps that are available in your MapFiles directory using the \"loadmap <mapfile>\" command.\n" << endl;
-            string path = "MapFiles/";
-            for (const auto& file : fs::directory_iterator(path)) {
-                fs::path map(file.path());
-                cout << "\t" << map.filename() << endl;
+        if (tournamenthandler) {
+            tournamenthandler->execute();
+        }
+        else {
+            switch (state)
+            {
+            case GS::START: {
+                cout << "Starting the startup phase" << endl;
+                cout << "Please choose one of the following maps that are available in your MapFiles directory using the \"loadmap <mapfile>\" command.\n" << endl;
+                string path = "MapFiles/";
+                for (const auto& file : fs::directory_iterator(path)) {
+                    fs::path map(file.path());
+                    cout << "\t" << map.filename() << endl;
+                }
+                cout << "You can also choose to start a tournament using the command: tournament -M <listofmapfiles> -P <listofplayerstrategies> -G <numberofgames> -D <maxnumberofturns>." << endl;
+                break;
             }
-            cout << "You can also choose to start a tournament using the command: tournament -M <listofmapfiles> -P <listofplayerstrategies> -G <numberofgames> -D <maxnumberofturns>." << endl;
-            break;
-        }
-        case GS::MAP_LOADED:
-            cout << "\nYou are in the map loaded phase." << endl;
-            break;
-        case GS::MAP_VALIDATED:
-            cout << "\nYou are in the map validated phase." << endl;
-            break;
-        case GS::PLAYERS_ADDED:
-            cout << "\nYou are in the player added phase." << endl;
-            break;
-        case GS::WIN:
-            cout << "\nYou are in the win phase" << endl;
-            break;
-        }
+            case GS::MAP_LOADED:
+                cout << "\nYou are in the map loaded phase." << endl;
+                break;
+            case GS::MAP_VALIDATED:
+                cout << "\nYou are in the map validated phase." << endl;
+                break;
+            case GS::PLAYERS_ADDED:
+                cout << "\nYou are in the player added phase." << endl;
+                break;
+            case GS::WIN:
+                cout << "\nYou are in the win phase" << endl;
+                break;
+            }
 
 
-        getandexecutecommand();
+            getandexecutecommand();
+        }
     }
 }
 
@@ -488,6 +498,9 @@ void GameEngine::reinforcementPhase() {
 }
 
 void GameEngine::issueOrdersPhase() {
+
+    
+
     for (Player* player : activePlayers) {
         player->endOfOrder = false;
         player->advanceordersnb = 0;
@@ -597,6 +610,72 @@ TournamentHandler::TournamentHandler(vector<Map*> maps, vector<string> playerstr
     this->nbOfGames = nbOfGames;
     this->maxNbOfTurns = maxNbOfTurns;
     this->gameengine = gameengine;
+    this->currentMapIndex = 0;
+    this->currentNbOfGames = 0;
+    results.push_back(vector<string>());
+}
+
+bool TournamentHandler::canPlayTurn() {
+    if (gameengine->nbOfTurns < this->maxNbOfTurns) {
+        return true;
+    }
+    else {
+        cout << "Max number of turns reached, this is a draw." << endl;
+        results[currentMapIndex].push_back("Draw");
+        gameengine->transition(GS::WIN);
+        return false;
+    }
+        
+}
+
+void TournamentHandler::execute() {
+    switch (gameengine->state) {
+    case GS::START: {
+        loadmap(currentMapIndex);
+        addplayers();
+        gameengine->startgame();
+        break;
+    }
+    case GS::WIN: {
+        if (gameengine->activePlayers.size() == 1) {
+            results.back().push_back(gameengine->activePlayers.front()->name);
+        }
+        currentNbOfGames++;
+        if (currentNbOfGames == nbOfGames) {
+            currentMapIndex++;
+            currentNbOfGames = 0;
+            results.push_back(vector<string>());
+
+            if (currentMapIndex == maps.size()) {
+                cout << "Tournament is over, printing the results." << endl;
+                printresults();
+                gameengine->tournamenthandler = nullptr;
+                delete this;
+                return;
+            }
+        }
+        gameengine->resetgameengine();
+        loadmap(currentMapIndex);
+        addplayers();
+        gameengine->startgame();
+        break;
+    }
+    default:
+        cout << "Impossible state in tournament." << endl;
+        break;
+    }
+}
+
+void TournamentHandler::loadmap(int index) {
+    gameengine->map = new Map(*maps[index]);
+}
+
+void TournamentHandler::addplayers() {
+    for (string playername : playerstrategies) {
+        Player* player = new Player(playername);
+        player->setPlayerStrategy(playername);
+        gameengine->activePlayers.push_back(player);
+    }
 }
 
 void TournamentHandler::printresults()

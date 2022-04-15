@@ -25,7 +25,7 @@ public:
     enum class GameState { //all the different states
         START, MAP_LOADED, MAP_VALIDATED, PLAYERS_ADDED, ASSIGN_REINFORCEMENT, ISSUE_ORDERS, EXECUTE_ORDERS, WIN
     };
-    bool FORCEWIN;
+    int nbOfTurns;
     bool running;
     Map* map;
     TournamentHandler* tournamenthandler;
@@ -80,11 +80,15 @@ private:
     void cleanupcontrolledcontinents(unordered_map<Player*, vector<Continent*>*>&);
     void makePlayerDrawCard(Player*);
     void clearActivePlayers();
+    void startgame();
+
+    friend class TournamentHandler;
 };
 
 class TournamentHandler {
 public:
     TournamentHandler(vector<Map*> maps, vector<string> playerstrategies, int nbOfGames, int maxNbOfTurns, GameEngine*);
+    
 private:
     vector<Map*> maps;
     vector<string> playerstrategies;
@@ -92,9 +96,19 @@ private:
     int maxNbOfTurns;
     vector<vector<string>> results;
     GameEngine* gameengine;
+    int currentMapIndex;
+    int currentNbOfGames;
 
     void printresults();
     void printverticalborder(int);
     void printspaceandborder(int);
+    void execute();
+    void loadmap(int);
+    void addplayers();
+    bool canPlayTurn();
+    
+
+    friend class GameEngine;
+    
 };
 

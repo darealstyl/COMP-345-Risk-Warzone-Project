@@ -355,6 +355,7 @@ void GameEngine::mainGameLoop() {
         if (tournamenthandler && !tournamenthandler->canPlayTurn()) {
             break;
         }
+        nbOfTurns++;
         switch (state) {
         case GS::ASSIGN_REINFORCEMENT:
             cout << "\nYou are in the assignment reinforcement phase" << endl;
@@ -399,15 +400,19 @@ void GameEngine::startupPhase() {
             }
             case GS::MAP_LOADED:
                 cout << "\nYou are in the map loaded phase." << endl;
+                cout << "You can use the \"validatemap\" command to validate the map you've loaded." << endl;
                 break;
             case GS::MAP_VALIDATED:
                 cout << "\nYou are in the map validated phase." << endl;
+                cout << "You can use the \"addplayer <playername>\" command to add a player" << endl;
                 break;
             case GS::PLAYERS_ADDED:
                 cout << "\nYou are in the player added phase." << endl;
+                cout << "You can use the \"addplayer <playername>\" command to add another player or start the game using \"gamestart\" if you've added 2 to 6 players." << endl;
                 break;
             case GS::WIN:
                 cout << "\nYou are in the win phase" << endl;
+                cout << "You can use the \"replay\" command to play another game or quit the program by using the \"quit\" command." << endl;
                 break;
             }
 

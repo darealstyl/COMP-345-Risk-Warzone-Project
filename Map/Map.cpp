@@ -292,6 +292,8 @@ Map* MapLoader::createMap(string filename) {
 
 	mapstream.close();
 
+    gamemap->name = filename;
+
 	return gamemap;
 }
 

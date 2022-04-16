@@ -58,6 +58,7 @@ public:
 	friend std::ostream& operator<<(std::ostream&, const Map&);
 	vector<Territory*> territories;
 	vector<Continent*> continents;
+	string name;
 
 	bool validate();
 

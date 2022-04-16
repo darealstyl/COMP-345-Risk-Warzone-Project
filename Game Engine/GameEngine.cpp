@@ -644,7 +644,7 @@ void TournamentHandler::execute() {
         if (currentNbOfGames == nbOfGames) {
             currentMapIndex++;
             currentNbOfGames = 0;
-            results.push_back(vector<string>());
+            
 
             if (currentMapIndex == maps.size()) {
                 cout << "Tournament is over, printing the results." << endl;
@@ -653,6 +653,8 @@ void TournamentHandler::execute() {
                 delete this;
                 return;
             }
+
+            results.push_back(vector<string>());
         }
         gameengine->resetgameengine();
         loadmap(currentMapIndex);
@@ -685,15 +687,15 @@ void TournamentHandler::printresults()
     cout << "|";
     printspaceandborder(width);
     for (int i = 1; i <= nbOfGames; i++) {
-        string str = "Game " + i;
-        cout << str;
-        printspaceandborder(width - str.size());
+        string str = "Game ";
+        cout << str << i;
+        printspaceandborder(width - str.size() - 1);
     }
     printverticalborder(width);
     int mapcount = 1;
     for (vector<string> mapwinners : results) {
-        string str = "Map " + mapcount;
-        cout << str;
+        string str = "|Map ";
+        cout << str << mapcount;
         printspaceandborder(width - str.size());
         int winnercount = 1;
         for (string gamewinner : mapwinners) {

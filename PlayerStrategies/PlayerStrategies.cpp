@@ -141,7 +141,6 @@ void HumanPlayerStrategy::issueOrder(Deck* deck)
 		cout << "Do you want to do an advance order on your 1. own territory, 2.enemy territory" << endl;
 		cin >> advanceChoice;
 
-
 		//user interaction to send soldier from defend to defend of choice
 
 		if (advanceChoice == 1) {
@@ -282,7 +281,6 @@ void AggressivePlayerStrategy::issueOrder(Deck* deck)
 	{
 		// aggressive players advance player into its strongest territories until all soldiers are there 
 
-		//TODO: check if all armies are in its strongest territory
 		int advanceChoice{};
 		Territory* from = nullptr;
 		//check if any territory except strongest has > 0 nbOfArmies
@@ -293,29 +291,22 @@ void AggressivePlayerStrategy::issueOrder(Deck* deck)
 				break;
 			}
 		}
-
-
-
 		
 		Territory* to = nullptr;
 		//if 0, we send soldier to strongest territory
 		if (advanceChoice == 0) {
 			to = strongestTerritory;
 		}
-		//attack from strongest to ennemy
+		//attack from strongest to enemy
 		else {
 			from = strongestTerritory;
 			to = vulnerableEnemy;
 		}
-		/*for (Territory* neighbor : to->adjacentTerritories) {
-			if (neighbor->owner == p) {
-				from = neighbor;
-				break;
-			}
-		}*/
+
 		if (from == nullptr) {
 			from = strongestTerritory;
 		}
+
 		int number = from->nbOfArmy;
 		if (number == 0) {
 			number = 1;

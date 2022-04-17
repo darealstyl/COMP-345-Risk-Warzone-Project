@@ -87,7 +87,7 @@ vector<Territory*> Player::getAdjacentTerritories() {
 vector<Territory*> Player::getAtRiskTerritories() {
 
 	vector<Territory*> defend(territories.begin(), territories.end());
-	// sort territories to defend by strength (army count)
+	// sort territories to defend by strength decreasing (army count)
 	sort(defend.begin(), defend.end(), [](const Territory* lhs, const Territory* rhs) {
 		return lhs->nbOfArmy > rhs->nbOfArmy;
 	});
@@ -160,59 +160,7 @@ void Player::issueOrder(Deck* deck) {
 	strat->issueOrder(deck);
 }
 
-void Player::issueOrder(CT cardtype) {
-	vector<Territory*> defend = toDefend();
-	vector<Territory*> attack = toAttack();
 
-	Order* order = nullptr;
-
-	switch (cardtype) {
-	case CT::AIRLIFT: {
-		Territory* from = defend.back();
-		Territory* to = defend.front();
-
-		int transfer = from->nbOfArmy;
-		if (transfer <= 0) {
-			transfer = 1;
-		}
-
-		int numOfArmies = (rand() % transfer) + 1;
-
-		order = new Airlift(this, numOfArmies, to, from);
-		break;
-	}
-	case CT::BLOCKADE: {
-		Territory* location = defend.front();
-
-		order = new Blockade(this, location);
-		break;
-	}
-	case CT::BOMB: {
-		Territory* location = attack.front();
-
-		order = new Bomb(this, location);
-
-		break;
-	}
-	case CT::DIPLOMACY: {
-		Territory* territory = attack.front();
-		Player* targetPlayer = territory->owner;
-
-		order = new Negotiate(this, targetPlayer);
-		break;
-	}
-	case CT::REINFORCEMENT: {
-
-		// TODO: ADJUST THIS AMOUNT
-		reinforcements += 10;
-		break;
-	}
-	}
-
-	if (order != nullptr) {
-		orderList->add(order);
-	}
-}
 void Player::addFriendlyPlayer(Player* friendplayer) {
 	friendlyPlayers.insert(friendplayer);
 }
@@ -225,85 +173,6 @@ bool Player::isFriendlyPlayer(Player* friendplayer) {
 void Player::clearFriendlyPlayers() {
 	friendlyPlayers.clear();
 }
-/*
-void Player::issueOrder(Deck* deck) {
-	chooseNextCommand();
-	if (endOfOrder) {
-		return;
-	}
-
-	vector<Territory*> defend = toDefend();
-	vector<Territory*> attack = toAttack();
-
-	Territory* weakestTerritory = defend.front();
-	Territory* strongestTerritory = defend.back();
-	Territory* vulnerableEnnemy = attack.front();
-
-	endOfOrder = false;
-	switch (command)
-	{
-	case OT::DEPLOY: {
-		// Create a deploy order and push it back in the orderlist
-		if (chosenCard != nullptr) {
-			chosenCard->play(this,deck);
-			chosenCard = nullptr;
-		}
-		if (reinforcements != 0) {
-			cout << "Creating deploy order" << endl;
-			int nbOfreinforcements = (rand() % reinforcements) + 1;
-			reinforcements -= nbOfreinforcements;
-
-			cout << "Deploying " << nbOfreinforcements << " reinforcements to " << *weakestTerritory << endl;
-			cout << reinforcements << " reinforcements left." << endl;
-			Deploy* deploy = new Deploy(this, nbOfreinforcements, weakestTerritory);
-			orderList->add(deploy);
-			
-		}
-		break;
-	}
-	case OT::ADVANCE:
-		{
-			
-		int advanceChoice = (rand() % 2);
-		Territory* to;
-		if (advanceChoice == 0) {
-			to = weakestTerritory;
-		}
-		else {
-			to = vulnerableEnnemy;
-		}
-		Territory* from = nullptr;
-		for (Territory* neighbor : to->adjacentTerritories) {
-			if (neighbor->owner == this) {
-				from = neighbor;
-				break;
-			}
-		}
-		if (from == nullptr) {
-			from = strongestTerritory;
-		}
-		int number = from->nbOfArmy;
-		if (number == 0) {
-			number = 1;
-		}
-		int soldierAmount = (rand() % number/4) + 1;
-		Advance* advance = new Advance(this, soldierAmount, from, to);
-		orderList->add(advance);
-		break;
-		}
-		
-	case OT::AIRLIFT:
-	case OT::BOMB:
-	case OT::BLOCKADE:
-	case OT::NEGOTIATE:
-		cout << *hand << endl;
-		chosenCard->play(this, deck);
-		cout << *hand << endl;
-		chosenCard = nullptr;
-		break;
-	}
-}
-*/
 
 void Player::chooseNextCommand() {
 	if (reinforcements != 0) {

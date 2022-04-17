@@ -47,8 +47,6 @@ istream & operator >> (istream &in, GameEngine &g){
     return in;
 }
 
-
-
 void GameEngine::transition(GS state) {
     this->state = state;
     notify(this);
@@ -231,11 +229,11 @@ void GameEngine::resetgameengine() {
 void GameEngine::getandexecutecommand() {
  
     
-        Command* command = commandprocessor->getCommand();
-        bool valid = commandprocessor->validate(command);
-        if (valid) {
-            execute(command);
-        }
+    Command* command = commandprocessor->getCommand();
+    bool valid = commandprocessor->validate(command);
+    if (valid) {
+        execute(command);
+    }
     
 }
 
@@ -247,18 +245,18 @@ void GameEngine::gamestart() {
 }
 
 void GameEngine::distributeterritories() {
-        vector<Territory*> territories(map->territories);
-        while (!territories.empty()) {
-            for (Player* player : activePlayers) {
-                if (territories.empty()) {
-                    break;
-                }
-                else {
-                    player->addTerritory(territories.back());
-                    territories.pop_back();
-                }
+    vector<Territory*> territories(map->territories);
+    while (!territories.empty()) {
+        for (Player* player : activePlayers) {
+            if (territories.empty()) {
+                break;
+            }
+            else {
+                player->addTerritory(territories.back());
+                territories.pop_back();
             }
         }
+    }
     
 }
 
@@ -531,7 +529,7 @@ void GameEngine::issueOrdersPhase() {
     transition(GS::EXECUTE_ORDERS);
         
 }
-// TODO : Execute all deploy orders before any other type of orders
+
 void GameEngine::executeOrdersPhase() {
     // Players are done issuing orders.
     // Proceed to execute the top order on the list of orders of each player in a round-robin fashion
@@ -624,6 +622,46 @@ TournamentHandler::TournamentHandler(vector<Map*> maps, vector<string> playerstr
     this->currentMapIndex = 0;
     this->currentNbOfGames = 0;
     results.push_back(vector<string>());
+}
+
+TournamentHandler::TournamentHandler(const TournamentHandler& th)
+{
+    this->maps = th.maps;
+    this->playerstrategies = th.playerstrategies;
+    this->nbOfGames = th.currentNbOfGames;
+    this->maxNbOfTurns = th.maxNbOfTurns;
+    this->results = th.results;
+    this->gameengine = th.gameengine;
+    this->currentMapIndex = th.currentMapIndex;
+    this->currentNbOfGames = th.currentNbOfGames;
+}
+
+TournamentHandler& TournamentHandler::operator=(const TournamentHandler& th)
+{
+    this->maps = th.maps;
+    this->playerstrategies = th.playerstrategies;
+    this->nbOfGames = th.currentNbOfGames;
+    this->maxNbOfTurns = th.maxNbOfTurns;
+    this->results = th.results;
+    this->gameengine = th.gameengine;
+    this->currentMapIndex = th.currentMapIndex;
+    this->currentNbOfGames = th.currentNbOfGames;
+    return *this;
+}
+
+TournamentHandler::~TournamentHandler()
+{
+    maps.clear();
+    playerstrategies.clear();
+    results.clear();
+    // game engine deletion is handled by the main driver.
+    gameengine = nullptr;
+}
+
+ostream& operator<<(ostream& out, const TournamentHandler& g)
+{
+    out << "[TOURNAMENTHANDLER]";
+    return out;
 }
 
 bool TournamentHandler::canPlayTurn() {

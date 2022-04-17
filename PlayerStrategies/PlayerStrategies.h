@@ -20,7 +20,6 @@ public:
 	
 	PlayerStrategy& operator=(const PlayerStrategy&);
 	friend std::ostream& operator<<(std::ostream&, const PlayerStrategy&);
-	//virtual std::ostream& to_string(std::ostream&) const = 0;
 	
 	void setPlayerLink(Player* p);
 
@@ -41,7 +40,6 @@ public:
 	~HumanPlayerStrategy();
 	HumanPlayerStrategy& operator=(const HumanPlayerStrategy&);
 	friend std::ostream& operator<<(std::ostream&, const HumanPlayerStrategy&);
-	//std::ostream& to_string(std::ostream&) const override;
 
 	void issueOrder(Deck*);
 	vector<Territory*> toAttack();
@@ -55,7 +53,6 @@ public:
 	~AggressivePlayerStrategy();
 	AggressivePlayerStrategy& operator=(const AggressivePlayerStrategy&);
 	friend std::ostream& operator<<(std::ostream&, const AggressivePlayerStrategy&);
-	//std::ostream& to_string(std::ostream&) const override;
 
 	void issueOrder(Deck*);
 	vector<Territory*> toAttack();
@@ -69,7 +66,6 @@ public:
 	~BenevolentPlayerStrategy();
 	BenevolentPlayerStrategy& operator=(const BenevolentPlayerStrategy&);
 	friend std::ostream& operator<<(std::ostream&, const BenevolentPlayerStrategy&);
-	//std::ostream& to_string(std::ostream&) const override;
 
 	void issueOrder(Deck*);
 	vector<Territory*> toAttack();
@@ -83,7 +79,6 @@ public:
 	~NeutralPlayerStrategy();
 	NeutralPlayerStrategy& operator=(const NeutralPlayerStrategy&);
 	friend std::ostream& operator<<(std::ostream&, const NeutralPlayerStrategy&);
-	//std::ostream& to_string(std::ostream&) const override;
 
 	void issueOrder(Deck*);
 	vector<Territory*> toAttack();
@@ -97,7 +92,6 @@ public:
 	~CheaterPlayerStrategy();
 	CheaterPlayerStrategy& operator=(const CheaterPlayerStrategy&);
 	friend std::ostream& operator<<(std::ostream&, const CheaterPlayerStrategy&);
-	//std::ostream& to_string(std::ostream&) const override;
 
 	void issueOrder(Deck*);
 	vector<Territory*> toAttack();

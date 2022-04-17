@@ -88,7 +88,11 @@ private:
 class TournamentHandler {
 public:
     TournamentHandler(vector<Map*> maps, vector<string> playerstrategies, int nbOfGames, int maxNbOfTurns, GameEngine*);
-    
+    TournamentHandler(const TournamentHandler& th); //copy constructor
+    TournamentHandler& operator =(const TournamentHandler&); //assignment operator
+    ~TournamentHandler(); //destructor
+
+    friend ostream& operator << (ostream& out, const TournamentHandler& g);
 private:
     vector<Map*> maps;
     vector<string> playerstrategies;

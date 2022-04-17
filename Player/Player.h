@@ -44,14 +44,8 @@ public:
 	Player& operator=(const Player&);
 
 	friend std::ostream& operator<<(std::ostream&, const Player&);
-
-	void issueOrder(OrderType, Territory*);
-	void issueOrder(OrderType, int, Territory*);
-	void issueOrder(OrderType, int, Territory*, Territory*);
-	void issueOrder(OrderType, Player*);
+		
 	void issueOrder(Deck*);
-	void issueOrder(Card::CardType);
-	void issueOrder();
 
 	int getNbOfTerritories();
 	OrderType cardTypeToOrderType(Card::CardType);

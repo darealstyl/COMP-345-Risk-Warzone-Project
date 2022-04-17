@@ -136,8 +136,58 @@ std::string Card::cardTypeToString() const {
 void Card::play(Player* player, Deck* deck) {
 
     // will add the card type to the order list later
-    player->issueOrder(this->type);
     
+    vector<Territory*> defend = player->toDefend();
+    vector<Territory*> attack = player->toAttack();
+
+    Order* order = nullptr;
+
+    switch (this->type) {
+    case CardType::AIRLIFT: {
+        Territory* from = defend.back();
+        Territory* to = defend.front();
+
+        int transfer = from->nbOfArmy;
+        if (transfer <= 0) {
+            transfer = 1;
+        }
+
+        int numOfArmies = (rand() % transfer) + 1;
+
+        order = new Airlift(player, numOfArmies, to, from);
+        break;
+    }
+    case CardType::BLOCKADE: {
+        Territory* location = defend.front();
+
+        order = new Blockade(player, location);
+        break;
+    }
+    case CardType::BOMB: {
+        Territory* location = attack.front();
+
+        order = new Bomb(player, location);
+
+        break;
+    }
+    case CardType::DIPLOMACY: {
+        Territory* territory = attack.front();
+        Player* targetPlayer = territory->owner;
+
+        order = new Negotiate(player, targetPlayer);
+        break;
+    }
+    case CardType::REINFORCEMENT: {
+
+        player->reinforcements += 10;
+        break;
+    }
+    }
+
+    if (order != nullptr) {
+        player->orderList->add(order);
+    }
+
     // Remove the card from the Hand and add it to the Deck
     cout << "Hand size before playing the card:" << player->hand->cards.size() << endl;
     auto index = std::find(player->hand->cards.begin(), player->hand->cards.end(), this);

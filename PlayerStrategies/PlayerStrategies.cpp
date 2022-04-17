@@ -151,7 +151,7 @@ void HumanPlayerStrategy::issueOrder(Deck* deck)
 			}
 			cout << "Enter the number of the territory that will send armies: ";
 			cin >> fromChoice;
-			cout << endl << "Enter the number of the territory that receives the armies:";
+			cout << endl << "Enter the number of the territory that receives the armies: ";
 			cin >> toChoice;
 
 			from = defend[fromChoice];
@@ -163,7 +163,7 @@ void HumanPlayerStrategy::issueOrder(Deck* deck)
 			for (int i = 0; i < defend.size(); i++) {
 				cout << i << ". " << defend[i]->name << " - number of armies: " << defend[i]->nbOfArmy << endl;
 			}
-			cout << "Enter the number of the territory that attacks the enemy";
+			cout << "Enter the number of the territory that attacks the enemy: ";
 			cin >> fromChoice;
 			cout << endl << "List of enemies' territories: " << endl;
 			for (int i = 0; i < attack.size(); i++) {

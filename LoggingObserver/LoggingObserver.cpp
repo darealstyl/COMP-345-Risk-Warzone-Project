@@ -49,10 +49,7 @@ void Subject::detach(Observer* o) {
 }
 
 // A object of type Subject calls this function to notify all observers that a change occurred
-void Subject::notify(ILoggable* il) {
-	// Following cout is used for driver purposes only.
-	if(!_observers->empty())
-		cout << "	Inside Subject::notify for: " << typeid(*il).name() << endl;
+void Subject::notify(ILoggable* il) {	
 	// Tell all Observer Subscribed to this Subject class
 	for (Observer* s : *_observers)
 		s->update(il);
@@ -103,7 +100,6 @@ LogObserver::~LogObserver() {}
 * Calls the stringToLog implementation of an ILoggable class to write relevant data to the log file.
 */ 
 void LogObserver::update(ILoggable* il) {
-	cout << "	Inside LogObserver::update for: " << typeid(*il).name() << endl;
 	std::ofstream file(logFilename, std::ios_base::app);
 	file << il->stringToLog() << std::endl;
 	file.close();

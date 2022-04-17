@@ -70,6 +70,8 @@ void GameEngine::initializeCommandProcessor() {
         if (split[0] == "-console" && split.size() == 1) {
             cout << "Chose to accept command from the console. Instanciated command processor to a new CommandProcessor()." << endl;
             this->commandprocessor = new CommandProcessor(this);
+            for (auto observer : *_observers)
+                this->commandprocessor->attach(observer);
         }
         else if (split[0] == "-file" && split.size() == 2) {
             string path = "CommandFiles/";
@@ -82,6 +84,8 @@ void GameEngine::initializeCommandProcessor() {
                     cout << "Chose to accept command from the saved file " << filename << ". Instanciated command processor to a new FileCommandProcessorAdapter()." << endl;
                     
                     this->commandprocessor = new FileCommandProcessorAdapter(this, filename);
+                    for (auto observer : *_observers)
+                        this->commandprocessor->attach(observer);
                     break;
                 }
             }
@@ -597,10 +601,12 @@ void GameEngine::addPlayer(string name) {
     else
         p = new Player(name, new HumanPlayerStrategy());
 
-    activePlayers.push_back(p);
+    addPlayer(p);
 }
 
 void GameEngine::addPlayer(Player* p) {
+    for (auto observer : *_observers)
+        p->orderList->attach(observer);
     activePlayers.push_back(p);
 }
 
@@ -681,7 +687,7 @@ void TournamentHandler::addplayers() {
     for (string playername : playerstrategies) {
         Player* player = new Player(playername);
         player->setPlayerStrategy(playername);
-        gameengine->activePlayers.push_back(player);
+        gameengine->addPlayer(player);
     }
 }
 

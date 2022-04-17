@@ -202,9 +202,7 @@ Advance::Advance(Player* issuingPlayer, int numOfArmies, Territory* to, Territor
 void Advance::validate() // Will validate the circumstances of the object before executing
 {	
 	cout << "Validating Advance Order..." << endl;
-	// TODO FIX NB OF ARMIES SENT
 	if (issuingPlayer == from->owner && Territory::territoriesAreAdjacent(from, to) && numOfArmies > 0) {
-		numOfArmies = from->nbOfArmy;
 		Player* targetPlayer = to->owner;
 		if (issuingPlayer != targetPlayer) {
 			if (!issuingPlayer->isFriendlyPlayer(targetPlayer)) {
@@ -238,6 +236,7 @@ void Advance::execute()
 			srand((unsigned)time(NULL));
 			cout << "Doing Battle..." << endl;
 			int numOfArmyCopy = this->numOfArmies;
+			from->nbOfArmy -= numOfArmies;
 			float rand_num = 0.0;
 			if (dynamic_cast<NeutralPlayerStrategy*>(to->owner->strat) != nullptr) {
 				cout << "A neutral player was attacked. They are now aggressive." << endl;
@@ -258,10 +257,16 @@ void Advance::execute()
 						cout << "Attacking army unit destroyed" << endl;
 					}
 				}
+				// defending force was destroyed
 				if (to->nbOfArmy == 0) 
 				{
-					cout << "Attacking army destroyed, "+to->name+" succesfully defended." << endl;
-					cout << to->name + " has " + to_string(to->nbOfArmy) + " remaining on the territory." << endl;
+					cout << "Defending army destroyed, " + to->name + " succesfully conquered by " + issuingPlayer->name + "." << endl;
+					// change the defeated territories owner and move the living armies there
+					issuingPlayer->addTerritory(to, numOfArmyCopy);
+
+					issuingPlayer->conquered = true;
+					cout << issuingPlayer->name + " now has " + to_string(to->nbOfArmy) + " armies on the territory." << endl;
+					break;
 				}
 				if (numOfArmyCopy != 0) 
 				{
@@ -274,13 +279,12 @@ void Advance::execute()
 						cout << "Defending army unit destroyed" << endl;
 					}
 				}
+				// attacking force was destroyed
 				if (numOfArmyCopy == 0)
 				{
-					cout << "Defending army destroyed, " + to->name + " succesfully conquered by " + issuingPlayer->name + "." << endl;
-					to->owner = issuingPlayer;
-					to->nbOfArmy = numOfArmyCopy;
-					issuingPlayer->conquered = true;
-					cout << issuingPlayer->name + " now has " + to_string(to->nbOfArmy) + " armies on the territory." <<endl;
+					cout << "Attacking army destroyed, " + to->name + " succesfully defended." << endl;
+					cout << to->name + " has " + to_string(to->nbOfArmy) + " remaining on the territory." << endl;
+					break;
 				}
 			}
 		}
@@ -311,7 +315,7 @@ Advance& Advance::operator=(const Advance& a) // Assignment Operator Overload
 }
 
 std::string Advance::stringToLog() {
-	return "Order Executed: " + issuingPlayer->name + "advanced " + std::to_string(numOfArmies) + " from " + from->name + " to " + to->name;
+	return "Order Executed: " + issuingPlayer->name + " advanced " + std::to_string(numOfArmies) + " from " + from->name + " to " + to->name;
 }
 
 Bomb::Bomb(Player* issuingPlayer, Territory* location) : Order(), issuingPlayer(issuingPlayer), location(location)

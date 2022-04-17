@@ -3,12 +3,9 @@
 using namespace std;
 
 int main() {
-	GameEngine* forcewingame = new GameEngine();
-	forcewingame->startupPhase();
-	cout << "Warning: next game will go by very fast and you won't be able to observe without breakpoints." << endl;
-	delete forcewingame;
-	
-	GameEngine normalgame;
-	normalgame.startupPhase();
+	LogObserver* logger = new LogObserver();
+	GameEngine* normalgame = new GameEngine();
+	normalgame->attach(logger);
+	normalgame->startupPhase();
 	cin.get();
 }

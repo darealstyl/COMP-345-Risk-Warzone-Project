@@ -41,7 +41,7 @@ public:
 
 	Subject& operator=(const Subject&);
 	friend std::ostream& operator<<(std::ostream&, const Subject&);
-protected:
+
 	std::list<Observer*>* _observers;
 };
 

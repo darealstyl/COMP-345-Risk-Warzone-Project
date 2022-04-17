@@ -1,0 +1,1 @@
+tournament -M solar.map -P neutral aggressive cheater benevolent -G 4 -D 30

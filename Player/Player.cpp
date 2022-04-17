@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <map>
 #include <algorithm>
+#include <set>
 
 typedef Player::OrderType OT;
 typedef Card::CardType CT;
@@ -68,7 +69,6 @@ Player::~Player() {
 
 	delete strat;
 }
-// TODO: this is creating duplicates of a territory if 2 owned territories are adjacent to it
 vector<Territory*> Player::getAdjacentTerritories() {
 	vector<Territory*> toattack;
 	for (Territory* territory : territories) {
@@ -78,12 +78,13 @@ vector<Territory*> Player::getAdjacentTerritories() {
 			}
 		}
 	}
+	set<Territory*> temp(toattack.begin(), toattack.end());
+	toattack.assign(temp.begin(), temp.end());
 	return toattack;
 }
 
 // gets territories owned by the player and sorts by army strength
 vector<Territory*> Player::getAtRiskTerritories() {
-	// TODO: possibly refactor to only get territories with adjacent enemies?
 
 	vector<Territory*> defend(territories.begin(), territories.end());
 	// sort territories to defend by strength (army count)

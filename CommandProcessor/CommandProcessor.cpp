@@ -20,7 +20,7 @@ void Command::saveEffect(string str) {
 }
 
 std::string Command::stringToLog() {
-	return "Command's Effect:" + this->effect;
+	return "Command's Effect: " + this->effect;
 }
 
 Command& Command::operator=(const Command& cmd)

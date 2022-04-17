@@ -37,6 +37,7 @@ GameEngine::~GameEngine(){
     delete commandprocessor;
     delete deck;
     delete map;
+    delete tournamenthandler;
 }
 
 ostream & operator << (ostream &out, const GameEngine &g){

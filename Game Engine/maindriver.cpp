@@ -7,5 +7,7 @@ int main() {
 	GameEngine* normalgame = new GameEngine();
 	normalgame->attach(logger);
 	normalgame->startupPhase();
+	delete logger;
+	delete normalgame;
 	cin.get();
 }
